@@ -36,9 +36,9 @@ import { ScrollArea } from '../ui/scroll-area';
 const initialState = { message: '', errors: {} };
 
 const productTypes = [
-    { name: 'Finished Good', abbreviation: 'FG' },
     { name: 'Raw Material', abbreviation: 'RM' },
     { name: 'Service', abbreviation: 'SRV' },
+    { name: 'Finished Good', abbreviation: 'FG' },
 ];
 
 function SubmitButton() {
