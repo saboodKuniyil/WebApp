@@ -1,5 +1,14 @@
-import { LoginForm } from '@/components/login-form';
+'use client';
 
-export default function LoginPage() {
-  return <LoginForm />;
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
+export default function HomePage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace('/signup');
+  }, [router]);
+
+  return null;
 }

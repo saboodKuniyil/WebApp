@@ -3,14 +3,6 @@
 import { redirect } from 'next/navigation';
 import { analyzeSalesTrends, type AnalyzeSalesTrendsInput } from '@/ai/flows/analyze-sales-trends';
 
-export async function login(formData: FormData) {
-  // In a real app, you'd validate credentials here against your user database.
-  // For this example, we'll just log the email and redirect.
-  const email = formData.get('email');
-  console.log(`User attempting to log in with email: ${email}`);
-  redirect('/dashboard');
-}
-
 export async function signup(formData: FormData) {
   // In a real app, you'd create a new user in your database.
   // For this example, we'll just log the email and redirect.

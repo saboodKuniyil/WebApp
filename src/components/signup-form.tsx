@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -35,12 +34,6 @@ export function SignupForm() {
               Sign Up
             </Button>
           </form>
-          <div className="mt-4 text-center text-sm">
-            Already have an account?{' '}
-            <Link href="/" className="underline">
-              Login
-            </Link>
-          </div>
         </CardContent>
       </Card>
     </div>
