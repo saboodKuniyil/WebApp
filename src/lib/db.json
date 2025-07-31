@@ -304,34 +304,72 @@
   "productCategories": [
     {
       "name": "Electronics",
+      "abbreviation": "ELC",
       "subcategories": [
-        "Laptops",
-        "Keyboards",
-        "Monitors",
-        "Accessories"
+        {
+          "name": "Laptops",
+          "abbreviation": "LAP"
+        },
+        {
+          "name": "Keyboards",
+          "abbreviation": "KEY"
+        },
+        {
+          "name": "Monitors",
+          "abbreviation": "MON"
+        },
+        {
+          "name": "Accessories",
+          "abbreviation": "ACC"
+        }
       ]
     },
     {
       "name": "Furniture",
+      "abbreviation": "FNT",
       "subcategories": [
-        "Chairs",
-        "Desks",
-        "Storage"
+        {
+          "name": "Chairs",
+          "abbreviation": "CHR"
+        },
+        {
+          "name": "Desks",
+          "abbreviation": "DSK"
+        },
+        {
+          "name": "Storage",
+          "abbreviation": "STR"
+        }
       ]
     },
     {
       "name": "Office Supplies",
+      "abbreviation": "OFS",
       "subcategories": [
-        "Pens",
-        "Notebooks",
-        "Binders"
+        {
+          "name": "Pens",
+          "abbreviation": "PEN"
+        },
+        {
+          "name": "Notebooks",
+          "abbreviation": "NTB"
+        },
+        {
+          "name": "Binders",
+          "abbreviation": "BND"
+        }
       ]
     },
     {
       "name": "MDF",
+      "abbreviation": "MDF",
       "subcategories": [
-        "Pain mdf"
+        {
+          "name": "Pain mdf",
+          "abbreviation": "PMD"
+        }
       ]
     }
   ]
 }
+    

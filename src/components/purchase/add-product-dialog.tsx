@@ -27,7 +27,7 @@ import { PlusCircle } from 'lucide-react';
 import { createProduct, getNextProductId } from '@/app/purchase/products/actions';
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '../ui/textarea';
-import type { ProductCategory } from '../settings/product-preferences';
+import type { ProductCategory, Subcategory } from '../settings/product-preferences';
 
 const initialState = { message: '', errors: {} };
 
@@ -45,7 +45,7 @@ export function AddProductDialog({ categories }: AddProductDialogProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [nextId, setNextId] = React.useState('');
   const [selectedCategory, setSelectedCategory] = React.useState('');
-  const [subcategories, setSubcategories] = React.useState<string[]>([]);
+  const [subcategories, setSubcategories] = React.useState<Subcategory[]>([]);
 
   const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
@@ -149,8 +149,8 @@ export function AddProductDialog({ categories }: AddProductDialogProps) {
                 </SelectTrigger>
                 <SelectContent>
                     {subcategories.map((subcategory) => (
-                        <SelectItem key={subcategory} value={subcategory}>
-                            {subcategory}
+                        <SelectItem key={subcategory.name} value={subcategory.name}>
+                            {subcategory.name}
                         </SelectItem>
                     ))}
                 </SelectContent>
@@ -188,3 +188,5 @@ export function AddProductDialog({ categories }: AddProductDialogProps) {
     </Dialog>
   );
 }
+
+    

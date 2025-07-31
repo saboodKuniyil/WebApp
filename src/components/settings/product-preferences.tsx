@@ -36,9 +36,15 @@ import { deleteProductCategory } from '@/app/settings/preferences/product-prefer
 import { useToast } from '@/hooks/use-toast';
 
 
+export type Subcategory = {
+  name: string;
+  abbreviation: string;
+};
+
 export type ProductCategory = {
   name: string;
-  subcategories: string[];
+  abbreviation: string;
+  subcategories: Subcategory[];
 };
 
 interface ProductPreferencesProps {
@@ -78,15 +84,18 @@ export function ProductPreferences({ data }: ProductPreferencesProps) {
     {
       accessorKey: 'name',
       header: 'Category Name',
-      cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
+      cell: ({ row }) => {
+        const category = row.original;
+        return <div className="font-medium">{category.name} <span className="text-muted-foreground">({category.abbreviation})</span></div>;
+      }
     },
     {
       accessorKey: 'subcategories',
       header: 'Subcategories',
       cell: ({ row }) => (
           <div className="flex flex-wrap gap-1">
-              {(row.getValue('subcategories') as string[]).map((sub) => (
-                  <Badge key={sub} variant="secondary">{sub}</Badge>
+              {(row.getValue('subcategories') as Subcategory[]).map((sub) => (
+                  <Badge key={sub.name} variant="secondary">{sub.name} ({sub.abbreviation})</Badge>
               ))}
         </div>
       ),
@@ -206,3 +215,5 @@ export function ProductPreferences({ data }: ProductPreferencesProps) {
     </>
   );
 }
+
+    

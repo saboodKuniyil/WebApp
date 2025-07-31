@@ -18,7 +18,7 @@ import { Label } from '@/components/ui/label';
 import { X, Plus } from 'lucide-react';
 import { updateProductCategory } from '@/app/settings/preferences/product-preference/actions';
 import { useToast } from '@/hooks/use-toast';
-import { ProductCategory } from './product-preferences';
+import { ProductCategory, Subcategory } from './product-preferences';
 
 const initialState = { message: '', errors: {} };
 
@@ -38,11 +38,14 @@ export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategory
   const formRef = React.useRef<HTMLFormElement>(null);
 
   const [name, setName] = React.useState(category.name);
-  const [subcategories, setSubcategories] = React.useState(category.subcategories);
-  const [newSubcategory, setNewSubcategory] = React.useState('');
+  const [abbreviation, setAbbreviation] = React.useState(category.abbreviation);
+  const [subcategories, setSubcategories] = React.useState<Subcategory[]>(category.subcategories);
+  const [newSubcategoryName, setNewSubcategoryName] = React.useState('');
+  const [newSubcategoryAbbr, setNewSubcategoryAbbr] = React.useState('');
 
   React.useEffect(() => {
     setName(category.name);
+    setAbbreviation(category.abbreviation);
     setSubcategories(category.subcategories);
   }, [category]);
 
@@ -58,14 +61,15 @@ export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategory
   }, [state, toast, setIsOpen]);
 
   const handleAddSubcategory = () => {
-    if (newSubcategory.trim() && !subcategories.includes(newSubcategory.trim())) {
-      setSubcategories([...subcategories, newSubcategory.trim()]);
-      setNewSubcategory('');
+    if (newSubcategoryName.trim() && newSubcategoryAbbr.trim().length === 3 && !subcategories.some(s => s.name === newSubcategoryName.trim())) {
+      setSubcategories([...subcategories, { name: newSubcategoryName.trim(), abbreviation: newSubcategoryAbbr.trim().toUpperCase() }]);
+      setNewSubcategoryName('');
+      setNewSubcategoryAbbr('');
     }
   };
 
   const handleRemoveSubcategory = (sub: string) => {
-    setSubcategories(subcategories.filter(s => s !== sub));
+    setSubcategories(subcategories.filter(s => s.name !== sub));
   };
   
   return (
@@ -96,6 +100,22 @@ export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategory
               <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.name[0]}</p>
             )}
           </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="abbreviation" className="text-right">
+              Abbreviation
+            </Label>
+            <Input
+              id="abbreviation"
+              name="abbreviation"
+              value={abbreviation}
+              onChange={(e) => setAbbreviation(e.target.value.toUpperCase())}
+              className="col-span-3"
+              maxLength={3}
+            />
+            {state.errors?.abbreviation && (
+              <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.abbreviation[0]}</p>
+            )}
+          </div>
            <div className="grid grid-cols-4 items-start gap-4">
             <Label htmlFor="subcategories-list" className="text-right pt-2">
               Subcategories
@@ -104,15 +124,16 @@ export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategory
                 <div className="flex gap-2">
                     <Input 
                         id="subcategories-list"
-                        value={newSubcategory}
-                        onChange={(e) => setNewSubcategory(e.target.value)}
-                        placeholder="Add a new subcategory"
-                        onKeyDown={(e) => {
-                            if(e.key === 'Enter') {
-                                e.preventDefault();
-                                handleAddSubcategory();
-                            }
-                        }}
+                        value={newSubcategoryName}
+                        onChange={(e) => setNewSubcategoryName(e.target.value)}
+                        placeholder="Subcategory Name"
+                    />
+                    <Input 
+                        value={newSubcategoryAbbr}
+                        onChange={(e) => setNewSubcategoryAbbr(e.target.value)}
+                        placeholder="Abbr."
+                        maxLength={3}
+                        className="w-20"
                     />
                     <Button type="button" size="icon" onClick={handleAddSubcategory}>
                         <Plus className="h-4 w-4"/>
@@ -120,9 +141,9 @@ export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategory
                 </div>
                 <div className="space-y-2">
                     {subcategories.map(sub => (
-                        <div key={sub} className="flex items-center justify-between rounded-md border p-2">
-                           <span>{sub}</span>
-                            <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveSubcategory(sub)}>
+                        <div key={sub.name} className="flex items-center justify-between rounded-md border p-2 text-sm">
+                           <span>{sub.name} ({sub.abbreviation})</span>
+                            <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveSubcategory(sub.name)}>
                                 <X className="h-4 w-4" />
                             </Button>
                         </div>
@@ -141,3 +162,5 @@ export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategory
     </Dialog>
   );
 }
+
+    

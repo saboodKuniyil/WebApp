@@ -5,17 +5,24 @@ import { z } from 'zod';
 import { getProductCategories, createProductCategory as createDbProductCategory, updateProductCategory as updateDbProductCategory, deleteProductCategory as deleteDbProductCategory } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 
+const subcategorySchema = z.object({
+  name: z.string().min(1, 'Subcategory name cannot be empty'),
+  abbreviation: z.string().length(3, 'Abbreviation must be 3 characters'),
+});
+
 const categorySchema = z.object({
   name: z.string().min(1, 'Category name is required'),
+  abbreviation: z.string().length(3, 'Abbreviation must be 3 characters'),
   subcategories: z.string()
-    .transform((val) => val.split(',').map(s => s.trim()).filter(Boolean))
-    .refine((val) => val.length > 0, { message: 'At least one subcategory is required' }),
+    .transform((val) => JSON.parse(val))
+    .pipe(z.array(subcategorySchema))
 });
 
 export type CategoryFormState = {
   message: string;
   errors?: {
     name?: string[];
+    abbreviation?: string[];
     subcategories?: string[];
   };
 };
@@ -26,9 +33,10 @@ export async function createProductCategory(
 ): Promise<CategoryFormState> {
   const validatedFields = categorySchema.safeParse({
     name: formData.get('name'),
+    abbreviation: formData.get('abbreviation'),
     subcategories: formData.get('subcategories'),
   });
-
+  
   if (!validatedFields.success) {
     return {
       message: 'Failed to create category.',
@@ -36,7 +44,7 @@ export async function createProductCategory(
     };
   }
 
-  const { name, subcategories } = validatedFields.data;
+  const { name, abbreviation, subcategories } = validatedFields.data;
 
   try {
     const categories = await getProductCategories();
@@ -45,9 +53,16 @@ export async function createProductCategory(
     if (nameExists) {
         return { message: 'Failed to create category. A category with this name already exists.' };
     }
+    
+    const abbreviationExists = categories.some(c => c.abbreviation.toLowerCase() === abbreviation.toLowerCase());
+    if (abbreviationExists) {
+        return { message: 'Failed to create category. A category with this abbreviation already exists.' };
+    }
+
 
     await createDbProductCategory({
         name,
+        abbreviation,
         subcategories,
     });
 
@@ -63,6 +78,7 @@ export async function createProductCategory(
 const updateCategorySchema = z.object({
     originalName: z.string(),
     name: z.string().min(1, 'Category name cannot be empty.'),
+    abbreviation: z.string().length(3, 'Abbreviation must be 3 characters'),
     subcategories: z.string().transform((val) => JSON.parse(val))
 });
 
@@ -70,6 +86,7 @@ export async function updateProductCategory(prevState: CategoryFormState, formDa
     const validatedFields = updateCategorySchema.safeParse({
         originalName: formData.get('originalName'),
         name: formData.get('name'),
+        abbreviation: formData.get('abbreviation'),
         subcategories: formData.get('subcategories'),
     });
     
@@ -77,7 +94,7 @@ export async function updateProductCategory(prevState: CategoryFormState, formDa
         return { message: 'Validation failed.', errors: validatedFields.error.flatten().fieldErrors };
     }
 
-    const { originalName, name, subcategories } = validatedFields.data;
+    const { originalName, name, abbreviation, subcategories } = validatedFields.data;
 
     try {
         const categories = await getProductCategories();
@@ -88,7 +105,15 @@ export async function updateProductCategory(prevState: CategoryFormState, formDa
             }
         }
         
-        await updateDbProductCategory(originalName, { name, subcategories });
+        const existingCategory = categories.find(c => c.name === originalName);
+        if (existingCategory && existingCategory.abbreviation !== abbreviation) {
+             const abbreviationExists = categories.some(c => c.abbreviation.toLowerCase() === abbreviation.toLowerCase());
+             if (abbreviationExists) {
+                return { message: 'Failed to update category. Another category with this abbreviation already exists.' };
+             }
+        }
+        
+        await updateDbProductCategory(originalName, { name, abbreviation, subcategories });
         revalidatePath('/settings/preferences/product-preference');
         revalidatePath('/purchase/products');
         return { message: 'Category updated successfully.' };
@@ -109,3 +134,5 @@ export async function deleteProductCategory(categoryName: string) {
         return { message: 'Failed to delete category.' };
     }
 }
+
+    
