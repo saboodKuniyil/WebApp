@@ -7,12 +7,15 @@ import { unstable_noStore as noStore } from 'next/cache';
 async function getProjects(): Promise<Project[]> {
   noStore();
   try {
+    // Attempt to connect to the database and fetch projects
     const [rows] = await db.query('SELECT id, title, status, manager, DATE_FORMAT(deadline, \'%Y-%m-%d\') as deadline FROM projects');
     // The library returns a strange type, so we need to cast it
     return rows as Project[];
   } catch (error) {
-    console.error('Failed to fetch projects:', error);
-    // In case of an error, return an empty array
+    // Log the error for debugging, but don't let it crash the page
+    console.error('Database connection failed:', error);
+    // In case of an error (like ECONNREFUSED), return an empty array
+    // This allows the page to render without a database connection.
     return [];
   }
 }
