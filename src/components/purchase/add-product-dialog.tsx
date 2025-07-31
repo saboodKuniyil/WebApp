@@ -75,7 +75,11 @@ export function AddProductDialog() {
   const [selectedBosProduct, setSelectedBosProduct] = React.useState('');
   const [selectedBosQuantity, setSelectedBosQuantity] = React.useState(1);
 
-  const [calculatedCost, setCalculatedCost] = React.useState(0);
+  const [purchasePrice, setPurchasePrice] = React.useState(0);
+  const [salesPrice, setSalesPrice] = React.useState(0);
+  const [marginPercent, setMarginPercent] = React.useState(0);
+  const [marginAmount, setMarginAmount] = React.useState(0);
+
 
   const rawMaterials = React.useMemo(() => allProducts.filter(p => p.type === 'Raw Material'), [allProducts]);
   const services = React.useMemo(() => allProducts.filter(p => p.type === 'Service'), [allProducts]);
@@ -124,7 +128,10 @@ export function AddProductDialog() {
     setNextId('');
     setBom([]);
     setBos([]);
-    setCalculatedCost(0);
+    setPurchasePrice(0);
+    setSalesPrice(0);
+    setMarginAmount(0);
+    setMarginPercent(0);
   }, []);
 
   React.useEffect(() => {
@@ -178,16 +185,57 @@ export function AddProductDialog() {
 
   // Cost Calculation Effect
   React.useEffect(() => {
-    const bomCost = bom.reduce((acc, item) => {
-        const product = rawMaterials.find(p => p.id === item.productId);
-        return acc + (product ? product.purchasePrice * item.quantity : 0);
-    }, 0);
-    const bosCost = bos.reduce((acc, item) => {
-        const service = services.find(s => s.id === item.productId);
-        return acc + (service ? service.purchasePrice * item.quantity : 0);
-    }, 0);
-    setCalculatedCost(bomCost + bosCost);
-  }, [bom, bos, rawMaterials, services]);
+    if (selectedTypeName === 'Finished Good') {
+        const bomCost = bom.reduce((acc, item) => {
+            const product = rawMaterials.find(p => p.id === item.productId);
+            return acc + (product ? product.purchasePrice * item.quantity : 0);
+        }, 0);
+        const bosCost = bos.reduce((acc, item) => {
+            const service = services.find(s => s.id === item.productId);
+            return acc + (service ? service.purchasePrice * item.quantity : 0);
+        }, 0);
+        const totalCost = parseFloat((bomCost + bosCost).toFixed(2));
+        setPurchasePrice(totalCost);
+    }
+  }, [bom, bos, rawMaterials, services, selectedTypeName]);
+
+  // Update sales price when purchase price or margin changes
+  React.useEffect(() => {
+      const newMarginAmount = purchasePrice * (marginPercent / 100);
+      setMarginAmount(parseFloat(newMarginAmount.toFixed(2)));
+      setSalesPrice(parseFloat((purchasePrice + newMarginAmount).toFixed(2)));
+  }, [purchasePrice, marginPercent]);
+
+
+  const handleMarginPercentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const percent = parseFloat(e.target.value) || 0;
+    setMarginPercent(percent);
+  };
+
+  const handleMarginAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const amount = parseFloat(e.target.value) || 0;
+      setMarginAmount(amount);
+      if (purchasePrice > 0) {
+          const newMarginPercent = (amount / purchasePrice) * 100;
+          setMarginPercent(parseFloat(newMarginPercent.toFixed(2)));
+      } else {
+          setMarginPercent(0);
+      }
+       setSalesPrice(parseFloat((purchasePrice + amount).toFixed(2)));
+  };
+  
+  const handleSalesPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newSalesPrice = parseFloat(e.target.value) || 0;
+    setSalesPrice(newSalesPrice);
+    const newMarginAmount = newSalesPrice - purchasePrice;
+    setMarginAmount(parseFloat(newMarginAmount.toFixed(2)));
+     if (purchasePrice > 0) {
+        const newMarginPercent = (newMarginAmount / purchasePrice) * 100;
+        setMarginPercent(parseFloat(newMarginPercent.toFixed(2)));
+    } else {
+        setMarginPercent(0);
+    }
+  };
 
   const handleAddBomItem = () => {
     if (selectedBomProduct && selectedBomQuantity > 0 && !bom.find(item => item.productId === selectedBomProduct)) {
@@ -231,6 +279,9 @@ export function AddProductDialog() {
           <form ref={formRef} action={dispatch}>
             <input type="hidden" name="billOfMaterials" value={JSON.stringify(bom)} />
             <input type="hidden" name="billOfServices" value={JSON.stringify(bos)} />
+            <input type="hidden" name="purchasePrice" value={purchasePrice} />
+            <input type="hidden" name="salesPrice" value={salesPrice} />
+
             <ScrollArea className="h-[70vh] pr-4">
               {isLoading ? (
                   <div className="space-y-4 py-4">
@@ -417,28 +468,50 @@ export function AddProductDialog() {
                             </Card>
                         </>
                     )}
-
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-[1fr_1fr_1fr_1fr] gap-2 items-end">
                         <div className="space-y-2">
                             <Label htmlFor="purchasePrice">Purchase Price</Label>
-                            <Input 
-                                id="purchasePrice" 
-                                name="purchasePrice" 
-                                type="number" 
-                                step="0.01" 
+                            <Input
+                                id="purchasePriceDisplay"
+                                type="number"
+                                step="0.01"
+                                value={purchasePrice}
+                                onChange={(e) => setPurchasePrice(parseFloat(e.target.value) || 0)}
                                 readOnly={selectedTypeName === 'Finished Good'}
-                                value={selectedTypeName === 'Finished Good' ? calculatedCost.toFixed(2) : undefined}
-                                onChange={selectedTypeName === 'Finished Good' ? undefined : (e) => {}}
                                 className={selectedTypeName === 'Finished Good' ? 'font-semibold bg-muted' : ''}
                             />
                             {state.errors?.purchasePrice && (
                                 <p className="text-red-500 text-xs">{state.errors.purchasePrice[0]}</p>
                             )}
                         </div>
+                         <div className="space-y-2">
+                            <Label htmlFor="marginPercent">Margin %</Label>
+                            <Input
+                                id="marginPercent"
+                                type="number"
+                                value={marginPercent}
+                                onChange={handleMarginPercentChange}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="marginAmount">Margin Amount</Label>
+                            <Input
+                                id="marginAmount"
+                                type="number"
+                                value={marginAmount}
+                                onChange={handleMarginAmountChange}
+                            />
+                        </div>
                         <div className="space-y-2">
                             <Label htmlFor="salesPrice">Sales Price</Label>
-                            <Input id="salesPrice" name="salesPrice" type="number" step="0.01" />
-                            {state.errors?.salesPrice && (
+                            <Input
+                                id="salesPriceDisplay"
+                                type="number"
+                                step="0.01"
+                                value={salesPrice}
+                                onChange={handleSalesPriceChange}
+                            />
+                             {state.errors?.salesPrice && (
                                 <p className="text-red-500 text-xs">{state.errors.salesPrice[0]}</p>
                             )}
                         </div>

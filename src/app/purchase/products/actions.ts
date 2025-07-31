@@ -114,6 +114,7 @@ export async function createProduct(
         type,
         category,
         subcategory,
+        purchasePrice,
         salesPrice,
         stock,
         unit
@@ -124,26 +125,9 @@ export async function createProduct(
             return { message: 'Failed to create product.', errors: { billOfMaterials: ['A finished good must have at least one raw material or service.']}};
         }
         
-        const rawMaterialsAndServices = products.filter(p => p.type === 'Raw Material' || p.type === 'Service');
-        
-        const bomCost = (billOfMaterials || []).reduce((acc, item) => {
-            const product = rawMaterialsAndServices.find(p => p.id === item.productId);
-            return acc + (product ? product.purchasePrice * item.quantity : 0);
-        }, 0);
-
-        const bosCost = (billOfServices || []).reduce((acc, item) => {
-            const product = rawMaterialsAndServices.find(p => p.id === item.productId);
-            return acc + (product ? product.purchasePrice * item.quantity : 0);
-        }, 0);
-
-        const calculatedCost = bomCost + bosCost;
-
-        newProduct.purchasePrice = parseFloat(calculatedCost.toFixed(2));
         newProduct.billOfMaterials = billOfMaterials;
         newProduct.billOfServices = billOfServices;
 
-     } else {
-        newProduct.purchasePrice = purchasePrice;
      }
 
     await createDbProduct(newProduct);
