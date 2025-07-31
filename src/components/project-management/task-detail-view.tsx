@@ -4,17 +4,20 @@
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import type { Project } from "./projects-list"
 import type { Task } from "./tasks-list"
+import type { Issue } from "./issues-list"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { Button } from "../ui/button"
-import { Pencil, Trash2, Briefcase } from "lucide-react"
+import { Pencil, Trash2, Briefcase, AlertTriangle } from "lucide-react"
 import React from "react"
 import Link from "next/link"
 
 interface TaskDetailViewProps {
     task: Task
     project?: Project
+    issues: Issue[]
 }
 
 const statusColors: Record<Task['status'], string> = {
@@ -24,6 +27,12 @@ const statusColors: Record<Task['status'], string> = {
     'todo': 'bg-purple-500/20 text-purple-700 dark:text-purple-300',
     'canceled': 'bg-red-500/20 text-red-700 dark:text-red-300',
 };
+
+const issueStatusColors: Record<Issue['status'], string> = {
+    'open': 'bg-red-500/20 text-red-700 dark:text-red-300',
+    'in-progress': 'bg-blue-500/20 text-blue-700 dark:text-blue-300',
+    'closed': 'bg-green-500/20 text-green-700 dark:text-green-300',
+}
 
 const priorityColors: Record<Task['priority'], string> = {
     'low': 'text-green-600',
@@ -43,7 +52,7 @@ const formatDate = (dateString: string | undefined) => {
     return new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' }).format(date);
 };
 
-export function TaskDetailView({ task, project }: TaskDetailViewProps) {
+export function TaskDetailView({ task, project, issues }: TaskDetailViewProps) {
 
     return (
         <div className="space-y-6">
@@ -115,6 +124,44 @@ export function TaskDetailView({ task, project }: TaskDetailViewProps) {
                              <span className="text-sm font-medium text-muted-foreground">{task.completionPercentage}%</span>
                         </div>
                     </div>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader className="p-4">
+                    <CardTitle className="flex items-center"><AlertTriangle className="mr-2 h-5 w-5" />Related Issues</CardTitle>
+                    <CardDescription>A list of issues associated with this task.</CardDescription>
+                </CardHeader>
+                <CardContent className="p-4 pt-0">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className="p-2">Issue ID</TableHead>
+                                <TableHead className="p-2">Title</TableHead>
+                                <TableHead className="p-2">Status</TableHead>
+                                <TableHead className="p-2">Priority</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {issues.map((issue) => (
+                                <TableRow key={issue.id}>
+                                    <TableCell className="p-2">
+                                         <Link href={`/project-management/issues/${issue.id}`} className="hover:underline font-medium">
+                                            {issue.id}
+                                        </Link>
+                                    </TableCell>
+                                    <TableCell className="max-w-xs truncate p-2">{issue.title}</TableCell>
+                                    <TableCell className="p-2"><Badge variant="outline" className={`capitalize border-0 ${issueStatusColors[issue.status]}`}>{issue.status}</Badge></TableCell>
+                                    <TableCell className="p-2"><div className={`capitalize font-medium ${priorityColors[issue.priority]}`}>{issue.priority}</div></TableCell>
+                                </TableRow>
+                            ))}
+                            {issues.length === 0 && (
+                                <TableRow>
+                                    <TableCell colSpan={4} className="h-24 text-center p-2">No issues for this task.</TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
                 </CardContent>
             </Card>
         </div>

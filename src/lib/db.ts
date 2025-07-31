@@ -3,12 +3,14 @@ import fs from 'fs/promises';
 import path from 'path';
 import type { Project } from '@/components/project-management/projects-list';
 import type { Task } from '@/components/project-management/tasks-list';
+import type { Issue } from '@/components/project-management/issues-list';
 
 const dbPath = path.join(process.cwd(), 'src', 'lib', 'db.json');
 
 type DbData = {
   projects: Project[];
   tasks: Task[];
+  issues: Issue[];
 };
 
 async function readDb(): Promise<DbData> {
@@ -18,7 +20,7 @@ async function readDb(): Promise<DbData> {
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
       // If the file doesn't exist, return a default structure
-      return { projects: [], tasks: [] };
+      return { projects: [], tasks: [], issues: [] };
     }
     throw error;
   }
@@ -93,6 +95,14 @@ export const db = {
     } else {
       throw new Error(`Task with id ${updatedTask.id} not found.`);
     }
+  },
+  getIssues: async (): Promise<Issue[]> => {
+    const data = await readDb();
+    return data.issues || [];
+  },
+  getIssuesByTaskId: async (taskId: string): Promise<Issue[]> => {
+    const data = await readDb();
+    return (data.issues || []).filter(i => i.taskId === taskId);
   },
 };
 

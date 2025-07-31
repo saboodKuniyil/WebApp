@@ -1,3 +1,4 @@
+
 {
   "projects": [
     {
@@ -109,6 +110,53 @@
       "startDate": "2025-07-30T20:00:00.000Z",
       "endDate": "2025-08-01T20:00:00.000Z",
       "completionPercentage": 11
+    }
+  ],
+  "issues": [
+    {
+      "id": "ISSUE-282",
+      "title": "Login button not working on Safari",
+      "status": "open",
+      "type": "bug",
+      "priority": "high",
+      "created": "2024-07-20",
+      "taskId": "TASK-7839"
+    },
+    {
+      "id": "ISSUE-281",
+      "title": "Add dark mode support",
+      "status": "in-progress",
+      "type": "feature-request",
+      "priority": "medium",
+      "created": "2024-07-18",
+      "taskId": "TASK-8686"
+    },
+    {
+      "id": "ISSUE-279",
+      "title": "API rate limit exceeded",
+      "status": "closed",
+      "type": "bug",
+      "priority": "high",
+      "created": "2024-07-15",
+      "taskId": "TASK-5562"
+    },
+    {
+      "id": "ISSUE-278",
+      "title": "Update documentation for new endpoint",
+      "status": "open",
+      "type": "documentation",
+      "priority": "low",
+      "created": "2024-07-21",
+      "taskId": "TASK-8782"
+    },
+    {
+        "id": "ISSUE-283",
+        "title": "Performance degradation on dashboard",
+        "status": "open",
+        "type": "bug",
+        "priority": "high",
+        "created": "2024-07-22",
+        "taskId": "TASK-7839"
     }
   ]
 }

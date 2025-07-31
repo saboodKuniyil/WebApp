@@ -2,6 +2,7 @@
 import { db } from '@/lib/db';
 import type { Task } from "@/components/project-management/tasks-list";
 import type { Project } from '@/components/project-management/projects-list';
+import type { Issue } from '@/components/project-management/issues-list';
 import { unstable_noStore as noStore } from 'next/cache';
 import { notFound } from 'next/navigation';
 import { TaskDetailView } from '@/components/project-management/task-detail-view';
@@ -19,6 +20,11 @@ async function getProject(id: string): Promise<Project | undefined> {
   return await db.getProjectById(id);
 }
 
+async function getIssues(taskId: string): Promise<Issue[]> {
+    noStore();
+    return await db.getIssuesByTaskId(taskId);
+}
+
 export default async function TaskDetailPage({ params }: { params: { id: string } }) {
   const task = await getTask(params.id);
   
@@ -27,6 +33,7 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
   }
   
   const project = await getProject(task.projectId);
+  const issues = await getIssues(task.id);
 
   return (
     <main className="flex-1 space-y-4 p-2 md:p-4 pt-4">
@@ -38,7 +45,7 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
             </Link>
         </Button>
       </div>
-      <TaskDetailView task={task} project={project} />
+      <TaskDetailView task={task} project={project} issues={issues} />
     </main>
   );
 }
