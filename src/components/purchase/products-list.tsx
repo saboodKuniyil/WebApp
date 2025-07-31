@@ -53,6 +53,7 @@ export type Product = {
   purchasePrice: number;
   salesPrice: number;
   stock: number;
+  unit: string;
 };
 
 const formatCurrency = (amount: number) => {
@@ -139,6 +140,11 @@ export const columns: ColumnDef<Product>[] = [
     accessorKey: 'stock',
     header: 'Stock',
     cell: ({ row }) => <div>{row.getValue('stock')}</div>,
+  },
+  {
+    accessorKey: 'unit',
+    header: 'Unit',
+    cell: ({ row }) => <div>{row.getValue('unit')}</div>,
   },
   {
     id: 'actions',
