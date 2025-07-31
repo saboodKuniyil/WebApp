@@ -191,3 +191,33 @@ export async function createProductCategory(newCategory: ProductCategory): Promi
     data.productCategories.push(newCategory);
     await writeDb(data);
 }
+
+export async function updateProductCategory(originalName: string, updatedCategory: ProductCategory): Promise<void> {
+    const data = await readDb();
+    const categoryIndex = data.productCategories.findIndex(c => c.name === originalName);
+    if (categoryIndex !== -1) {
+        data.productCategories[categoryIndex] = updatedCategory;
+        // Also update any products that were using the old category name
+        if (originalName !== updatedCategory.name) {
+            data.products.forEach(p => {
+                if (p.category === originalName) {
+                    p.category = updatedCategory.name;
+                }
+            });
+        }
+        await writeDb(data);
+    } else {
+        throw new Error(`Category with name ${originalName} not found.`);
+    }
+}
+
+export async function deleteProductCategory(categoryName: string): Promise<void> {
+    const data = await readDb();
+    const categoryIndex = data.productCategories.findIndex(c => c.name === categoryName);
+    if (categoryIndex !== -1) {
+        data.productCategories.splice(categoryIndex, 1);
+        await writeDb(data);
+    } else {
+        throw new Error(`Category with name ${categoryName} not found.`);
+    }
+}

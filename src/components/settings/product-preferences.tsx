@@ -8,7 +8,6 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-
 import {
   Table,
   TableBody,
@@ -20,6 +19,21 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { AddCategoryDialog } from './add-category-dialog';
+import { Button } from '../ui/button';
+import { Edit, Trash2 } from 'lucide-react';
+import { EditCategoryDialog } from './edit-category-dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { deleteProductCategory } from '@/app/settings/preferences/product-preference/actions';
+import { useToast } from '@/hooks/use-toast';
 
 
 export type ProductCategory = {
@@ -27,30 +41,72 @@ export type ProductCategory = {
   subcategories: string[];
 };
 
-export const columns: ColumnDef<ProductCategory>[] = [
-  {
-    accessorKey: 'name',
-    header: 'Category Name',
-    cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
-  },
-  {
-    accessorKey: 'subcategories',
-    header: 'Subcategories',
-    cell: ({ row }) => (
-        <div className="flex flex-wrap gap-1">
-            {(row.getValue('subcategories') as string[]).map((sub) => (
-                <Badge key={sub} variant="secondary">{sub}</Badge>
-            ))}
-      </div>
-    ),
-  },
-];
-
 interface ProductPreferencesProps {
   data: ProductCategory[];
 }
 
 export function ProductPreferences({ data }: ProductPreferencesProps) {
+  const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
+  const [selectedCategory, setSelectedCategory] = React.useState<ProductCategory | null>(null);
+  const { toast } = useToast();
+
+  const handleEdit = (category: ProductCategory) => {
+    setSelectedCategory(category);
+    setIsEditDialogOpen(true);
+  };
+  
+  const handleDelete = (category: ProductCategory) => {
+    setSelectedCategory(category);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (selectedCategory) {
+      const result = await deleteProductCategory(selectedCategory.name);
+       if (result.message.includes('success')) {
+        toast({ title: 'Success', description: result.message });
+      } else {
+        toast({ variant: 'destructive', title: 'Error', description: result.message });
+      }
+      setIsDeleteDialogOpen(false);
+      setSelectedCategory(null);
+    }
+  };
+  
+  const columns: ColumnDef<ProductCategory>[] = [
+    {
+      accessorKey: 'name',
+      header: 'Category Name',
+      cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
+    },
+    {
+      accessorKey: 'subcategories',
+      header: 'Subcategories',
+      cell: ({ row }) => (
+          <div className="flex flex-wrap gap-1">
+              {(row.getValue('subcategories') as string[]).map((sub) => (
+                  <Badge key={sub} variant="secondary">{sub}</Badge>
+              ))}
+        </div>
+      ),
+    },
+    {
+        id: 'actions',
+        header: 'Actions',
+        cell: ({ row }) => (
+            <div className="flex gap-2">
+                <Button variant="ghost" size="icon" onClick={() => handleEdit(row.original)}>
+                    <Edit className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="icon" onClick={() => handleDelete(row.original)}>
+                    <Trash2 className="h-4 w-4 text-destructive" />
+                </Button>
+            </div>
+        ),
+    }
+  ];
+
   const table = useReactTable({
     data,
     columns,
@@ -58,6 +114,7 @@ export function ProductPreferences({ data }: ProductPreferencesProps) {
   });
 
   return (
+    <>
     <Card>
         <CardHeader className="p-2">
             <CardTitle>Categories</CardTitle>
@@ -121,5 +178,31 @@ export function ProductPreferences({ data }: ProductPreferencesProps) {
             </div>
         </CardContent>
     </Card>
+    {selectedCategory && (
+        <EditCategoryDialog 
+            isOpen={isEditDialogOpen}
+            setIsOpen={setIsEditDialogOpen}
+            category={selectedCategory}
+        />
+    )}
+    <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+            <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete the 
+                <span className="font-bold"> "{selectedCategory?.name}"</span> category.
+                 Products using this category will need to be updated manually.
+            </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive hover:bg-destructive/90">
+                Delete
+            </AlertDialogAction>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }

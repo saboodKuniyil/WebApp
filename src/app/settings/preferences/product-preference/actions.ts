@@ -2,7 +2,7 @@
 'use server';
 
 import { z } from 'zod';
-import { getProductCategories, createProductCategory as createDbProductCategory } from '@/lib/db';
+import { getProductCategories, createProductCategory as createDbProductCategory, updateProductCategory as updateDbProductCategory, deleteProductCategory as deleteDbProductCategory } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 
 const categorySchema = z.object({
@@ -58,4 +58,54 @@ export async function createProductCategory(
     console.error('Database Error:', error);
     return { message: 'Failed to create category.' };
   }
+}
+
+const updateCategorySchema = z.object({
+    originalName: z.string(),
+    name: z.string().min(1, 'Category name cannot be empty.'),
+    subcategories: z.string().transform((val) => JSON.parse(val))
+});
+
+export async function updateProductCategory(prevState: CategoryFormState, formData: FormData): Promise<CategoryFormState> {
+    const validatedFields = updateCategorySchema.safeParse({
+        originalName: formData.get('originalName'),
+        name: formData.get('name'),
+        subcategories: formData.get('subcategories'),
+    });
+    
+    if (!validatedFields.success) {
+        return { message: 'Validation failed.', errors: validatedFields.error.flatten().fieldErrors };
+    }
+
+    const { originalName, name, subcategories } = validatedFields.data;
+
+    try {
+        const categories = await getProductCategories();
+        if (originalName !== name) {
+            const nameExists = categories.some(c => c.name.toLowerCase() === name.toLowerCase());
+            if (nameExists) {
+                return { message: 'Failed to update category. Another category with this name already exists.' };
+            }
+        }
+        
+        await updateDbProductCategory(originalName, { name, subcategories });
+        revalidatePath('/settings/preferences/product-preference');
+        revalidatePath('/purchase/products');
+        return { message: 'Category updated successfully.' };
+    } catch (error) {
+        console.error('Database error:', error);
+        return { message: 'Failed to update category.' };
+    }
+}
+
+export async function deleteProductCategory(categoryName: string) {
+    try {
+        await deleteDbProductCategory(categoryName);
+        revalidatePath('/settings/preferences/product-preference');
+        revalidatePath('/purchase/products');
+        return { message: 'Category deleted successfully.' };
+    } catch (error) {
+        console.error('Database error:', error);
+        return { message: 'Failed to delete category.' };
+    }
 }
