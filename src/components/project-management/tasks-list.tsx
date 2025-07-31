@@ -227,6 +227,11 @@ export function TasksList({ data, projects, taskBlueprints }: TasksListProps) {
         description: false,
     });
   const [rowSelection, setRowSelection] = React.useState({});
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const table = useReactTable({
     data,
@@ -268,7 +273,7 @@ export function TasksList({ data, projects, taskBlueprints }: TasksListProps) {
                 className="max-w-sm h-8"
                 />
                  <div className="flex items-center gap-2">
-                    <Select
+                    {mounted && <Select
                         value={(table.getColumn('projectId')?.getFilterValue() as string) ?? ''}
                         onValueChange={(value) =>
                             table.getColumn('projectId')?.setFilterValue(value === 'all' ? '' : value)
@@ -285,7 +290,7 @@ export function TasksList({ data, projects, taskBlueprints }: TasksListProps) {
                                 </SelectItem>
                             ))}
                         </SelectContent>
-                    </Select>
+                    </Select>}
                 </div>
                 <div className="flex space-x-2">
                 <AddTaskDialog projects={projects} taskBlueprints={taskBlueprints} />
