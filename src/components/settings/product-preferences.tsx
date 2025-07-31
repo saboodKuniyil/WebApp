@@ -115,94 +115,94 @@ export function ProductPreferences({ data }: ProductPreferencesProps) {
 
   return (
     <>
-    <Card>
-        <CardHeader className="p-2">
-            <CardTitle>Categories</CardTitle>
-            <CardDescription>Manage your product categories and subcategories.</CardDescription>
-        </CardHeader>
-        <CardContent className="p-2 pt-0">
-            <div className="w-full">
-            <div className="flex items-center justify-end py-2">
-                <AddCategoryDialog />
-            </div>
-            <div className="rounded-md border">
-                <Table>
-                <TableHeader>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow key={headerGroup.id}>
-                        {headerGroup.headers.map((header) => {
-                        return (
-                            <TableHead key={header.id} className="p-2">
-                            {header.isPlaceholder
-                                ? null
-                                : flexRender(
-                                    header.column.columnDef.header,
-                                    header.getContext()
-                                )}
-                            </TableHead>
-                        );
-                        })}
-                    </TableRow>
-                    ))}
-                </TableHeader>
-                <TableBody>
-                    {table.getRowModel().rows?.length ? (
-                    table.getRowModel().rows.map((row) => (
-                        <TableRow
-                        key={row.id}
-                        data-state={row.getIsSelected() && 'selected'}
-                        >
-                        {row.getVisibleCells().map((cell) => (
-                            <TableCell key={cell.id} className="p-2">
-                            {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext()
-                            )}
-                            </TableCell>
-                        ))}
-                        </TableRow>
-                    ))
-                    ) : (
-                    <TableRow>
-                        <TableCell
-                        colSpan={columns.length}
-                        className="h-24 text-center"
-                        >
-                        No categories found.
-                        </TableCell>
-                    </TableRow>
-                    )}
-                </TableBody>
-                </Table>
-            </div>
-            </div>
-        </CardContent>
-    </Card>
-    {selectedCategory && (
-        <EditCategoryDialog 
-            isOpen={isEditDialogOpen}
-            setIsOpen={setIsEditDialogOpen}
-            category={selectedCategory}
-        />
-    )}
-    <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
-            <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete the 
-                <span className="font-bold"> "{selectedCategory?.name}"</span> category.
-                 Products using this category will need to be updated manually.
-            </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-destructive hover:bg-destructive/90">
-                Delete
-            </AlertDialogAction>
-            </AlertDialogFooter>
-        </AlertDialogContent>
-    </AlertDialog>
+      <Card>
+          <CardHeader className="p-2">
+              <CardTitle>Categories</CardTitle>
+              <CardDescription>Manage your product categories and subcategories.</CardDescription>
+          </CardHeader>
+          <CardContent className="p-2 pt-0">
+              <div className="w-full">
+              <div className="flex items-center justify-end py-2">
+                  <AddCategoryDialog />
+              </div>
+              <div className="rounded-md border">
+                  <Table>
+                  <TableHeader>
+                      {table.getHeaderGroups().map((headerGroup) => (
+                      <TableRow key={headerGroup.id}>
+                          {headerGroup.headers.map((header) => {
+                          return (
+                              <TableHead key={header.id} className="p-2">
+                              {header.isPlaceholder
+                                  ? null
+                                  : flexRender(
+                                      header.column.columnDef.header,
+                                      header.getContext()
+                                  )}
+                              </TableHead>
+                          );
+                          })}
+                      </TableRow>
+                      ))}
+                  </TableHeader>
+                  <TableBody>
+                      {table.getRowModel().rows?.length ? (
+                      table.getRowModel().rows.map((row) => (
+                          <TableRow
+                          key={row.id}
+                          data-state={row.getIsSelected() && 'selected'}
+                          >
+                          {row.getVisibleCells().map((cell) => (
+                              <TableCell key={cell.id} className="p-2">
+                              {flexRender(
+                                  cell.column.columnDef.cell,
+                                  cell.getContext()
+                              )}
+                              </TableCell>
+                          ))}
+                          </TableRow>
+                      ))
+                      ) : (
+                      <TableRow>
+                          <TableCell
+                          colSpan={columns.length}
+                          className="h-24 text-center"
+                          >
+                          No categories found.
+                          </TableCell>
+                      </TableRow>
+                      )}
+                  </TableBody>
+                  </Table>
+              </div>
+              </div>
+          </CardContent>
+      </Card>
+      {selectedCategory && (
+          <EditCategoryDialog 
+              isOpen={isEditDialogOpen}
+              setIsOpen={setIsEditDialogOpen}
+              category={selectedCategory}
+          />
+      )}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <AlertDialogContent>
+              <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete the 
+                  <span className="font-bold"> "{selectedCategory?.name}"</span> category.
+                  Products using this category will need to be updated manually.
+              </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={confirmDelete} className="bg-destructive hover:bg-destructive/90">
+                  Delete
+              </AlertDialogAction>
+              </AlertDialogFooter>
+          </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
