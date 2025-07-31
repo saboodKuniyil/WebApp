@@ -110,7 +110,11 @@ export const columns: ColumnDef<Issue>[] = [
   {
     accessorKey: 'title',
     header: 'Title',
-    cell: ({ row }) => <div className="font-medium max-w-xs truncate">{row.getValue('title')}</div>,
+    cell: ({ row }) => (
+        <Link href={`/project-management/issues/${row.original.id}`} className="font-medium hover:underline max-w-xs truncate block">
+            {row.getValue('title')}
+        </Link>
+    ),
   },
   {
     accessorKey: 'status',

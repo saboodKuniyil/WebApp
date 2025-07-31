@@ -156,6 +156,33 @@
       "priority": "high",
       "created": "2024-07-22",
       "taskId": "TASK-7839"
+    },
+    {
+      "id": "ISSUE-284",
+      "title": "lloopp",
+      "type": "bug",
+      "status": "open",
+      "priority": "low",
+      "taskId": "TASK-8782",
+      "created": "2025-07-31"
+    },
+    {
+      "id": "ISSUE-285",
+      "title": "Taskks",
+      "type": "bug",
+      "status": "open",
+      "priority": "low",
+      "taskId": "TASK-8782",
+      "created": "2025-07-31"
+    },
+    {
+      "id": "ISSUE-286",
+      "title": "ths is the issue",
+      "type": "bug",
+      "status": "open",
+      "priority": "low",
+      "taskId": "TS_9001",
+      "created": "2025-07-31"
     }
   ]
 }
