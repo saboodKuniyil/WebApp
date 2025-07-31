@@ -33,6 +33,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Calendar } from '../ui/calendar';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { ScrollArea } from '../ui/scroll-area';
 
 const initialState = { message: '', errors: {} };
 
@@ -113,166 +114,170 @@ export function AddTaskDialog({ projects, taskBlueprints, defaultProjectId, trig
             Fill in the details below to create a new task.
           </DialogDescription>
         </DialogHeader>
-        <form ref={formRef} action={dispatch} className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="id" className="text-right">
-              Task ID
-            </Label>
-            <Input id="id" name="id" className="col-span-3" value={nextId} readOnly />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="title" className="text-right">
-              Title
-            </Label>
-            <Input id="title" name="title" className="col-span-3" />
-            {state.errors?.title && (
-              <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.title[0]}</p>
-            )}
-          </div>
-          <div className="grid grid-cols-4 items-start gap-4">
-            <Label htmlFor="description" className="text-right pt-2">
-              Description
-            </Label>
-            <Textarea id="description" name="description" className="col-span-3" />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="projectId" className="text-right">
-                Project
-            </Label>
-            <Select name="projectId" value={selectedProjectId} onValueChange={setSelectedProjectId} disabled={!!defaultProjectId}>
-              <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Select a project" />
-              </SelectTrigger>
-              <SelectContent>
-                {projects.map((project) => (
-                    <SelectItem key={project.id} value={project.id}>{project.title}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {defaultProjectId && <input type="hidden" name="projectId" value={defaultProjectId} />}
-            {state.errors?.projectId && (
-                <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.projectId[0]}</p>
-            )}
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="assignee" className="text-right">
-              Assignee
-            </Label>
-            <Input id="assignee" name="assignee" className="col-span-3" />
-            {state.errors?.assignee && (
-              <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.assignee[0]}</p>
-            )}
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label className="text-right">
-              Start Date
-            </Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={'outline'}
-                  className={cn(
-                    'col-span-3 justify-start text-left font-normal',
-                    !startDate && 'text-muted-foreground'
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {startDate ? format(startDate, 'PPP') : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={startDate}
-                  onSelect={setStartDate}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-            <input type="hidden" name="startDate" value={startDate?.toISOString() ?? ''} />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label className="text-right">
-              End Date
-            </Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={'outline'}
-                  className={cn(
-                    'col-span-3 justify-start text-left font-normal',
-                    !endDate && 'text-muted-foreground'
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {endDate ? format(endDate, 'PPP') : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={endDate}
-                  onSelect={setEndDate}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-            <input type="hidden" name="endDate" value={endDate?.toISOString() ?? ''} />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="status" className="text-right">
-              Status
-            </Label>
-            <Select name="status" disabled={!selectedProjectId}>
-              <SelectTrigger className="col-span-3">
-                <SelectValue placeholder={selectedProjectId ? "Select a status" : "Select a project first"} />
-              </SelectTrigger>
-              <SelectContent>
-                {availableStatuses.map((status) => (
-                  <SelectItem key={status.name} value={status.name.toLowerCase().replace(/\s/g, '-')}>{status.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {state.errors?.status && (
-                <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.status[0]}</p>
-            )}
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="label" className="text-right">
-              Label
-            </Label>
-            <Select name="label">
-              <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Select a label" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="bug">Bug</SelectItem>
-                <SelectItem value="feature">Feature</SelectItem>
-                <SelectItem value="documentation">Documentation</SelectItem>
-              </SelectContent>
-            </Select>
-            {state.errors?.label && (
-                <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.label[0]}</p>
-            )}
-          </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="priority" className="text-right">
-                Priority
+        <form ref={formRef} action={dispatch}>
+          <ScrollArea className="h-[60vh] pr-4">
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="id" className="text-right">
+                  Task ID
                 </Label>
-                <Select name="priority">
-                <SelectTrigger className="col-span-3">
-                    <SelectValue placeholder="Select a priority" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="low">Low</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
-                </SelectContent>
-                </Select>
-                {state.errors?.priority && (
-                    <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.priority[0]}</p>
+                <Input id="id" name="id" className="col-span-3" value={nextId} readOnly />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="title" className="text-right">
+                  Title
+                </Label>
+                <Input id="title" name="title" className="col-span-3" />
+                {state.errors?.title && (
+                  <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.title[0]}</p>
                 )}
+              </div>
+              <div className="grid grid-cols-4 items-start gap-4">
+                <Label htmlFor="description" className="text-right pt-2">
+                  Description
+                </Label>
+                <Textarea id="description" name="description" className="col-span-3" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="projectId" className="text-right">
+                    Project
+                </Label>
+                <Select name="projectId" value={selectedProjectId} onValueChange={setSelectedProjectId} disabled={!!defaultProjectId}>
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Select a project" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {projects.map((project) => (
+                        <SelectItem key={project.id} value={project.id}>{project.title}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {defaultProjectId && <input type="hidden" name="projectId" value={defaultProjectId} />}
+                {state.errors?.projectId && (
+                    <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.projectId[0]}</p>
+                )}
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="assignee" className="text-right">
+                  Assignee
+                </Label>
+                <Input id="assignee" name="assignee" className="col-span-3" />
+                {state.errors?.assignee && (
+                  <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.assignee[0]}</p>
+                )}
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label className="text-right">
+                  Start Date
+                </Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={'outline'}
+                      className={cn(
+                        'col-span-3 justify-start text-left font-normal',
+                        !startDate && 'text-muted-foreground'
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {startDate ? format(startDate, 'PPP') : <span>Pick a date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={startDate}
+                      onSelect={setStartDate}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                <input type="hidden" name="startDate" value={startDate?.toISOString() ?? ''} />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label className="text-right">
+                  End Date
+                </Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={'outline'}
+                      className={cn(
+                        'col-span-3 justify-start text-left font-normal',
+                        !endDate && 'text-muted-foreground'
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {endDate ? format(endDate, 'PPP') : <span>Pick a date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={endDate}
+                      onSelect={setEndDate}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                <input type="hidden" name="endDate" value={endDate?.toISOString() ?? ''} />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="status" className="text-right">
+                  Status
+                </Label>
+                <Select name="status" disabled={!selectedProjectId}>
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder={selectedProjectId ? "Select a status" : "Select a project first"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableStatuses.map((status) => (
+                      <SelectItem key={status.name} value={status.name.toLowerCase().replace(/\s/g, '-')}>{status.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {state.errors?.status && (
+                    <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.status[0]}</p>
+                )}
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="label" className="text-right">
+                  Label
+                </Label>
+                <Select name="label">
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Select a label" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="bug">Bug</SelectItem>
+                    <SelectItem value="feature">Feature</SelectItem>
+                    <SelectItem value="documentation">Documentation</SelectItem>
+                  </SelectContent>
+                </Select>
+                {state.errors?.label && (
+                    <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.label[0]}</p>
+                )}
+              </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="priority" className="text-right">
+                    Priority
+                    </Label>
+                    <Select name="priority">
+                    <SelectTrigger className="col-span-3">
+                        <SelectValue placeholder="Select a priority" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="low">Low</SelectItem>
+                        <SelectItem value="medium">Medium</SelectItem>
+                        <SelectItem value="high">High</SelectItem>
+                    </SelectContent>
+                    </Select>
+                    {state.errors?.priority && (
+                        <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.priority[0]}</p>
+                    )}
+                </div>
             </div>
+          </ScrollArea>
           <DialogFooter>
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
