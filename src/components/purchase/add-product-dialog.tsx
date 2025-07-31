@@ -54,6 +54,13 @@ interface AddProductDialogProps {
   allProducts: Product[];
 }
 
+const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+    }).format(amount);
+}
+
 export function AddProductDialog({ allProducts }: AddProductDialogProps) {
   const [state, dispatch] = useActionState(createProduct, initialState);
   const [isOpen, setIsOpen] = React.useState(false);
@@ -297,17 +304,28 @@ export function AddProductDialog({ allProducts }: AddProductDialogProps) {
                                 <Button type="button" size="icon" onClick={handleAddBomItem}><Plus className="h-4 w-4" /></Button>
                             </div>
                             <div className="space-y-2">
+                                {bom.length > 0 && (
+                                    <div className="grid grid-cols-[1fr_auto_auto_auto_auto] items-center gap-x-4 px-2 text-xs text-muted-foreground font-medium">
+                                        <span>Material</span>
+                                        <span className="text-right">Qty</span>
+                                        <span className="text-right">Rate</span>
+                                        <span className="text-right">Total</span>
+                                        <span></span>
+                                    </div>
+                                )}
                                 {bom.map(item => {
                                     const product = rawMaterials.find(p => p.id === item.productId);
+                                    if (!product) return null;
+                                    const totalItemCost = product.purchasePrice * item.quantity;
                                     return (
-                                        <div key={item.productId} className="flex items-center justify-between p-2 border rounded-md text-sm">
-                                            <span>{product?.name}</span>
-                                            <div className="flex items-center gap-2">
-                                                <span>{item.quantity} {product?.unit}</span>
-                                                <Button type="button" variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleRemoveBomItem(item.productId)}>
-                                                    <Trash2 className="h-4 w-4 text-destructive" />
-                                                </Button>
-                                            </div>
+                                        <div key={item.productId} className="grid grid-cols-[1fr_auto_auto_auto_auto] items-center gap-x-4 p-2 border rounded-md text-sm">
+                                            <span className="truncate" title={product.name}>{product.name}</span>
+                                            <span className="text-right">{item.quantity} {product?.unit}</span>
+                                            <span className="text-right">{formatCurrency(product.purchasePrice)}</span>
+                                            <span className="text-right font-semibold">{formatCurrency(totalItemCost)}</span>
+                                            <Button type="button" variant="ghost" size="icon" className="h-6 w-6 justify-self-end" onClick={() => handleRemoveBomItem(item.productId)}>
+                                                <Trash2 className="h-4 w-4 text-destructive" />
+                                            </Button>
                                         </div>
                                     )
                                 })}
@@ -329,7 +347,7 @@ export function AddProductDialog({ allProducts }: AddProductDialogProps) {
                                 readOnly={selectedTypeName === 'Finished Good'}
                                 value={selectedTypeName === 'Finished Good' ? calculatedCost.toFixed(2) : undefined}
                                 onChange={selectedTypeName === 'Finished Good' ? undefined : (e) => {}}
-                                className={selectedTypeName === 'Finished Good' ? 'bg-muted' : ''}
+                                className={selectedTypeName === 'Finished Good' ? 'font-semibold bg-muted' : ''}
                             />
                             {state.errors?.purchasePrice && (
                                 <p className="text-red-500 text-xs">{state.errors.purchasePrice[0]}</p>
