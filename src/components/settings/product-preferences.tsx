@@ -34,6 +34,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { deleteProductCategory } from '@/app/settings/preferences/product-preference/actions';
 import { useToast } from '@/hooks/use-toast';
+import Draggable from 'react-draggable';
 
 
 export type Subcategory = {
@@ -56,6 +57,7 @@ export function ProductPreferences({ data }: ProductPreferencesProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
   const [selectedCategory, setSelectedCategory] = React.useState<ProductCategory | null>(null);
   const { toast } = useToast();
+  const nodeRef = React.useRef(null);
 
   const handleEdit = (category: ProductCategory) => {
     setSelectedCategory(category);
@@ -195,8 +197,9 @@ export function ProductPreferences({ data }: ProductPreferencesProps) {
           />
       )}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-          <AlertDialogContent>
-              <AlertDialogHeader>
+        <Draggable nodeRef={nodeRef} handle=".alert-dialog-header">
+          <AlertDialogContent ref={nodeRef}>
+              <AlertDialogHeader className="alert-dialog-header cursor-move">
               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
               <AlertDialogDescription>
                   This action cannot be undone. This will permanently delete the 
@@ -211,6 +214,7 @@ export function ProductPreferences({ data }: ProductPreferencesProps) {
               </AlertDialogAction>
               </AlertDialogFooter>
           </AlertDialogContent>
+        </Draggable>
       </AlertDialog>
     </>
   );

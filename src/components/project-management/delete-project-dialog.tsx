@@ -16,6 +16,7 @@ import { Button } from '../ui/button';
 import type { Project } from './projects-list';
 import { deleteProject } from '@/app/project-management/projects/actions';
 import { useToast } from '@/hooks/use-toast';
+import Draggable from 'react-draggable';
 
 interface DeleteProjectDialogProps {
   project: Project;
@@ -26,6 +27,7 @@ interface DeleteProjectDialogProps {
 export function DeleteProjectDialog({ project, isOpen, setIsOpen }: DeleteProjectDialogProps) {
   const [isPending, startTransition] = React.useTransition();
   const { toast } = useToast();
+  const nodeRef = React.useRef(null);
 
   const handleDelete = () => {
     startTransition(async () => {
@@ -49,27 +51,29 @@ export function DeleteProjectDialog({ project, isOpen, setIsOpen }: DeleteProjec
 
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete the project
-            <span className="font-bold"> "{project.title}"</span> and all of its associated tasks.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            asChild
-            disabled={isPending}
-            onClick={handleDelete}
-          >
-            <Button variant="destructive">
-                {isPending ? 'Deleting...' : 'Delete Project'}
-            </Button>
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
+      <Draggable nodeRef={nodeRef} handle=".alert-dialog-header">
+        <AlertDialogContent ref={nodeRef}>
+          <AlertDialogHeader className="alert-dialog-header cursor-move">
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the project
+              <span className="font-bold"> "{project.title}"</span> and all of its associated tasks.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              asChild
+              disabled={isPending}
+              onClick={handleDelete}
+            >
+              <Button variant="destructive">
+                  {isPending ? 'Deleting...' : 'Delete Project'}
+              </Button>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </Draggable>
     </AlertDialog>
   );
 }

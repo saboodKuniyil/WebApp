@@ -20,6 +20,7 @@ import { PlusCircle, Plus, X } from 'lucide-react';
 import { createProductCategory } from '@/app/settings/preferences/product-preference/actions';
 import { useToast } from '@/hooks/use-toast';
 import type { Subcategory } from './product-preferences';
+import Draggable from 'react-draggable';
 
 const initialState = { message: '', errors: {} };
 
@@ -33,6 +34,7 @@ export function AddCategoryDialog() {
   const [subcategories, setSubcategories] = React.useState<Subcategory[]>([]);
   const [newSubcategoryName, setNewSubcategoryName] = React.useState('');
   const [newSubcategoryAbbr, setNewSubcategoryAbbr] = React.useState('');
+  const nodeRef = React.useRef(null);
 
   const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
@@ -78,78 +80,80 @@ export function AddCategoryDialog() {
           Add Category
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Add New Category</DialogTitle>
-          <DialogDescription>
-            Define a new product category and its subcategories.
-          </DialogDescription>
-        </DialogHeader>
-        <form ref={formRef} action={dispatch} className="grid gap-4 py-4">
-          <input type="hidden" name="subcategories" value={JSON.stringify(subcategories)} />
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Category Name
-            </Label>
-            <Input id="name" name="name" className="col-span-3" />
-            {state.errors?.name && (
-              <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.name[0]}</p>
-            )}
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="abbreviation" className="text-right">
-              Abbreviation
-            </Label>
-            <Input id="abbreviation" name="abbreviation" className="col-span-3" maxLength={3} placeholder="e.g., ELC" />
-            {state.errors?.abbreviation && (
-              <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.abbreviation[0]}</p>
-            )}
-          </div>
-           <div className="grid grid-cols-4 items-start gap-4">
-            <Label htmlFor="subcategories-list" className="text-right pt-2">
-              Subcategories
-            </Label>
-            <div className="col-span-3 space-y-2">
-                <div className="flex gap-2">
-                    <Input 
-                        value={newSubcategoryName}
-                        onChange={(e) => setNewSubcategoryName(e.target.value)}
-                        placeholder="Subcategory Name"
-                    />
-                     <Input 
-                        value={newSubcategoryAbbr}
-                        onChange={(e) => setNewSubcategoryAbbr(e.target.value)}
-                        placeholder="Abbr."
-                        maxLength={3}
-                        className="w-20"
-                    />
-                    <Button type="button" size="icon" onClick={handleAddSubcategory}>
-                        <Plus className="h-4 w-4"/>
-                    </Button>
-                </div>
-                 <div className="space-y-2">
-                    {subcategories.map(sub => (
-                        <div key={sub.name} className="flex items-center justify-between rounded-md border p-2 text-sm">
-                           <span>{sub.name} ({sub.abbreviation})</span>
-                            <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveSubcategory(sub.name)}>
-                                <X className="h-4 w-4" />
-                            </Button>
-                        </div>
-                    ))}
-                </div>
-                {state.errors?.subcategories && (
-                    <p className="text-red-500 text-xs">{state.errors.subcategories[0]}</p>
-                )}
+      <Draggable nodeRef={nodeRef} handle=".dialog-header">
+        <DialogContent ref={nodeRef} className="sm:max-w-[500px]">
+          <DialogHeader className="dialog-header cursor-move">
+            <DialogTitle>Add New Category</DialogTitle>
+            <DialogDescription>
+              Define a new product category and its subcategories.
+            </DialogDescription>
+          </DialogHeader>
+          <form ref={formRef} action={dispatch} className="grid gap-4 py-4">
+            <input type="hidden" name="subcategories" value={JSON.stringify(subcategories)} />
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="name" className="text-right">
+                Category Name
+              </Label>
+              <Input id="name" name="name" className="col-span-3" />
+              {state.errors?.name && (
+                <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.name[0]}</p>
+              )}
             </div>
-          </div>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
-            </DialogClose>
-            <SubmitButton />
-          </DialogFooter>
-        </form>
-      </DialogContent>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="abbreviation" className="text-right">
+                Abbreviation
+              </Label>
+              <Input id="abbreviation" name="abbreviation" className="col-span-3" maxLength={3} placeholder="e.g., ELC" />
+              {state.errors?.abbreviation && (
+                <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.abbreviation[0]}</p>
+              )}
+            </div>
+            <div className="grid grid-cols-4 items-start gap-4">
+              <Label htmlFor="subcategories-list" className="text-right pt-2">
+                Subcategories
+              </Label>
+              <div className="col-span-3 space-y-2">
+                  <div className="flex gap-2">
+                      <Input 
+                          value={newSubcategoryName}
+                          onChange={(e) => setNewSubcategoryName(e.target.value)}
+                          placeholder="Subcategory Name"
+                      />
+                      <Input 
+                          value={newSubcategoryAbbr}
+                          onChange={(e) => setNewSubcategoryAbbr(e.target.value)}
+                          placeholder="Abbr."
+                          maxLength={3}
+                          className="w-20"
+                      />
+                      <Button type="button" size="icon" onClick={handleAddSubcategory}>
+                          <Plus className="h-4 w-4"/>
+                      </Button>
+                  </div>
+                  <div className="space-y-2">
+                      {subcategories.map(sub => (
+                          <div key={sub.name} className="flex items-center justify-between rounded-md border p-2 text-sm">
+                            <span>{sub.name} ({sub.abbreviation})</span>
+                              <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveSubcategory(sub.name)}>
+                                  <X className="h-4 w-4" />
+                              </Button>
+                          </div>
+                      ))}
+                  </div>
+                  {state.errors?.subcategories && (
+                      <p className="text-red-500 text-xs">{state.errors.subcategories[0]}</p>
+                  )}
+              </div>
+            </div>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="outline">Cancel</Button>
+              </DialogClose>
+              <SubmitButton />
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Draggable>
     </Dialog>
   );
 }

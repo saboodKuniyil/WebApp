@@ -32,6 +32,7 @@ import { createProject, getNextProjectId } from '@/app/project-management/projec
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '../ui/textarea';
 import type { TaskBlueprint } from './task-blueprints-list';
+import Draggable from 'react-draggable';
 
 
 const initialState = { message: '', errors: {} };
@@ -61,6 +62,7 @@ export function AddProjectDialog({ taskBlueprints }: AddProjectDialogProps) {
   const [startDate, setStartDate] = React.useState<Date>();
   const [endDate, setEndDate] = React.useState<Date>();
   const [nextId, setNextId] = React.useState('');
+  const nodeRef = React.useRef(null);
 
   const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
@@ -100,172 +102,174 @@ export function AddProjectDialog({ taskBlueprints }: AddProjectDialogProps) {
           Add Project
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Add New Project</DialogTitle>
-          <DialogDescription>
-            Fill in the details below to create a new project.
-          </DialogDescription>
-        </DialogHeader>
-        <form ref={formRef} action={dispatch} className="grid gap-4 py-4">
-           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="id" className="text-right">
-              Project ID
-            </Label>
-            <Input id="id" name="id" className="col-span-3" value={nextId} readOnly />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="title" className="text-right">
-              Title
-            </Label>
-            <Input id="title" name="title" className="col-span-3" />
-            {state.errors?.title && (
-              <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.title[0]}</p>
-            )}
-          </div>
-           <div className="grid grid-cols-4 items-start gap-4">
-            <Label htmlFor="description" className="text-right pt-2">
-              Description
-            </Label>
-            <Textarea id="description" name="description" className="col-span-3" />
-            {state.errors?.description && (
-              <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.description[0]}</p>
-            )}
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="manager" className="text-right">
-              Manager
-            </Label>
-            <Input id="manager" name="manager" className="col-span-3" />
-             {state.errors?.manager && (
-              <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.manager[0]}</p>
-            )}
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="customer" className="text-right">
-                Customer
-            </Label>
-            <Select name="customer">
-              <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Select a customer" />
-              </SelectTrigger>
-              <SelectContent>
-                {customers.map((customer) => (
-                    <SelectItem key={customer.id} value={customer.name}>{customer.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {state.errors?.customer && (
-                <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.customer[0]}</p>
-            )}
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label className="text-right">
-              Start Date
-            </Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={'outline'}
-                  className={cn(
-                    'col-span-3 justify-start text-left font-normal',
-                    !startDate && 'text-muted-foreground'
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {startDate ? format(startDate, 'PPP') : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={startDate}
-                  onSelect={setStartDate}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-            <input type="hidden" name="startDate" value={startDate?.toISOString() ?? ''} />
-             {state.errors?.startDate && (
-              <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.startDate[0]}</p>
-            )}
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label className="text-right">
-              End Date
-            </Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={'outline'}
-                  className={cn(
-                    'col-span-3 justify-start text-left font-normal',
-                    !endDate && 'text-muted-foreground'
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {endDate ? format(endDate, 'PPP') : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={endDate}
-                  onSelect={setEndDate}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-            <input type="hidden" name="endDate" value={endDate?.toISOString() ?? ''} />
-             {state.errors?.endDate && (
-              <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.endDate[0]}</p>
-            )}
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="status" className="text-right">
-              Status
-            </Label>
-            <Select name="status">
-              <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Select a status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="in-progress">In Progress</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
-                <SelectItem value="on-hold">On Hold</SelectItem>
-                <SelectItem value="canceled">Canceled</SelectItem>
-              </SelectContent>
-            </Select>
-            {state.errors?.status && (
-                <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.status[0]}</p>
-            )}
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="taskBlueprintId" className="text-right">
-              Task Blueprint
-            </Label>
-            <Select name="taskBlueprintId">
-              <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Select a blueprint" />
-              </SelectTrigger>
-              <SelectContent>
-                {taskBlueprints.map((bp) => (
-                    <SelectItem key={bp.id} value={bp.id}>{bp.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {state.errors?.taskBlueprintId && (
-                <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.taskBlueprintId[0]}</p>
-            )}
-          </div>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
-            </DialogClose>
-            <SubmitButton />
-          </DialogFooter>
-        </form>
-      </DialogContent>
+      <Draggable nodeRef={nodeRef} handle=".dialog-header">
+        <DialogContent ref={nodeRef} className="sm:max-w-[500px]">
+          <DialogHeader className="dialog-header cursor-move">
+            <DialogTitle>Add New Project</DialogTitle>
+            <DialogDescription>
+              Fill in the details below to create a new project.
+            </DialogDescription>
+          </DialogHeader>
+          <form ref={formRef} action={dispatch} className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="id" className="text-right">
+                Project ID
+              </Label>
+              <Input id="id" name="id" className="col-span-3" value={nextId} readOnly />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="title" className="text-right">
+                Title
+              </Label>
+              <Input id="title" name="title" className="col-span-3" />
+              {state.errors?.title && (
+                <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.title[0]}</p>
+              )}
+            </div>
+            <div className="grid grid-cols-4 items-start gap-4">
+              <Label htmlFor="description" className="text-right pt-2">
+                Description
+              </Label>
+              <Textarea id="description" name="description" className="col-span-3" />
+              {state.errors?.description && (
+                <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.description[0]}</p>
+              )}
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="manager" className="text-right">
+                Manager
+              </Label>
+              <Input id="manager" name="manager" className="col-span-3" />
+              {state.errors?.manager && (
+                <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.manager[0]}</p>
+              )}
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="customer" className="text-right">
+                  Customer
+              </Label>
+              <Select name="customer">
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Select a customer" />
+                </SelectTrigger>
+                <SelectContent>
+                  {customers.map((customer) => (
+                      <SelectItem key={customer.id} value={customer.name}>{customer.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {state.errors?.customer && (
+                  <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.customer[0]}</p>
+              )}
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right">
+                Start Date
+              </Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={'outline'}
+                    className={cn(
+                      'col-span-3 justify-start text-left font-normal',
+                      !startDate && 'text-muted-foreground'
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {startDate ? format(startDate, 'PPP') : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={startDate}
+                    onSelect={setStartDate}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              <input type="hidden" name="startDate" value={startDate?.toISOString() ?? ''} />
+              {state.errors?.startDate && (
+                <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.startDate[0]}</p>
+              )}
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right">
+                End Date
+              </Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={'outline'}
+                    className={cn(
+                      'col-span-3 justify-start text-left font-normal',
+                      !endDate && 'text-muted-foreground'
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {endDate ? format(endDate, 'PPP') : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={endDate}
+                    onSelect={setEndDate}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              <input type="hidden" name="endDate" value={endDate?.toISOString() ?? ''} />
+              {state.errors?.endDate && (
+                <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.endDate[0]}</p>
+              )}
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="status" className="text-right">
+                Status
+              </Label>
+              <Select name="status">
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Select a status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="in-progress">In Progress</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="on-hold">On Hold</SelectItem>
+                  <SelectItem value="canceled">Canceled</SelectItem>
+                </SelectContent>
+              </Select>
+              {state.errors?.status && (
+                  <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.status[0]}</p>
+              )}
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="taskBlueprintId" className="text-right">
+                Task Blueprint
+              </Label>
+              <Select name="taskBlueprintId">
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Select a blueprint" />
+                </SelectTrigger>
+                <SelectContent>
+                  {taskBlueprints.map((bp) => (
+                      <SelectItem key={bp.id} value={bp.id}>{bp.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {state.errors?.taskBlueprintId && (
+                  <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.taskBlueprintId[0]}</p>
+              )}
+            </div>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="outline">Cancel</Button>
+              </DialogClose>
+              <SubmitButton />
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Draggable>
     </Dialog>
   );
 }
