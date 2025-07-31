@@ -2,7 +2,7 @@
 'use server';
 
 import { z } from 'zod';
-import { getProducts, createProduct as createDbProduct } from '@/lib/db';
+import { getProducts, getProductCategories, createProduct as createDbProduct } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 
 const productSchema = z.object({
@@ -28,21 +28,26 @@ export type ProductFormState = {
   };
 };
 
-export async function getNextProductId(): Promise<string> {
+export async function getNextProductId(categoryAbbr: string, subcategoryAbbr: string): Promise<string> {
+    if (!categoryAbbr || !subcategoryAbbr) {
+        return '';
+    }
+    const prefix = `${categoryAbbr.toUpperCase()}-${subcategoryAbbr.toUpperCase()}-`;
+    
     const products = await getProducts();
     const productIds = products
       .map(p => p.id)
-      .filter(id => id.startsWith('PROD-'))
-      .map(id => parseInt(id.replace('PROD-', ''), 10))
+      .filter(id => id.startsWith(prefix))
+      .map(id => parseInt(id.replace(prefix, ''), 10))
       .filter(num => !isNaN(num));
 
     if (productIds.length === 0) {
-        return 'PROD-001';
+        return `${prefix}7001`;
     }
 
     const lastNumber = Math.max(...productIds);
     const nextNumber = lastNumber + 1;
-    return `PROD-${nextNumber.toString().padStart(3, '0')}`;
+    return `${prefix}${nextNumber}`;
 }
 
 export async function createProduct(
@@ -93,3 +98,4 @@ export async function createProduct(
     return { message: 'Failed to create product.' };
   }
 }
+

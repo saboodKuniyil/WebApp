@@ -365,11 +365,18 @@
       "abbreviation": "MDF",
       "subcategories": [
         {
-          "name": "Pain mdf",
-          "abbreviation": "PMD"
+          "name": "Melamine",
+          "abbreviation": "MLM"
+        },
+        {
+          "name": "Plain",
+          "abbreviation": "PLN"
+        },
+        {
+          "name": "Vineer Pressed",
+          "abbreviation": "VNR"
         }
       ]
     }
   ]
 }
-    

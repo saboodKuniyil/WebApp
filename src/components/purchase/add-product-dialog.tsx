@@ -44,7 +44,8 @@ export function AddProductDialog({ categories }: AddProductDialogProps) {
   const [state, dispatch] = useActionState(createProduct, initialState);
   const [isOpen, setIsOpen] = React.useState(false);
   const [nextId, setNextId] = React.useState('');
-  const [selectedCategory, setSelectedCategory] = React.useState('');
+  const [selectedCategoryName, setSelectedCategoryName] = React.useState('');
+  const [selectedSubcategoryName, setSelectedSubcategoryName] = React.useState('');
   const [subcategories, setSubcategories] = React.useState<Subcategory[]>([]);
 
   const { toast } = useToast();
@@ -65,22 +66,33 @@ export function AddProductDialog({ categories }: AddProductDialogProps) {
         });
         setIsOpen(false);
         formRef.current?.reset();
-        setSelectedCategory('');
+        setSelectedCategoryName('');
+        setSelectedSubcategoryName('');
         setSubcategories([]);
+        setNextId('');
       }
     }
   }, [state, toast]);
-
-  React.useEffect(() => {
-    if (isOpen) {
-      getNextProductId().then(setNextId);
-    }
-  }, [isOpen]);
   
   React.useEffect(() => {
-    const category = categories.find(c => c.name === selectedCategory);
+    const category = categories.find(c => c.name === selectedCategoryName);
     setSubcategories(category ? category.subcategories : []);
-  }, [selectedCategory, categories]);
+    setSelectedSubcategoryName(''); // Reset subcategory when category changes
+    setNextId(''); // Reset ID when category changes
+  }, [selectedCategoryName, categories]);
+
+  React.useEffect(() => {
+      if(selectedCategoryName && selectedSubcategoryName) {
+        const category = categories.find(c => c.name === selectedCategoryName);
+        const subcategory = category?.subcategories.find(s => s.name === selectedSubcategoryName);
+        if (category && subcategory) {
+            getNextProductId(category.abbreviation, subcategory.abbreviation).then(setNextId);
+        }
+      } else {
+        setNextId('');
+      }
+  }, [selectedCategoryName, selectedSubcategoryName, categories]);
+
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -123,7 +135,7 @@ export function AddProductDialog({ categories }: AddProductDialogProps) {
             <Label htmlFor="category" className="text-right">
               Category
             </Label>
-             <Select name="category" onValueChange={setSelectedCategory}>
+             <Select name="category" onValueChange={setSelectedCategoryName}>
               <SelectTrigger className="col-span-3">
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
@@ -143,9 +155,9 @@ export function AddProductDialog({ categories }: AddProductDialogProps) {
             <Label htmlFor="subcategory" className="text-right">
                 Subcategory
             </Label>
-            <Select name="subcategory" disabled={!selectedCategory}>
+            <Select name="subcategory" onValueChange={setSelectedSubcategoryName} disabled={!selectedCategoryName}>
                 <SelectTrigger className="col-span-3">
-                    <SelectValue placeholder={selectedCategory ? "Select a subcategory" : "Select a category first"} />
+                    <SelectValue placeholder={selectedCategoryName ? "Select a subcategory" : "Select a category first"} />
                 </SelectTrigger>
                 <SelectContent>
                     {subcategories.map((subcategory) => (
