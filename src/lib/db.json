@@ -274,33 +274,36 @@
   ],
   "products": [
     {
-      "id": "FG-ELC-LAP-7001",
+      "id": "FG_ELC_7001",
       "name": "Laptop Pro 15",
       "description": "High-performance laptop for professionals.",
       "type": "Finished Good",
       "category": "Electronics",
       "subcategory": "Laptops",
-      "price": 1499.99,
+      "purchasePrice": 1049.99,
+      "salesPrice": 1499.99,
       "stock": 50
     },
     {
-      "id": "FG-FNT-CHR-7001",
+      "id": "FG_FNT_7001",
       "name": "Ergonomic Office Chair",
       "description": "Comfortable chair for long working hours.",
       "type": "Finished Good",
       "category": "Furniture",
       "subcategory": "Chairs",
-      "price": 349.99,
+      "purchasePrice": 244.99,
+      "salesPrice": 349.99,
       "stock": 120
     },
     {
-      "id": "FG-ELC-KEY-7001",
+      "id": "FG_ELC_7002",
       "name": "Wireless Mechanical Keyboard",
       "description": "A tactile and responsive keyboard for coders and writers.",
       "type": "Finished Good",
       "category": "Electronics",
       "subcategory": "Keyboards",
-      "price": 129.99,
+      "purchasePrice": 90.99,
+      "salesPrice": 129.99,
       "stock": 200
     }
   ],

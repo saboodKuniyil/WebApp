@@ -50,7 +50,8 @@ export type Product = {
   type: string;
   category: string;
   subcategory: string;
-  price: number;
+  purchasePrice: number;
+  salesPrice: number;
   stock: number;
 };
 
@@ -125,9 +126,14 @@ export const columns: ColumnDef<Product>[] = [
     cell: ({ row }) => <Badge variant="secondary">{row.getValue('subcategory')}</Badge>,
   },
   {
-    accessorKey: 'price',
-    header: 'Price',
-    cell: ({ row }) => <div>{formatCurrency(row.getValue('price'))}</div>,
+    accessorKey: 'purchasePrice',
+    header: 'Purchase Price',
+    cell: ({ row }) => <div>{formatCurrency(row.getValue('purchasePrice'))}</div>,
+  },
+  {
+    accessorKey: 'salesPrice',
+    header: 'Sales Price',
+    cell: ({ row }) => <div>{formatCurrency(row.getValue('salesPrice'))}</div>,
   },
   {
     accessorKey: 'stock',

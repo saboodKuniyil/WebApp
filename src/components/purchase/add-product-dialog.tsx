@@ -183,12 +183,20 @@ export function AddProductDialog({ categories }: AddProductDialogProps) {
             <Textarea id="description" name="description" />
           </div>
            <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-                <Label htmlFor="price">Price</Label>
-                <Input id="price" name="price" type="number" step="0.01" />
-                {state.errors?.price && (
-                <p className="text-red-500 text-xs">{state.errors.price[0]}</p>
-                )}
+                <div className="space-y-2">
+                    <Label htmlFor="purchasePrice">Purchase Price</Label>
+                    <Input id="purchasePrice" name="purchasePrice" type="number" step="0.01" />
+                    {state.errors?.purchasePrice && (
+                        <p className="text-red-500 text-xs">{state.errors.purchasePrice[0]}</p>
+                    )}
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="salesPrice">Sales Price</Label>
+                    <Input id="salesPrice" name="salesPrice" type="number" step="0.01" />
+                    {state.errors?.salesPrice && (
+                        <p className="text-red-500 text-xs">{state.errors.salesPrice[0]}</p>
+                    )}
+                </div>
             </div>
             <div className="space-y-2">
                 <Label htmlFor="stock">Stock</Label>
@@ -197,7 +205,6 @@ export function AddProductDialog({ categories }: AddProductDialogProps) {
                 <p className="text-red-500 text-xs">{state.errors.stock[0]}</p>
                 )}
             </div>
-          </div>
           <DialogFooter>
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>

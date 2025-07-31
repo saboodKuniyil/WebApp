@@ -12,7 +12,8 @@ const productSchema = z.object({
   type: z.string().min(1, 'Type is required'),
   category: z.string().min(1, 'Category is required'),
   subcategory: z.string().min(1, 'Subcategory is required'),
-  price: z.coerce.number().min(0, 'Price must be a positive number'),
+  purchasePrice: z.coerce.number().min(0, 'Purchase price must be a positive number'),
+  salesPrice: z.coerce.number().min(0, 'Sales price must be a positive number'),
   stock: z.coerce.number().int().min(0, 'Stock must be a positive integer'),
 });
 
@@ -25,7 +26,8 @@ export type ProductFormState = {
     type?: string[];
     category?: string[];
     subcategory?: string[];
-    price?: string[];
+    purchasePrice?: string[];
+    salesPrice?: string[];
     stock?: string[];
   };
 };
@@ -63,7 +65,8 @@ export async function createProduct(
     type: formData.get('type'),
     category: formData.get('category'),
     subcategory: formData.get('subcategory'),
-    price: formData.get('price'),
+    purchasePrice: formData.get('purchasePrice'),
+    salesPrice: formData.get('salesPrice'),
     stock: formData.get('stock'),
   });
 
@@ -74,7 +77,7 @@ export async function createProduct(
     };
   }
 
-  const { id, name, description, type, category, subcategory, price, stock } = validatedFields.data;
+  const { id, name, description, type, category, subcategory, purchasePrice, salesPrice, stock } = validatedFields.data;
 
   try {
      const products = await getProducts();
@@ -91,7 +94,8 @@ export async function createProduct(
         type,
         category,
         subcategory,
-        price,
+        purchasePrice,
+        salesPrice,
         stock
     });
 
