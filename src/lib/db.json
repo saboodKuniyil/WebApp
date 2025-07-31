@@ -39,14 +39,14 @@
       "id": "TASK-8782",
       "title": "this is normal task",
       "description": "Detailed analysis of the pixel compression algorithm is needed.",
-      "status": "in-progress",
+      "status": "done",
       "label": "documentation",
       "priority": "medium",
       "assignee": "Alice",
       "projectId": "PR_9001",
       "startDate": "2024-06-30T20:00:00.000Z",
       "endDate": "2024-07-29T20:00:00.000Z",
-      "completionPercentage": 50
+      "completionPercentage": 100
     },
     {
       "id": "TASK-7878",
@@ -118,13 +118,13 @@
       "title": "task",
       "description": "dd",
       "label": "feature",
-      "status": "sight",
+      "status": "carpentry",
       "priority": "medium",
       "assignee": "Alice",
       "projectId": "PR_9003",
       "startDate": "2025-07-23T20:00:00.000Z",
       "endDate": "2025-07-29T20:00:00.000Z",
-      "completionPercentage": 16
+      "completionPercentage": 60
     }
   ],
   "issues": [
