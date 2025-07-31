@@ -39,14 +39,14 @@
       "id": "TASK-8782",
       "title": "this is normal task",
       "description": "Detailed analysis of the pixel compression algorithm is needed.",
-      "status": "done",
+      "status": "in-progress",
       "label": "documentation",
       "priority": "medium",
       "assignee": "Alice",
       "projectId": "PR_9001",
       "startDate": "2024-06-30T20:00:00.000Z",
       "endDate": "2024-07-29T20:00:00.000Z",
-      "completionPercentage": 100
+      "completionPercentage": 50
     },
     {
       "id": "TASK-7878",
@@ -78,14 +78,14 @@
       "id": "TASK-5562",
       "title": "The SAS interface is down, navigate the annual interface without connecting the backup RAM!",
       "description": "The SAS interface has been deprecated.",
-      "status": "approval",
+      "status": "canceled",
       "label": "bug",
       "priority": "low",
       "assignee": "David",
       "projectId": "PR_9003",
       "startDate": "2024-06-01",
       "endDate": "2024-06-10",
-      "completionPercentage": 30
+      "completionPercentage": 0
     },
     {
       "id": "TASK-8686",
@@ -396,6 +396,24 @@
           "abbreviation": "VNR"
         }
       ]
+    }
+  ],
+  "units": [
+    {
+      "name": "Kilogram",
+      "abbreviation": "kg"
+    },
+    {
+      "name": "Piece",
+      "abbreviation": "pcs"
+    },
+    {
+      "name": "Meter",
+      "abbreviation": "m"
+    },
+    {
+      "name": "Liter",
+      "abbreviation": "L"
     }
   ]
 }

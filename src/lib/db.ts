@@ -9,6 +9,7 @@ import type { Issue } from '@/components/project-management/issues-list';
 import type { TaskBlueprint } from '@/components/project-management/task-blueprints-list';
 import type { Product } from '@/components/purchase/products-list';
 import type { ProductCategory } from '@/components/settings/product-preferences';
+import type { Unit } from '@/components/settings/units-management';
 
 const dbPath = path.join(process.cwd(), 'src', 'lib', 'db.json');
 
@@ -19,6 +20,7 @@ type DbData = {
   taskBlueprints: TaskBlueprint[];
   products: Product[];
   productCategories: ProductCategory[];
+  units: Unit[];
 };
 
 async function readDb(): Promise<DbData> {
@@ -28,7 +30,7 @@ async function readDb(): Promise<DbData> {
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
       // If the file doesn't exist, return a default structure
-      return { projects: [], tasks: [], issues: [], taskBlueprints: [], products: [], productCategories: [] };
+      return { projects: [], tasks: [], issues: [], taskBlueprints: [], products: [], productCategories: [], units: [] };
     }
     throw error;
   }
@@ -219,5 +221,41 @@ export async function deleteProductCategory(categoryName: string): Promise<void>
         await writeDb(data);
     } else {
         throw new Error(`Category with name ${categoryName} not found.`);
+    }
+}
+
+export async function getUnits(): Promise<Unit[]> {
+    const data = await readDb();
+    return data.units || [];
+}
+
+export async function createUnit(newUnit: Unit): Promise<void> {
+    const data = await readDb();
+    if (!data.units) {
+        data.units = [];
+    }
+    data.units.push(newUnit);
+    await writeDb(data);
+}
+
+export async function updateUnit(originalName: string, updatedUnit: Unit): Promise<void> {
+    const data = await readDb();
+    const unitIndex = data.units.findIndex(u => u.name === originalName);
+    if (unitIndex !== -1) {
+        data.units[unitIndex] = updatedUnit;
+        await writeDb(data);
+    } else {
+        throw new Error(`Unit with name ${originalName} not found.`);
+    }
+}
+
+export async function deleteUnit(unitName: string): Promise<void> {
+    const data = await readDb();
+    const unitIndex = data.units.findIndex(u => u.name === unitName);
+    if (unitIndex !== -1) {
+        data.units.splice(unitIndex, 1);
+        await writeDb(data);
+    } else {
+        throw new Error(`Unit with name ${unitName} not found.`);
     }
 }
