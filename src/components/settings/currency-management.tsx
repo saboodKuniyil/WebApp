@@ -278,7 +278,7 @@ export function CurrencyManagement({ data, defaultCurrency }: CurrencyManagement
                 <SelectContent>
                 {data.map(currency => (
                     <SelectItem key={currency.code} value={currency.code}>
-                    {currency.name} ({currency.symbol})
+                      {currency.name} ({currency.symbol})
                     </SelectItem>
                 ))}
                 </SelectContent>

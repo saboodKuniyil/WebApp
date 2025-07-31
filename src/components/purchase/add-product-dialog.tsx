@@ -86,6 +86,7 @@ export function AddProductDialog() {
     return new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: currency.code,
+        currencyDisplay: 'narrowSymbol'
     }).format(amount);
   }, [currency]);
 
