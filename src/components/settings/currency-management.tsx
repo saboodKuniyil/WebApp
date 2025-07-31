@@ -178,7 +178,9 @@ export function CurrencyManagement({ data, defaultCurrency }: CurrencyManagement
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
   const [selectedCurrency, setSelectedCurrency] = React.useState<Currency | null>(null);
+  const [selectedDefaultCurrency, setSelectedDefaultCurrency] = React.useState(defaultCurrency);
   const [currentDefault, setCurrentDefault] = React.useState(defaultCurrency);
+
   const { toast } = useToast();
   const { allCurrencies, setCurrency } = useModules();
 
@@ -210,12 +212,12 @@ export function CurrencyManagement({ data, defaultCurrency }: CurrencyManagement
     }
   };
 
-  const handleDefaultCurrencyChange = async (newDefaultCode: string) => {
-    const result = await updateAppSettings({ currency: newDefaultCode });
+  const handleSetDefaultCurrency = async () => {
+    const result = await updateAppSettings({ currency: selectedDefaultCurrency });
     if (result.message.includes('success')) {
       toast({ title: 'Success', description: result.message });
-      setCurrentDefault(newDefaultCode);
-      const newDefaultCurrency = allCurrencies.find(c => c.code === newDefaultCode) || null;
+      setCurrentDefault(selectedDefaultCurrency);
+      const newDefaultCurrency = allCurrencies.find(c => c.code === selectedDefaultCurrency) || null;
       setCurrency(newDefaultCurrency);
     } else {
       toast({ variant: 'destructive', title: 'Error', description: result.message });
@@ -268,18 +270,21 @@ export function CurrencyManagement({ data, defaultCurrency }: CurrencyManagement
             <CardDescription>Select the default currency to be used across the application.</CardDescription>
         </CardHeader>
         <CardContent className="p-4 pt-0">
-          <Select value={currentDefault} onValueChange={handleDefaultCurrencyChange}>
-            <SelectTrigger className="w-[280px]">
-              <SelectValue placeholder="Select a default currency" />
-            </SelectTrigger>
-            <SelectContent>
-              {data.map(currency => (
-                <SelectItem key={currency.code} value={currency.code}>
-                  {currency.name} ({currency.symbol})
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-2">
+            <Select value={selectedDefaultCurrency} onValueChange={setSelectedDefaultCurrency}>
+                <SelectTrigger className="w-[280px]">
+                <SelectValue placeholder="Select a default currency" />
+                </SelectTrigger>
+                <SelectContent>
+                {data.map(currency => (
+                    <SelectItem key={currency.code} value={currency.code}>
+                    {currency.name} ({currency.symbol})
+                    </SelectItem>
+                ))}
+                </SelectContent>
+            </Select>
+            <Button onClick={handleSetDefaultCurrency} disabled={selectedDefaultCurrency === currentDefault}>Set Default</Button>
+          </div>
         </CardContent>
       </Card>
       <Card>

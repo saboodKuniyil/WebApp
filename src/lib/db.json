@@ -452,7 +452,7 @@
     }
   ],
   "appSettings": {
-    "currency": "USD"
+    "currency": "AED"
   },
   "currencies": [
     {
@@ -474,6 +474,11 @@
       "name": "British Pound",
       "code": "GBP",
       "symbol": "£"
+    },
+    {
+      "name": "United Arab Emirates",
+      "code": "AED",
+      "symbol": "AED"
     }
   ]
 }
