@@ -1,3 +1,4 @@
+
 'use server';
 
 import { z } from 'zod';
@@ -31,17 +32,17 @@ export async function getNextTaskId(): Promise<string> {
     const tasks = await db.getTasks();
     const taskIds = tasks
       .map(t => t.id)
-      .filter(id => id.startsWith('TASK-'))
-      .map(id => parseInt(id.replace('TASK-', ''), 10))
+      .filter(id => id.startsWith('TS_'))
+      .map(id => parseInt(id.replace('TS_', ''), 10))
       .filter(num => !isNaN(num));
 
     if (taskIds.length === 0) {
-        return 'TASK-8783';
+        return 'TS_9001';
     }
 
     const lastNumber = Math.max(...taskIds);
     const nextNumber = lastNumber + 1;
-    return `TASK-${nextNumber}`;
+    return `TS_${nextNumber}`;
 }
 
 export async function createTask(
