@@ -186,6 +186,11 @@ export function ProductsList({ data, addProductDialog }: ProductsListProps) {
         description: false,
     });
   const [rowSelection, setRowSelection] = React.useState({});
+  const [isMounted, setIsMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const table = useReactTable({
     data,
@@ -224,7 +229,7 @@ export function ProductsList({ data, addProductDialog }: ProductsListProps) {
                 className="max-w-sm h-8"
                 />
                 <div className="flex space-x-2">
-                {addProductDialog}
+                {isMounted && addProductDialog}
                 <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="outline" className="ml-auto h-8">
