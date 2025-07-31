@@ -8,11 +8,15 @@ import { revalidatePath } from 'next/cache';
 const taskSchema = z.object({
   id: z.string(),
   title: z.string().min(1, 'Title is required'),
+  description: z.string().optional(),
   label: z.enum(['bug', 'feature', 'documentation']),
   status: z.enum(['in-progress', 'done', 'backlog', 'todo', 'canceled']),
   priority: z.enum(['low', 'medium', 'high']),
   assignee: z.string().min(1, 'Assignee is required'),
   projectId: z.string().min(1, 'Project is required'),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  completionPercentage: z.coerce.number().min(0).max(100).optional(),
 });
 
 export type TaskFormState = {
@@ -20,11 +24,15 @@ export type TaskFormState = {
   errors?: {
     id?: string[];
     title?: string[];
+    description?: string[];
     label?: string[];
     status?: string[];
     priority?: string[];
     assignee?: string[];
     projectId?: string[];
+    startDate?: string[];
+    endDate?: string[];
+    completionPercentage?: string[];
   };
 };
 
@@ -52,11 +60,15 @@ export async function createTask(
   const validatedFields = taskSchema.safeParse({
     id: formData.get('id'),
     title: formData.get('title'),
+    description: formData.get('description'),
     label: formData.get('label'),
     status: formData.get('status'),
     priority: formData.get('priority'),
     assignee: formData.get('assignee'),
     projectId: formData.get('projectId'),
+    startDate: formData.get('startDate') || undefined,
+    endDate: formData.get('endDate') || undefined,
+    completionPercentage: formData.get('completionPercentage'),
   });
 
   if (!validatedFields.success) {
@@ -66,7 +78,7 @@ export async function createTask(
     };
   }
   
-  const { id, title, label, status, priority, assignee, projectId } = validatedFields.data;
+  const { id, title, description, label, status, priority, assignee, projectId, startDate, endDate, completionPercentage } = validatedFields.data;
 
   try {
      const tasks = await db.getTasks();
@@ -79,11 +91,15 @@ export async function createTask(
     await db.createTask({
         id,
         title,
+        description,
         label,
         status,
         priority,
         assignee,
         projectId,
+        startDate,
+        endDate,
+        completionPercentage,
     });
 
     revalidatePath('/project-management/tasks');

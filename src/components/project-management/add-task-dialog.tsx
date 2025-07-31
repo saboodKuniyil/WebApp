@@ -23,10 +23,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { PlusCircle } from 'lucide-react';
+import { CalendarIcon, PlusCircle } from 'lucide-react';
 import { createTask, getNextTaskId } from '@/app/project-management/tasks/actions';
 import { useToast } from '@/hooks/use-toast';
 import type { Project } from './projects-list';
+import { Textarea } from '../ui/textarea';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { Calendar } from '../ui/calendar';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
+import { Slider } from '../ui/slider';
 
 
 const initialState = { message: '', errors: {} };
@@ -43,6 +49,9 @@ export function AddTaskDialog({ projects }: AddTaskDialogProps) {
   const [state, dispatch] = useActionState(createTask, initialState);
   const [isOpen, setIsOpen] = React.useState(false);
   const [nextId, setNextId] = React.useState('');
+  const [startDate, setStartDate] = React.useState<Date>();
+  const [endDate, setEndDate] = React.useState<Date>();
+  const [completionPercentage, setCompletionPercentage] = React.useState([0]);
 
   const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
@@ -62,6 +71,9 @@ export function AddTaskDialog({ projects }: AddTaskDialogProps) {
         });
         setIsOpen(false);
         formRef.current?.reset();
+        setStartDate(undefined);
+        setEndDate(undefined);
+        setCompletionPercentage([0]);
       }
     }
   }, [state, toast]);
@@ -103,6 +115,12 @@ export function AddTaskDialog({ projects }: AddTaskDialogProps) {
               <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.title[0]}</p>
             )}
           </div>
+          <div className="grid grid-cols-4 items-start gap-4">
+            <Label htmlFor="description" className="text-right pt-2">
+              Description
+            </Label>
+            <Textarea id="description" name="description" className="col-span-3" />
+          </div>
            <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="projectId" className="text-right">
                 Project
@@ -129,6 +147,62 @@ export function AddTaskDialog({ projects }: AddTaskDialogProps) {
              {state.errors?.assignee && (
               <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.assignee[0]}</p>
             )}
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label className="text-right">
+              Start Date
+            </Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={'outline'}
+                  className={cn(
+                    'col-span-3 justify-start text-left font-normal',
+                    !startDate && 'text-muted-foreground'
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {startDate ? format(startDate, 'PPP') : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={startDate}
+                  onSelect={setStartDate}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+            <input type="hidden" name="startDate" value={startDate?.toISOString() ?? ''} />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label className="text-right">
+              End Date
+            </Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={'outline'}
+                  className={cn(
+                    'col-span-3 justify-start text-left font-normal',
+                    !endDate && 'text-muted-foreground'
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {endDate ? format(endDate, 'PPP') : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={endDate}
+                  onSelect={setEndDate}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+            <input type="hidden" name="endDate" value={endDate?.toISOString() ?? ''} />
           </div>
            <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="status" className="text-right">
@@ -185,6 +259,23 @@ export function AddTaskDialog({ projects }: AddTaskDialogProps) {
                 {state.errors?.priority && (
                     <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.priority[0]}</p>
                 )}
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="completionPercentage" className="text-right">
+                  Completion
+                </Label>
+                <div className="col-span-3 flex items-center gap-4">
+                    <Slider
+                        name="completionPercentage"
+                        defaultValue={[0]}
+                        value={completionPercentage}
+                        onValueChange={setCompletionPercentage}
+                        max={100}
+                        step={1}
+                        className="flex-1"
+                    />
+                    <span className="text-sm text-muted-foreground w-12 text-right">{completionPercentage[0]}%</span>
+                </div>
             </div>
           <DialogFooter>
             <DialogClose asChild>

@@ -35,47 +35,67 @@
     {
       "id": "TASK-8782",
       "title": "You can't compress the program without quantifying the open-source SSD pixel!",
+      "description": "Detailed analysis of the pixel compression algorithm is needed.",
       "status": "in-progress",
       "label": "documentation",
       "priority": "medium",
       "assignee": "Alice",
-      "projectId": "PR_9001"
+      "projectId": "PR_9001",
+      "startDate": "2024-07-01",
+      "endDate": "2024-07-30",
+      "completionPercentage": 75
     },
     {
       "id": "TASK-7878",
       "title": "Try to calculate the EXE feed, maybe it will index the multi-byte pixel!",
+      "description": "Implement the core logic for the EXE feed calculation.",
       "status": "backlog",
       "label": "feature",
       "priority": "medium",
       "assignee": "Bob",
-      "projectId": "PR_9001"
+      "projectId": "PR_9001",
+      "startDate": "2024-08-01",
+      "endDate": "2024-08-15",
+      "completionPercentage": 0
     },
     {
       "id": "TASK-7839",
       "title": "We need to bypass the neural TCP card!",
+      "description": "Critical bug in the TCP card is blocking deployment.",
       "status": "todo",
       "label": "bug",
       "priority": "high",
       "assignee": "Charlie",
-      "projectId": "PR_9002"
+      "projectId": "PR_9002",
+      "startDate": "2024-07-25",
+      "endDate": "2024-08-10",
+      "completionPercentage": 10
     },
     {
       "id": "TASK-5562",
       "title": "The SAS interface is down, navigate the annual interface without connecting the backup RAM!",
+      "description": "The SAS interface has been deprecated.",
       "status": "canceled",
       "label": "bug",
       "priority": "low",
       "assignee": "David",
-      "projectId": "PR_9003"
+      "projectId": "PR_9003",
+      "startDate": "2024-06-01",
+      "endDate": "2024-06-10",
+      "completionPercentage": 100
     },
     {
       "id": "TASK-8686",
       "title": "I'll parse the wireless SSL protocol, that should driver the API panel!",
+      "description": "Develop the new wireless SSL protocol for the API.",
       "status": "in-progress",
       "label": "feature",
       "priority": "medium",
       "assignee": "Eve",
-      "projectId": "PR_9001"
+      "projectId": "PR_9001",
+      "startDate": "2024-07-10",
+      "endDate": "2024-09-01",
+      "completionPercentage": 40
     }
   ]
 }

@@ -45,15 +45,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { AddTaskDialog } from './add-task-dialog';
 import type { Project } from './projects-list';
+import { Progress } from '../ui/progress';
 
 export type Task = {
   id: string;
   title: string;
+  description?: string;
   status: 'in-progress' | 'done' | 'backlog' | 'todo' | 'canceled';
   label: 'bug' | 'feature' | 'documentation';
   priority: 'low' | 'medium' | 'high';
   assignee: string;
   projectId: string;
+  startDate?: string;
+  endDate?: string;
+  completionPercentage?: number;
 };
 
 
@@ -105,6 +110,11 @@ export const columns: ColumnDef<Task>[] = [
     cell: ({ row }) => <div className="font-medium max-w-xs truncate">{row.getValue('title')}</div>,
   },
   {
+    accessorKey: 'description',
+    header: 'Description',
+    cell: ({ row }) => <div className="max-w-xs truncate">{row.getValue('description') ?? 'N/A'}</div>,
+  },
+  {
     accessorKey: 'status',
     header: 'Status',
     cell: ({ row }) => <Badge variant="outline" className={`capitalize border-0 ${statusColors[row.getValue('status') as Task['status']]}`}>{row.getValue('status')}</Badge>,
@@ -113,6 +123,26 @@ export const columns: ColumnDef<Task>[] = [
     accessorKey: 'priority',
     header: 'Priority',
     cell: ({ row }) => <div className={`capitalize font-medium ${priorityColors[row.getValue('priority') as Task['priority']]}`}>{row.getValue('priority')}</div>,
+  },
+   {
+    accessorKey: 'startDate',
+    header: 'Start Date',
+    cell: ({ row }) => row.getValue('startDate') ? <div>{new Date(row.getValue('startDate')).toLocaleDateString()}</div> : 'N/A',
+  },
+  {
+    accessorKey: 'endDate',
+    header: 'End Date',
+    cell: ({ row }) => row.getValue('endDate') ? <div>{new Date(row.getValue('endDate')).toLocaleDateString()}</div> : 'N/A',
+  },
+  {
+      accessorKey: 'completionPercentage',
+      header: 'Completion',
+      cell: ({ row }) => (
+          <div className="flex items-center gap-2">
+              <Progress value={row.getValue('completionPercentage') ?? 0} className="w-24" />
+              <span>{row.getValue('completionPercentage') ?? 0}%</span>
+          </div>
+      )
   },
   {
     accessorKey: 'projectId',
@@ -172,7 +202,9 @@ export function TasksList({ data, projects }: TasksListProps) {
     []
   );
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+    React.useState<VisibilityState>({
+        description: false,
+    });
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
