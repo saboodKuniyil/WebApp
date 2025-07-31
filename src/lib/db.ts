@@ -112,9 +112,21 @@ export const db = {
     const data = await readDb();
     return data.issues || [];
   },
+  getIssueById: async (id: string): Promise<Issue | undefined> => {
+    const data = await readDb();
+    return (data.issues || []).find(i => i.id === id);
+  },
   getIssuesByTaskId: async (taskId: string): Promise<Issue[]> => {
     const data = await readDb();
     return (data.issues || []).filter(i => i.taskId === taskId);
+  },
+  createIssue: async (newIssue: Issue): Promise<void> => {
+    const data = await readDb();
+    if (!data.issues) {
+      data.issues = [];
+    }
+    data.issues.push(newIssue);
+    await writeDb(data);
   },
 };
 

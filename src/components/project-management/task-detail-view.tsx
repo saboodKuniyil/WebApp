@@ -157,7 +157,7 @@ export function TaskDetailView({ task, project, issues, projects }: TaskDetailVi
                                     </TableCell>
                                     <TableCell className="max-w-xs truncate p-2">{issue.title}</TableCell>
                                     <TableCell className="p-2"><Badge variant="outline" className={`capitalize border-0 ${issueStatusColors[issue.status]}`}>{issue.status}</Badge></TableCell>
-                                    <TableCell className="p-2"><div className={`capitalize font-medium ${priorityColors[issue.priority]}`}>{issue.priority}</div></TableCell>
+                                    <TableCell className="p-2"><div className={`capitalize font-medium ${priorityColors[issue.priority as keyof typeof priorityColors]}`}>{issue.priority}</div></TableCell>
                                 </TableRow>
                             ))}
                             {issues.length === 0 && (

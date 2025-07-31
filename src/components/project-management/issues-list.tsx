@@ -41,47 +41,10 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { PlusCircle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-
-const data: Issue[] = [
-    {
-    id: 'ISSUE-282',
-    title: 'Login button not working on Safari',
-    status: 'open',
-    type: 'bug',
-    priority: 'high',
-    created: '2024-07-20',
-    taskId: 'TASK-7839',
-  },
-  {
-    id: 'ISSUE-281',
-    title: 'Add dark mode support',
-    status: 'in-progress',
-    type: 'feature-request',
-    priority: 'medium',
-    created: '2024-07-18',
-    taskId: 'TASK-8686',
-  },
-  {
-    id: 'ISSUE-279',
-    title: 'API rate limit exceeded',
-    status: 'closed',
-    type: 'bug',
-    priority: 'high',
-    created: '2024-07-15',
-    taskId: 'TASK-5562',
-  },
-  {
-    id: 'ISSUE-278',
-    title: 'Update documentation for new endpoint',
-    status: 'open',
-    type: 'documentation',
-    priority: 'low',
-    created: '2024-07-21',
-    taskId: 'TASK-8782',
-  },
-];
+import { AddIssueDialog } from './add-issue-dialog';
+import type { Task } from './tasks-list';
+import Link from 'next/link';
 
 export type Issue = {
   id: string;
@@ -134,6 +97,15 @@ export const columns: ColumnDef<Issue>[] = [
     enableSorting: false,
     enableHiding: false,
   },
+   {
+    accessorKey: 'id',
+    header: 'ID',
+    cell: ({ row }) => (
+        <Link href={`/project-management/issues/${row.original.id}`} className="font-medium hover:underline">
+            {row.getValue('id')}
+        </Link>
+    ),
+  },
   {
     accessorKey: 'title',
     header: 'Title',
@@ -157,7 +129,11 @@ export const columns: ColumnDef<Issue>[] = [
   {
     accessorKey: 'taskId',
     header: 'Task ID',
-    cell: ({ row }) => <div>{row.getValue('taskId')}</div>,
+    cell: ({ row }) => (
+       <Link href={`/project-management/tasks/${row.original.taskId}`} className="font-medium hover:underline">
+            {row.getValue('taskId')}
+        </Link>
+    ),
   },
     {
     accessorKey: 'created',
@@ -180,10 +156,8 @@ export const columns: ColumnDef<Issue>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(issue.id)}
-            >
-              View Issue
+            <DropdownMenuItem asChild>
+                <Link href={`/project-management/issues/${issue.id}`}>View Issue</Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>Edit Issue</DropdownMenuItem>
@@ -195,7 +169,12 @@ export const columns: ColumnDef<Issue>[] = [
   },
 ];
 
-export function IssuesList() {
+interface IssuesListProps {
+  data: Issue[];
+  tasks: Task[];
+}
+
+export function IssuesList({ data, tasks }: IssuesListProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -225,29 +204,26 @@ export function IssuesList() {
 
   return (
     <Card>
-        <CardHeader>
+        <CardHeader className="p-2">
             <CardTitle>Issues</CardTitle>
-            <CardDescription>A list of all issues for the current project.</CardDescription>
+            <CardDescription>A list of all issues for your projects.</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-2 pt-0">
             <div className="w-full">
-            <div className="flex items-center justify-between py-4">
+            <div className="flex items-center justify-between py-2">
                 <Input
                 placeholder="Filter issues..."
                 value={(table.getColumn('title')?.getFilterValue() as string) ?? ''}
                 onChange={(event) =>
                     table.getColumn('title')?.setFilterValue(event.target.value)
                 }
-                className="max-w-sm"
+                className="max-w-sm h-8"
                 />
                 <div className="flex space-x-2">
-                <Button>
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Add Issue
-                </Button>
+                <AddIssueDialog tasks={tasks} />
                 <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="ml-auto">
+                    <Button variant="outline" className="ml-auto h-8">
                     Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
                     </Button>
                 </DropdownMenuTrigger>
@@ -280,7 +256,7 @@ export function IssuesList() {
                     <TableRow key={headerGroup.id}>
                         {headerGroup.headers.map((header) => {
                         return (
-                            <TableHead key={header.id}>
+                            <TableHead key={header.id} className="p-2">
                             {header.isPlaceholder
                                 ? null
                                 : flexRender(
@@ -301,7 +277,7 @@ export function IssuesList() {
                         data-state={row.getIsSelected() && 'selected'}
                         >
                         {row.getVisibleCells().map((cell) => (
-                            <TableCell key={cell.id}>
+                            <TableCell key={cell.id} className="p-2">
                             {flexRender(
                                 cell.column.columnDef.cell,
                                 cell.getContext()
@@ -323,7 +299,7 @@ export function IssuesList() {
                 </TableBody>
                 </Table>
             </div>
-            <div className="flex items-center justify-end space-x-2 py-4">
+            <div className="flex items-center justify-end space-x-2 py-2">
                 <div className="flex-1 text-sm text-muted-foreground">
                 {table.getFilteredSelectedRowModel().rows.length} of{' '}
                 {table.getFilteredRowModel().rows.length} row(s) selected.
