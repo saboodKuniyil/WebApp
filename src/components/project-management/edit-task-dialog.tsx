@@ -33,7 +33,6 @@ import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Calendar } from '../ui/calendar';
 import { format, parseISO } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { Slider } from '../ui/slider';
 
 const initialState = { message: '', errors: {} };
 
@@ -58,7 +57,6 @@ export function EditTaskDialog({ task, projects, taskBlueprints, isOpen, setIsOp
   const [endDate, setEndDate] = React.useState<Date | undefined>(
     task.endDate ? parseISO(task.endDate) : undefined
   );
-  const [completionPercentage, setCompletionPercentage] = React.useState([task.completionPercentage ?? 0]);
   const [selectedProjectId, setSelectedProjectId] = React.useState<string>(task.projectId);
   
   const selectedProject = projects.find(p => p.id === selectedProjectId);
@@ -89,7 +87,6 @@ export function EditTaskDialog({ task, projects, taskBlueprints, isOpen, setIsOp
   React.useEffect(() => {
     setStartDate(task.startDate ? parseISO(task.startDate) : undefined);
     setEndDate(task.endDate ? parseISO(task.endDate) : undefined);
-    setCompletionPercentage([task.completionPercentage ?? 0]);
     setSelectedProjectId(task.projectId);
   }, [task]);
 
@@ -219,7 +216,7 @@ export function EditTaskDialog({ task, projects, taskBlueprints, isOpen, setIsOp
               </SelectTrigger>
               <SelectContent>
                 {availableStatuses.map((status) => (
-                  <SelectItem key={status} value={status.toLowerCase().replace(/\s/g, '-')}>{status}</SelectItem>
+                  <SelectItem key={status.name} value={status.name.toLowerCase().replace(/\s/g, '-')}>{status.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -262,22 +259,6 @@ export function EditTaskDialog({ task, projects, taskBlueprints, isOpen, setIsOp
                 {state.errors?.priority && (
                     <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.priority[0]}</p>
                 )}
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="completionPercentage" className="text-right">
-                  Completion
-                </Label>
-                <div className="col-span-3 flex items-center gap-4">
-                    <Slider
-                        name="completionPercentage"
-                        value={completionPercentage}
-                        onValueChange={setCompletionPercentage}
-                        max={100}
-                        step={1}
-                        className="flex-1"
-                    />
-                    <span className="text-sm text-muted-foreground w-12 text-right">{completionPercentage[0]}%</span>
-                </div>
             </div>
           <DialogFooter>
             <DialogClose asChild>

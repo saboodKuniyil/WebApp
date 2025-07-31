@@ -2,7 +2,7 @@
 'use server';
 
 import { z } from 'zod';
-import { getTasks, createTask as createDbTask, updateTask as updateDbTask, deleteTask as deleteDbTask } from '@/lib/db';
+import { getTasks, createTask as createDbTask, updateTask as updateDbTask, deleteTask as deleteDbTask, getProjects, getTaskBlueprints } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
@@ -11,7 +11,7 @@ const taskSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().optional(),
   label: z.enum(['bug', 'feature', 'documentation']),
-  status: z.enum(['in-progress', 'done', 'backlog', 'todo', 'canceled']),
+  status: z.string().min(1, 'Status is required'),
   priority: z.enum(['low', 'medium', 'high']),
   assignee: z.string().min(1, 'Assignee is required'),
   projectId: z.string().min(1, 'Project is required'),
@@ -54,6 +54,20 @@ export async function getNextTaskId(): Promise<string> {
     return `TS_${nextNumber}`;
 }
 
+async function getCompletionPercentageForStatus(projectId: string, status: string): Promise<number | undefined> {
+    const projects = await getProjects();
+    const project = projects.find(p => p.id === projectId);
+    if (!project) return undefined;
+
+    const blueprints = await getTaskBlueprints();
+    const blueprint = blueprints.find(b => b.id === project.taskBlueprintId);
+    if (!blueprint) return undefined;
+    
+    const statusObj = blueprint.statuses.find(s => s.name.toLowerCase().replace(/\s/g, '-') === status);
+    return statusObj?.completionPercentage;
+}
+
+
 export async function createTask(
   prevState: TaskFormState,
   formData: FormData
@@ -79,7 +93,10 @@ export async function createTask(
     };
   }
   
-  const { id, title, description, label, status, priority, assignee, projectId, startDate, endDate, completionPercentage } = validatedFields.data;
+  const { id, title, description, label, status, priority, assignee, projectId, startDate, endDate } = validatedFields.data;
+  
+  const completionPercentage = await getCompletionPercentageForStatus(projectId, status);
+
 
   try {
      const tasks = await getTasks();
@@ -100,7 +117,7 @@ export async function createTask(
         projectId,
         startDate,
         endDate,
-        completionPercentage,
+        completionPercentage: completionPercentage ?? 0,
     });
 
     revalidatePath('/project-management/tasks');
@@ -136,12 +153,17 @@ export async function updateTask(
         };
     }
 
-    const { id, ...taskData } = validatedFields.data;
+    const { id, status, projectId, ...taskData } = validatedFields.data;
+    
+    const completionPercentage = await getCompletionPercentageForStatus(projectId, status);
 
     try {
         await updateDbTask({
             id,
-            ...taskData
+            status,
+            projectId,
+            ...taskData,
+            completionPercentage: completionPercentage ?? 0
         });
 
         revalidatePath(`/project-management/tasks/${id}`);
@@ -168,6 +190,8 @@ export async function deleteTask(taskId: string): Promise<{ message: string }> {
 
 export async function updateTaskCompletion(taskId: string, completionPercentage: number) {
   try {
+    // This function might become obsolete or change logic, as completion is now tied to status.
+    // For now, let's allow direct updates but know it can be overwritten by a status change.
     await updateDbTask({ id: taskId, completionPercentage });
     revalidatePath('/project-management/tasks');
     revalidatePath(`/project-management/projects`); // Revalidate projects to update progress

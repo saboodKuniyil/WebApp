@@ -5,10 +5,18 @@ import { z } from 'zod';
 import { getTaskBlueprints, createTaskBlueprint as createDbTaskBlueprint } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 
+const blueprintStatusSchema = z.object({
+  name: z.string().min(1, 'Status name cannot be empty'),
+  completionPercentage: z.coerce.number().min(0).max(100),
+});
+
 const blueprintSchema = z.object({
   id: z.string(),
   name: z.string().min(1, 'Name is required'),
-  statuses: z.string().min(1, 'At least one status is required').transform(val => val.split(',')),
+  statuses: z.string()
+    .min(1, 'At least one status is required')
+    .transform(val => JSON.parse(val))
+    .pipe(z.array(blueprintStatusSchema).min(1, 'At least one status is required')),
 });
 
 export type BlueprintFormState = {

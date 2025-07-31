@@ -46,7 +46,7 @@
       "projectId": "PR_9001",
       "startDate": "2024-06-30T20:00:00.000Z",
       "endDate": "2024-07-29T20:00:00.000Z",
-      "completionPercentage": 37
+      "completionPercentage": 50
     },
     {
       "id": "TASK-7878",
@@ -59,7 +59,7 @@
       "projectId": "PR_9001",
       "startDate": "2024-08-01",
       "endDate": "2024-08-15",
-      "completionPercentage": 39
+      "completionPercentage": 0
     },
     {
       "id": "TASK-7839",
@@ -72,7 +72,7 @@
       "projectId": "PR_9002",
       "startDate": "2024-07-25",
       "endDate": "2024-08-10",
-      "completionPercentage": 43
+      "completionPercentage": 10
     },
     {
       "id": "TASK-5562",
@@ -85,7 +85,7 @@
       "projectId": "PR_9003",
       "startDate": "2024-06-01",
       "endDate": "2024-06-10",
-      "completionPercentage": 55
+      "completionPercentage": 0
     },
     {
       "id": "TASK-8686",
@@ -98,7 +98,7 @@
       "projectId": "PR_9001",
       "startDate": "2024-07-10",
       "endDate": "2024-09-01",
-      "completionPercentage": 40
+      "completionPercentage": 50
     },
     {
       "id": "TS_9001",
@@ -111,7 +111,7 @@
       "projectId": "PR_9001",
       "startDate": "2025-07-30T20:00:00.000Z",
       "endDate": "2025-08-01T20:00:00.000Z",
-      "completionPercentage": 11
+      "completionPercentage": 0
     }
   ],
   "issues": [
@@ -193,34 +193,34 @@
       "id": "bp-1",
       "name": "Default Blueprint",
       "statuses": [
-        "Backlog",
-        "To Do",
-        "In Progress",
-        "Done",
-        "Canceled"
+        { "name": "Backlog", "completionPercentage": 0 },
+        { "name": "To Do", "completionPercentage": 10 },
+        { "name": "In Progress", "completionPercentage": 50 },
+        { "name": "Done", "completionPercentage": 100 },
+        { "name": "Canceled", "completionPercentage": 0 }
       ]
     },
     {
       "id": "bp-2",
       "name": "Agile Blueprint",
       "statuses": [
-        "Backlog",
-        "In Development",
-        "In Review",
-        "Merged",
-        "Done"
+        { "name": "Backlog", "completionPercentage": 0 },
+        { "name": "In Development", "completionPercentage": 25 },
+        { "name": "In Review", "completionPercentage": 75 },
+        { "name": "Merged", "completionPercentage": 90 },
+        { "name": "Done", "completionPercentage": 100 }
       ]
     },
     {
       "id": "bp-3",
       "name": "Sab001",
       "statuses": [
-        "Drawing",
-        "Approval",
-        "Carpentry",
-        "Sight",
-        "Delivered",
-        "Completed"
+        { "name": "Drawing", "completionPercentage": 15 },
+        { "name": "Approval", "completionPercentage": 30 },
+        { "name": "Carpentry", "completionPercentage": 60 },
+        { "name": "Sight", "completionPercentage": 80 },
+        { "name": "Delivered", "completionPercentage": 95 },
+        { "name": "Completed", "completionPercentage": 100 }
       ]
     }
   ]

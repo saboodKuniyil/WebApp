@@ -21,10 +21,15 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { AddTaskBlueprintDialog } from './add-task-blueprint-dialog';
 
+export type BlueprintStatus = {
+  name: string;
+  completionPercentage: number;
+};
+
 export type TaskBlueprint = {
   id: string;
   name: string;
-  statuses: string[];
+  statuses: BlueprintStatus[];
 };
 
 export const columns: ColumnDef<TaskBlueprint>[] = [
@@ -43,8 +48,8 @@ export const columns: ColumnDef<TaskBlueprint>[] = [
     header: 'Statuses',
     cell: ({ row }) => (
         <div className="flex flex-wrap gap-1">
-            {(row.getValue('statuses') as string[]).map((status) => (
-                <Badge key={status} variant="secondary">{status}</Badge>
+            {(row.getValue('statuses') as BlueprintStatus[]).map((status) => (
+                <Badge key={status.name} variant="secondary">{status.name} ({status.completionPercentage}%)</Badge>
             ))}
       </div>
     ),
