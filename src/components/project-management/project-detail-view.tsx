@@ -14,6 +14,8 @@ import { EditProjectDialog } from "./edit-project-dialog"
 import { DeleteProjectDialog } from "./delete-project-dialog"
 import React from "react"
 import Link from 'next/link';
+import { db } from "@/lib/db"
+import { TaskBlueprint } from "./task-blueprints-list"
 
 interface ProjectDetailViewProps {
     project: Project
@@ -52,6 +54,11 @@ export function ProjectDetailView({ project, tasks }: ProjectDetailViewProps) {
     const overallProgress = totalTasks > 0 ? totalCompletion / totalTasks : 0;
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
+    const [taskBlueprints, setTaskBlueprints] = React.useState<TaskBlueprint[]>([]);
+
+    React.useEffect(() => {
+        db.getTaskBlueprints().then(setTaskBlueprints);
+    }, []);
 
 
     return (
@@ -155,7 +162,7 @@ export function ProjectDetailView({ project, tasks }: ProjectDetailViewProps) {
                     </Table>
                 </CardContent>
             </Card>
-            <EditProjectDialog project={project} isOpen={isEditDialogOpen} setIsOpen={setIsEditDialogOpen} />
+            <EditProjectDialog project={project} taskBlueprints={taskBlueprints} isOpen={isEditDialogOpen} setIsOpen={setIsEditDialogOpen} />
             <DeleteProjectDialog project={project} isOpen={isDeleteDialogOpen} setIsOpen={setIsDeleteDialogOpen} />
         </div>
     )

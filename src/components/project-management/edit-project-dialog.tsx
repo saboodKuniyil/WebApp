@@ -31,6 +31,7 @@ import { updateProject } from '@/app/project-management/projects/actions';
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '../ui/textarea';
 import type { Project } from './projects-list';
+import type { TaskBlueprint } from './task-blueprints-list';
 
 const initialState = { message: '', errors: {} };
 
@@ -48,11 +49,12 @@ function SubmitButton() {
 
 interface EditProjectDialogProps {
   project: Project;
+  taskBlueprints: TaskBlueprint[];
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
 }
 
-export function EditProjectDialog({ project, isOpen, setIsOpen }: EditProjectDialogProps) {
+export function EditProjectDialog({ project, taskBlueprints, isOpen, setIsOpen }: EditProjectDialogProps) {
   const [state, dispatch] = useActionState(updateProject, initialState);
   const [startDate, setStartDate] = React.useState<Date | undefined>(
     project.startDate ? new Date(project.startDate) : undefined
@@ -230,6 +232,24 @@ export function EditProjectDialog({ project, isOpen, setIsOpen }: EditProjectDia
             </Select>
             {state.errors?.status && (
                 <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.status[0]}</p>
+            )}
+          </div>
+           <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="taskBlueprintId" className="text-right">
+              Task Blueprint
+            </Label>
+            <Select name="taskBlueprintId" defaultValue={project.taskBlueprintId}>
+              <SelectTrigger className="col-span-3">
+                <SelectValue placeholder="Select a blueprint" />
+              </SelectTrigger>
+              <SelectContent>
+                {taskBlueprints.map((bp) => (
+                    <SelectItem key={bp.id} value={bp.id}>{bp.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {state.errors?.taskBlueprintId && (
+                <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.taskBlueprintId[0]}</p>
             )}
           </div>
           <DialogFooter>

@@ -4,6 +4,7 @@ import path from 'path';
 import type { Project } from '@/components/project-management/projects-list';
 import type { Task } from '@/components/project-management/tasks-list';
 import type { Issue } from '@/components/project-management/issues-list';
+import type { TaskBlueprint } from '@/components/project-management/task-blueprints-list';
 
 const dbPath = path.join(process.cwd(), 'src', 'lib', 'db.json');
 
@@ -11,6 +12,7 @@ type DbData = {
   projects: Project[];
   tasks: Task[];
   issues: Issue[];
+  taskBlueprints: TaskBlueprint[];
 };
 
 async function readDb(): Promise<DbData> {
@@ -20,7 +22,7 @@ async function readDb(): Promise<DbData> {
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
       // If the file doesn't exist, return a default structure
-      return { projects: [], tasks: [], issues: [] };
+      return { projects: [], tasks: [], issues: [], taskBlueprints: [] };
     }
     throw error;
   }
@@ -126,6 +128,18 @@ export const db = {
       data.issues = [];
     }
     data.issues.push(newIssue);
+    await writeDb(data);
+  },
+  getTaskBlueprints: async (): Promise<TaskBlueprint[]> => {
+    const data = await readDb();
+    return data.taskBlueprints || [];
+  },
+  createTaskBlueprint: async (newBlueprint: TaskBlueprint): Promise<void> => {
+    const data = await readDb();
+    if (!data.taskBlueprints) {
+      data.taskBlueprints = [];
+    }
+    data.taskBlueprints.push(newBlueprint);
     await writeDb(data);
   },
 };

@@ -49,6 +49,7 @@ import { AddProjectDialog } from './add-project-dialog';
 import type { Task } from './tasks-list';
 import { ChevronRight } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import type { TaskBlueprint } from './task-blueprints-list';
 
 
 export type Project = {
@@ -60,6 +61,7 @@ export type Project = {
   customer: string;
   startDate: string;
   endDate: string;
+  taskBlueprintId: string;
 };
 
 const statusColors: Record<Project['status'], string> = {
@@ -257,9 +259,10 @@ const SubTasksList = ({ tasks }: { tasks: Task[] }) => {
 interface ProjectsListProps {
   data: Project[];
   tasks: Task[];
+  taskBlueprints: TaskBlueprint[];
 }
 
-export function ProjectsList({ data, tasks }: ProjectsListProps) {
+export function ProjectsList({ data, tasks, taskBlueprints }: ProjectsListProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -318,7 +321,7 @@ export function ProjectsList({ data, tasks }: ProjectsListProps) {
                 className="max-w-sm h-8"
                 />
                 <div className="flex space-x-2">
-                <AddProjectDialog />
+                <AddProjectDialog taskBlueprints={taskBlueprints} />
                 <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="outline" className="ml-auto h-8">

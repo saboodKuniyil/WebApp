@@ -16,6 +16,8 @@ import Link from "next/link"
 import { EditTaskDialog } from "./edit-task-dialog"
 import { DeleteTaskDialog } from "./delete-task-dialog"
 import { AddIssueDialog } from "./add-issue-dialog"
+import { db } from "@/lib/db"
+import { TaskBlueprint } from "./task-blueprints-list"
 
 interface TaskDetailViewProps {
     task: Task
@@ -59,6 +61,11 @@ const formatDate = (dateString: string | undefined) => {
 export function TaskDetailView({ task, project, issues, projects }: TaskDetailViewProps) {
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
+    const [taskBlueprints, setTaskBlueprints] = React.useState<TaskBlueprint[]>([]);
+
+    React.useEffect(() => {
+        db.getTaskBlueprints().then(setTaskBlueprints);
+    }, []);
 
     return (
         <div className="space-y-6">
@@ -188,7 +195,7 @@ export function TaskDetailView({ task, project, issues, projects }: TaskDetailVi
                     </Table>
                 </CardContent>
             </Card>
-            <EditTaskDialog task={task} projects={projects} isOpen={isEditDialogOpen} setIsOpen={setIsEditDialogOpen} />
+            <EditTaskDialog task={task} projects={projects} taskBlueprints={taskBlueprints} isOpen={isEditDialogOpen} setIsOpen={setIsEditDialogOpen} />
             <DeleteTaskDialog task={task} isOpen={isDeleteDialogOpen} setIsOpen={setIsDeleteDialogOpen} />
         </div>
     )

@@ -31,6 +31,7 @@ import { cn } from '@/lib/utils';
 import { createProject, getNextProjectId } from '@/app/project-management/projects/actions';
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '../ui/textarea';
+import type { TaskBlueprint } from './task-blueprints-list';
 
 
 const initialState = { message: '', errors: {} };
@@ -50,7 +51,11 @@ function SubmitButton() {
     return <Button type="submit">Create Project</Button>;
 }
 
-export function AddProjectDialog() {
+interface AddProjectDialogProps {
+  taskBlueprints: TaskBlueprint[];
+}
+
+export function AddProjectDialog({ taskBlueprints }: AddProjectDialogProps) {
   const [state, dispatch] = useActionState(createProject, initialState);
   const [isOpen, setIsOpen] = React.useState(false);
   const [startDate, setStartDate] = React.useState<Date>();
@@ -233,6 +238,24 @@ export function AddProjectDialog() {
             </Select>
             {state.errors?.status && (
                 <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.status[0]}</p>
+            )}
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="taskBlueprintId" className="text-right">
+              Task Blueprint
+            </Label>
+            <Select name="taskBlueprintId">
+              <SelectTrigger className="col-span-3">
+                <SelectValue placeholder="Select a blueprint" />
+              </SelectTrigger>
+              <SelectContent>
+                {taskBlueprints.map((bp) => (
+                    <SelectItem key={bp.id} value={bp.id}>{bp.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {state.errors?.taskBlueprintId && (
+                <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.taskBlueprintId[0]}</p>
             )}
           </div>
           <DialogFooter>

@@ -27,6 +27,7 @@ import { updateTask } from '@/app/project-management/tasks/actions';
 import { useToast } from '@/hooks/use-toast';
 import type { Project } from './projects-list';
 import type { Task } from './tasks-list';
+import type { TaskBlueprint } from './task-blueprints-list';
 import { Textarea } from '../ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Calendar } from '../ui/calendar';
@@ -43,11 +44,12 @@ function SubmitButton() {
 interface EditTaskDialogProps {
     task: Task;
     projects: Project[];
+    taskBlueprints: TaskBlueprint[];
     isOpen: boolean;
     setIsOpen: (open: boolean) => void;
 }
 
-export function EditTaskDialog({ task, projects, isOpen, setIsOpen }: EditTaskDialogProps) {
+export function EditTaskDialog({ task, projects, taskBlueprints, isOpen, setIsOpen }: EditTaskDialogProps) {
   const [state, dispatch] = useActionState(updateTask, initialState);
   
   const [startDate, setStartDate] = React.useState<Date | undefined>(
@@ -57,6 +59,11 @@ export function EditTaskDialog({ task, projects, isOpen, setIsOpen }: EditTaskDi
     task.endDate ? parseISO(task.endDate) : undefined
   );
   const [completionPercentage, setCompletionPercentage] = React.useState([task.completionPercentage ?? 0]);
+  const [selectedProjectId, setSelectedProjectId] = React.useState<string>(task.projectId);
+  
+  const selectedProject = projects.find(p => p.id === selectedProjectId);
+  const selectedBlueprint = taskBlueprints.find(b => b.id === selectedProject?.taskBlueprintId);
+  const availableStatuses = selectedBlueprint?.statuses ?? [];
 
   const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
@@ -83,6 +90,7 @@ export function EditTaskDialog({ task, projects, isOpen, setIsOpen }: EditTaskDi
     setStartDate(task.startDate ? parseISO(task.startDate) : undefined);
     setEndDate(task.endDate ? parseISO(task.endDate) : undefined);
     setCompletionPercentage([task.completionPercentage ?? 0]);
+    setSelectedProjectId(task.projectId);
   }, [task]);
 
 
@@ -122,7 +130,7 @@ export function EditTaskDialog({ task, projects, isOpen, setIsOpen }: EditTaskDi
             <Label htmlFor="projectId" className="text-right">
                 Project
             </Label>
-            <Select name="projectId" defaultValue={task.projectId}>
+            <Select name="projectId" defaultValue={task.projectId} onValueChange={setSelectedProjectId}>
               <SelectTrigger className="col-span-3">
                 <SelectValue placeholder="Select a project" />
               </SelectTrigger>
@@ -205,16 +213,14 @@ export function EditTaskDialog({ task, projects, isOpen, setIsOpen }: EditTaskDi
             <Label htmlFor="status" className="text-right">
               Status
             </Label>
-            <Select name="status" defaultValue={task.status}>
+            <Select name="status" defaultValue={task.status} disabled={!selectedProjectId}>
               <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Select a status" />
+                <SelectValue placeholder={selectedProjectId ? "Select a status" : "Select a project first"} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="backlog">Backlog</SelectItem>
-                <SelectItem value="todo">To Do</SelectItem>
-                <SelectItem value="in-progress">In Progress</SelectItem>
-                <SelectItem value="done">Done</SelectItem>
-                <SelectItem value="canceled">Canceled</SelectItem>
+                {availableStatuses.map((status) => (
+                  <SelectItem key={status} value={status.toLowerCase().replace(/\s/g, '-')}>{status}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
             {state.errors?.status && (

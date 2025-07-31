@@ -1,3 +1,4 @@
+
 'use server';
 
 import { z } from 'zod';
@@ -19,6 +20,7 @@ const projectSchema = z.object({
     message: "Invalid end date format",
   }),
   status: z.enum(['in-progress', 'completed', 'on-hold', 'canceled']),
+  taskBlueprintId: z.string().min(1, 'Task Blueprint is required'),
 });
 
 export type ProjectFormState = {
@@ -32,6 +34,7 @@ export type ProjectFormState = {
     startDate?: string[];
     endDate?: string[];
     status?: string[];
+    taskBlueprintId?: string[];
   };
 };
 
@@ -65,6 +68,7 @@ export async function createProject(
     startDate: formData.get('startDate'),
     endDate: formData.get('endDate'),
     status: formData.get('status'),
+    taskBlueprintId: formData.get('taskBlueprintId'),
   });
 
   if (!validatedFields.success) {
@@ -74,7 +78,7 @@ export async function createProject(
     };
   }
 
-  const { id, title, description, manager, customer, startDate, endDate, status } = validatedFields.data;
+  const { id, title, description, manager, customer, startDate, endDate, status, taskBlueprintId } = validatedFields.data;
 
   try {
      const projects = await db.getProjects();
@@ -93,6 +97,7 @@ export async function createProject(
         startDate,
         endDate,
         status,
+        taskBlueprintId
     });
 
     revalidatePath('/project-management/projects');
@@ -116,6 +121,7 @@ export async function updateProject(
         startDate: formData.get('startDate'),
         endDate: formData.get('endDate'),
         status: formData.get('status'),
+        taskBlueprintId: formData.get('taskBlueprintId'),
     });
 
     if (!validatedFields.success) {

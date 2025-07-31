@@ -27,6 +27,7 @@ import { CalendarIcon, PlusCircle } from 'lucide-react';
 import { createTask, getNextTaskId } from '@/app/project-management/tasks/actions';
 import { useToast } from '@/hooks/use-toast';
 import type { Project } from './projects-list';
+import type { TaskBlueprint } from './task-blueprints-list';
 import { Textarea } from '../ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Calendar } from '../ui/calendar';
@@ -43,18 +44,24 @@ function SubmitButton() {
 
 interface AddTaskDialogProps {
     projects: Project[];
+    taskBlueprints: TaskBlueprint[];
 }
 
-export function AddTaskDialog({ projects }: AddTaskDialogProps) {
+export function AddTaskDialog({ projects, taskBlueprints }: AddTaskDialogProps) {
   const [state, dispatch] = useActionState(createTask, initialState);
   const [isOpen, setIsOpen] = React.useState(false);
   const [nextId, setNextId] = React.useState('');
   const [startDate, setStartDate] = React.useState<Date>();
   const [endDate, setEndDate] = React.useState<Date>();
   const [completionPercentage, setCompletionPercentage] = React.useState([0]);
+  const [selectedProjectId, setSelectedProjectId] = React.useState<string>('');
 
   const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
+  
+  const selectedProject = projects.find(p => p.id === selectedProjectId);
+  const selectedBlueprint = taskBlueprints.find(b => b.id === selectedProject?.taskBlueprintId);
+  const availableStatuses = selectedBlueprint?.statuses ?? [];
 
   React.useEffect(() => {
     if (state.message) {
@@ -74,6 +81,7 @@ export function AddTaskDialog({ projects }: AddTaskDialogProps) {
         setStartDate(undefined);
         setEndDate(undefined);
         setCompletionPercentage([0]);
+        setSelectedProjectId('');
       }
     }
   }, [state, toast]);
@@ -125,7 +133,7 @@ export function AddTaskDialog({ projects }: AddTaskDialogProps) {
             <Label htmlFor="projectId" className="text-right">
                 Project
             </Label>
-            <Select name="projectId">
+            <Select name="projectId" onValueChange={setSelectedProjectId}>
               <SelectTrigger className="col-span-3">
                 <SelectValue placeholder="Select a project" />
               </SelectTrigger>
@@ -208,16 +216,14 @@ export function AddTaskDialog({ projects }: AddTaskDialogProps) {
             <Label htmlFor="status" className="text-right">
               Status
             </Label>
-            <Select name="status">
+            <Select name="status" disabled={!selectedProjectId}>
               <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Select a status" />
+                <SelectValue placeholder={selectedProjectId ? "Select a status" : "Select a project first"} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="backlog">Backlog</SelectItem>
-                <SelectItem value="todo">To Do</SelectItem>
-                <SelectItem value="in-progress">In Progress</SelectItem>
-                <SelectItem value="done">Done</SelectItem>
-                <SelectItem value="canceled">Canceled</SelectItem>
+                {availableStatuses.map((status) => (
+                  <SelectItem key={status} value={status.toLowerCase().replace(/\s/g, '-')}>{status}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
             {state.errors?.status && (

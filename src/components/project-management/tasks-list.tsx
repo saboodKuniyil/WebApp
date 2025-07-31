@@ -46,6 +46,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { AddTaskDialog } from './add-task-dialog';
 import type { Project } from './projects-list';
+import type { TaskBlueprint } from './task-blueprints-list';
 import { EditableCompletionCell } from './editable-completion-cell';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
@@ -53,7 +54,7 @@ export type Task = {
   id: string;
   title: string;
   description?: string;
-  status: 'in-progress' | 'done' | 'backlog' | 'todo' | 'canceled';
+  status: 'in-progress' | 'done' | 'backlog' | 'todo' | 'canceled' | string; // Allow any string for dynamic statuses
   label: 'bug' | 'feature' | 'documentation';
   priority: 'low' | 'medium' | 'high';
   assignee: string;
@@ -64,12 +65,15 @@ export type Task = {
 };
 
 
-const statusColors = {
+const statusColors: Record<string, string> = {
     'in-progress': 'bg-blue-500/20 text-blue-700 dark:text-blue-300',
     'done': 'bg-green-500/20 text-green-700 dark:text-green-300',
     'backlog': 'bg-gray-500/20 text-gray-700 dark:text-gray-300',
     'todo': 'bg-purple-500/20 text-purple-700 dark:text-purple-300',
     'canceled': 'bg-red-500/20 text-red-700 dark:text-red-300',
+    'in-development': 'bg-yellow-500/20 text-yellow-700 dark:text-yellow-300',
+    'in-review': 'bg-indigo-500/20 text-indigo-700 dark:text-indigo-300',
+    'merged': 'bg-pink-500/20 text-pink-700 dark:text-pink-300',
 }
 
 const priorityColors = {
@@ -210,9 +214,10 @@ export const columns: ColumnDef<Task>[] = [
 interface TasksListProps {
     data: Task[];
     projects: Project[];
+    taskBlueprints: TaskBlueprint[];
 }
 
-export function TasksList({ data, projects }: TasksListProps) {
+export function TasksList({ data, projects, taskBlueprints }: TasksListProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -283,7 +288,7 @@ export function TasksList({ data, projects }: TasksListProps) {
                     </Select>
                 </div>
                 <div className="flex space-x-2">
-                <AddTaskDialog projects={projects} />
+                <AddTaskDialog projects={projects} taskBlueprints={taskBlueprints} />
                 <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="outline" className="ml-auto h-8">

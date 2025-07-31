@@ -8,7 +8,8 @@
       "customer": "Innovate Inc.",
       "startDate": "2024-05-01T00:00:00.000Z",
       "endDate": "2024-09-30T00:00:00.000Z",
-      "status": "in-progress"
+      "status": "in-progress",
+      "taskBlueprintId": "bp-1"
     },
     {
       "id": "PR_9002",
@@ -18,7 +19,8 @@
       "manager": "Bob Smith",
       "customer": "Quantum Solutions",
       "startDate": "2024-06-15",
-      "endDate": "2024-12-31"
+      "endDate": "2024-12-31",
+      "taskBlueprintId": "bp-2"
     },
     {
       "id": "PR_9003",
@@ -28,7 +30,8 @@
       "customer": "Quantum Solutions",
       "startDate": "2025-07-30T20:00:00.000Z",
       "endDate": "2025-08-03T20:00:00.000Z",
-      "status": "in-progress"
+      "status": "in-progress",
+      "taskBlueprintId": "bp-1"
     }
   ],
   "tasks": [
@@ -183,6 +186,30 @@
       "priority": "low",
       "taskId": "TS_9001",
       "created": "2025-07-31"
+    }
+  ],
+  "taskBlueprints": [
+    {
+      "id": "bp-1",
+      "name": "Default Blueprint",
+      "statuses": [
+        "Backlog",
+        "To Do",
+        "In Progress",
+        "Done",
+        "Canceled"
+      ]
+    },
+    {
+      "id": "bp-2",
+      "name": "Agile Blueprint",
+      "statuses": [
+        "Backlog",
+        "In Development",
+        "In Review",
+        "Merged",
+        "Done"
+      ]
     }
   ]
 }
