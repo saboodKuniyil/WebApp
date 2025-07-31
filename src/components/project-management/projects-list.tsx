@@ -44,37 +44,6 @@ import { Badge } from '@/components/ui/badge';
 import { PlusCircle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 
-const data: Project[] = [
-  {
-    id: 'PROJ-001',
-    title: 'E-commerce Platform',
-    status: 'in-progress',
-    manager: 'Alice Johnson',
-    deadline: '2024-12-31',
-  },
-  {
-    id: 'PROJ-002',
-    title: 'Mobile App for iOS',
-    status: 'completed',
-    manager: 'Bob Williams',
-    deadline: '2024-09-15',
-  },
-  {
-    id: 'PROJ-003',
-    title: 'Data Analytics Dashboard',
-    status: 'on-hold',
-    manager: 'Charlie Brown',
-    deadline: '2025-03-01',
-  },
-    {
-    id: 'PROJ-004',
-    title: 'Marketing Website Redesign',
-    status: 'in-progress',
-    manager: 'Diana Prince',
-    deadline: '2024-11-30',
-  },
-];
-
 export type Project = {
   id: string;
   title: string;
@@ -83,12 +52,12 @@ export type Project = {
   deadline: string;
 };
 
-const statusColors = {
+const statusColors: Record<Project['status'], string> = {
     'in-progress': 'bg-blue-500/20 text-blue-700 dark:text-blue-300',
     'completed': 'bg-green-500/20 text-green-700 dark:text-green-300',
     'on-hold': 'bg-yellow-500/20 text-yellow-700 dark:text-yellow-300',
     'canceled': 'bg-red-500/20 text-red-700 dark:text-red-300',
-}
+};
 
 export const columns: ColumnDef<Project>[] = [
   {
@@ -141,7 +110,7 @@ export const columns: ColumnDef<Project>[] = [
   {
     accessorKey: 'deadline',
     header: 'Deadline',
-    cell: ({ row }) => <div>{row.getValue('deadline')}</div>,
+    cell: ({ row }) => <div>{new Date(row.getValue('deadline')).toLocaleDateString()}</div>,
   },
   {
     id: 'actions',
@@ -174,7 +143,11 @@ export const columns: ColumnDef<Project>[] = [
   },
 ];
 
-export function ProjectsList() {
+interface ProjectsListProps {
+  data: Project[];
+}
+
+export function ProjectsList({ data }: ProjectsListProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
