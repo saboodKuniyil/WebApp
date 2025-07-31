@@ -1,10 +1,48 @@
+'use client';
+
+import * as React from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Briefcase } from 'lucide-react';
+
 export default function ModulesPage() {
+  const [isProjectManagementEnabled, setIsProjectManagementEnabled] = React.useState(true);
+
   return (
     <main className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
         <h1 className="text-3xl font-bold tracking-tight font-headline">Modules</h1>
       </div>
-      <p>This is the modules page.</p>
+      
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <Card className="hover:shadow-lg transition-shadow duration-300">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+            <div className="space-y-1.5">
+              <CardTitle className="text-xl flex items-center">
+                <Briefcase className="mr-3 h-6 w-6 text-primary" />
+                Project Management
+              </CardTitle>
+              <CardDescription>
+                Organize, track, and manage your team's projects.
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between rounded-lg border p-3">
+              <Label htmlFor="project-management-switch" className="font-medium">
+                {isProjectManagementEnabled ? 'Module Active' : 'Module Inactive'}
+              </Label>
+              <Switch
+                id="project-management-switch"
+                checked={isProjectManagementEnabled}
+                onCheckedChange={setIsProjectManagementEnabled}
+                aria-label="Toggle Project Management Module"
+              />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </main>
   );
 }
