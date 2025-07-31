@@ -18,6 +18,8 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
+  getExpandedRowModel,
+  ExpandedState,
 } from '@tanstack/react-table';
 
 import { Button } from '@/components/ui/button';
@@ -43,6 +45,10 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { AddProjectDialog } from './add-project-dialog';
+import type { Task } from './tasks-list';
+import { ChevronRight } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+
 
 export type Project = {
   id: string;
@@ -62,6 +68,20 @@ const statusColors: Record<Project['status'], string> = {
     'canceled': 'bg-red-500/20 text-red-700 dark:text-red-300',
 };
 
+const taskStatusColors: Record<Task['status'], string> = {
+    'in-progress': 'bg-blue-500/20 text-blue-700 dark:text-blue-300',
+    'done': 'bg-green-500/20 text-green-700 dark:text-green-300',
+    'backlog': 'bg-gray-500/20 text-gray-700 dark:text-gray-300',
+    'todo': 'bg-purple-500/20 text-purple-700 dark:text-purple-300',
+    'canceled': 'bg-red-500/20 text-red-700 dark:text-red-300',
+}
+
+const taskPriorityColors: Record<Task['priority'], string> = {
+    'low': 'text-green-600',
+    'medium': 'text-yellow-600',
+    'high': 'text-red-600',
+}
+
 // Helper function to format dates consistently
 const formatDate = (dateString: string) => {
     // Append 'T00:00:00Z' to treat date strings as UTC, preventing timezone shifts.
@@ -69,8 +89,24 @@ const formatDate = (dateString: string) => {
     return date.toLocaleDateString('en-US', { timeZone: 'UTC' });
 };
 
-
-export const columns: ColumnDef<Project>[] = [
+const getColumns = (tasks: Task[]): ColumnDef<Project>[] => [
+  {
+    id: 'expander',
+    header: () => null,
+    cell: ({ row }) => {
+      const projectTasks = tasks.filter(t => t.projectId === row.original.id);
+      return projectTasks.length > 0 ? (
+        <Button
+            variant="ghost"
+            size="icon"
+            onClick={row.getToggleExpandedHandler()}
+            className="h-6 w-6"
+        >
+            <ChevronRight className={`h-4 w-4 transition-transform ${row.getIsExpanded() ? 'rotate-90' : ''}`} />
+        </Button>
+      ) : null;
+    },
+  },
   {
     id: 'select',
     header: ({ table }) => (
@@ -174,11 +210,49 @@ export const columns: ColumnDef<Project>[] = [
   },
 ];
 
+const SubTasksList = ({ tasks }: { tasks: Task[] }) => {
+  return (
+    <div className="p-2 bg-muted/50">
+      <h4 className="text-sm font-semibold mb-2">Tasks</h4>
+       <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Title</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Priority</TableHead>
+            <TableHead>Assignee</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {tasks.map((task) => (
+            <TableRow key={task.id}>
+              <TableCell className="font-medium max-w-xs truncate">{task.title}</TableCell>
+              <TableCell><Badge variant="outline" className={`capitalize border-0 ${taskStatusColors[task.status]}`}>{task.status}</Badge></TableCell>
+              <TableCell><div className={`capitalize font-medium ${taskPriorityColors[task.priority]}`}>{task.priority}</div></TableCell>
+              <TableCell>
+                <div className="flex items-center gap-2">
+                    <Avatar className="h-6 w-6">
+                        <AvatarImage src={`https://placehold.co/100x100.png?text=${task.assignee.charAt(0)}`} />
+                        <AvatarFallback>{task.assignee.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    {task.assignee}
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+};
+
+
 interface ProjectsListProps {
   data: Project[];
+  tasks: Task[];
 }
 
-export function ProjectsList({ data }: ProjectsListProps) {
+export function ProjectsList({ data, tasks }: ProjectsListProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -188,6 +262,10 @@ export function ProjectsList({ data }: ProjectsListProps) {
         description: false,
     });
   const [rowSelection, setRowSelection] = React.useState({});
+  const [expanded, setExpanded] = React.useState<ExpandedState>({});
+  
+  const columns = React.useMemo(() => getColumns(tasks), [tasks]);
+
 
   const table = useReactTable({
     data,
@@ -200,11 +278,15 @@ export function ProjectsList({ data }: ProjectsListProps) {
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    onExpandedChange: setExpanded,
+    getExpandedRowModel: getExpandedRowModel(),
+    getRowCanExpand: (row) => tasks.some(t => t.projectId === row.original.id),
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
+      expanded,
     },
     meta: {
       // You can add any custom meta data here if needed
@@ -239,7 +321,7 @@ export function ProjectsList({ data }: ProjectsListProps) {
                 <DropdownMenuContent align="end">
                     {table
                     .getAllColumns()
-                    .filter((column) => column.getCanHide())
+                    .filter((column) => column.getCanHide() && column.id !== 'expander')
                     .map((column) => {
                         return (
                         <DropdownMenuCheckboxItem
@@ -281,19 +363,27 @@ export function ProjectsList({ data }: ProjectsListProps) {
                 <TableBody>
                     {table.getRowModel().rows?.length ? (
                     table.getRowModel().rows.map((row) => (
-                        <TableRow
-                        key={row.id}
-                        data-state={row.getIsSelected() && 'selected'}
-                        >
-                        {row.getVisibleCells().map((cell) => (
-                            <TableCell key={cell.id} className="p-2">
-                            {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext()
+                        <React.Fragment key={row.id}>
+                            <TableRow
+                                data-state={row.getIsSelected() && 'selected'}
+                            >
+                                {row.getVisibleCells().map((cell) => (
+                                    <TableCell key={cell.id} className="p-2">
+                                    {flexRender(
+                                        cell.column.columnDef.cell,
+                                        cell.getContext()
+                                    )}
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                            {row.getIsExpanded() && (
+                                <TableRow>
+                                    <TableCell colSpan={columns.length}>
+                                       <SubTasksList tasks={tasks.filter(t => t.projectId === row.original.id)} />
+                                    </TableCell>
+                                </TableRow>
                             )}
-                            </TableCell>
-                        ))}
-                        </TableRow>
+                        </React.Fragment>
                     ))
                     ) : (
                     <TableRow>
