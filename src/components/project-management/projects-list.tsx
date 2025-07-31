@@ -62,6 +62,14 @@ const statusColors: Record<Project['status'], string> = {
     'canceled': 'bg-red-500/20 text-red-700 dark:text-red-300',
 };
 
+// Helper function to format dates consistently
+const formatDate = (dateString: string) => {
+    // Append 'T00:00:00Z' to treat date strings as UTC, preventing timezone shifts.
+    const date = new Date(dateString.includes('T') ? dateString : `${dateString}T00:00:00Z`);
+    return date.toLocaleDateString('en-US', { timeZone: 'UTC' });
+};
+
+
 export const columns: ColumnDef<Project>[] = [
   {
     id: 'select',
@@ -128,12 +136,12 @@ export const columns: ColumnDef<Project>[] = [
   {
     accessorKey: 'startDate',
     header: 'Start Date',
-    cell: ({ row }) => <div>{new Date(row.getValue('startDate')).toLocaleDateString()}</div>,
+    cell: ({ row }) => <div>{formatDate(row.getValue('startDate'))}</div>,
   },
   {
     accessorKey: 'endDate',
     header: 'End Date',
-    cell: ({ row }) => <div>{new Date(row.getValue('endDate')).toLocaleDateString()}</div>,
+    cell: ({ row }) => <div>{formatDate(row.getValue('endDate'))}</div>,
   },
   {
     id: 'actions',
@@ -205,26 +213,26 @@ export function ProjectsList({ data }: ProjectsListProps) {
 
   return (
     <Card>
-        <CardHeader>
+        <CardHeader className="p-2">
             <CardTitle>Projects</CardTitle>
             <CardDescription>A list of all projects in your organization.</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-2 pt-0">
             <div className="w-full">
-            <div className="flex items-center justify-between py-4">
+            <div className="flex items-center justify-between py-2">
                 <Input
                 placeholder="Filter projects..."
                 value={(table.getColumn('title')?.getFilterValue() as string) ?? ''}
                 onChange={(event) =>
                     table.getColumn('title')?.setFilterValue(event.target.value)
                 }
-                className="max-w-sm"
+                className="max-w-sm h-8"
                 />
                 <div className="flex space-x-2">
                 <AddProjectDialog />
                 <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="ml-auto">
+                    <Button variant="outline" className="ml-auto h-8">
                     Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
                     </Button>
                 </DropdownMenuTrigger>
@@ -257,7 +265,7 @@ export function ProjectsList({ data }: ProjectsListProps) {
                     <TableRow key={headerGroup.id}>
                         {headerGroup.headers.map((header) => {
                         return (
-                            <TableHead key={header.id}>
+                            <TableHead key={header.id} className="p-2">
                             {header.isPlaceholder
                                 ? null
                                 : flexRender(
@@ -278,7 +286,7 @@ export function ProjectsList({ data }: ProjectsListProps) {
                         data-state={row.getIsSelected() && 'selected'}
                         >
                         {row.getVisibleCells().map((cell) => (
-                            <TableCell key={cell.id}>
+                            <TableCell key={cell.id} className="p-2">
                             {flexRender(
                                 cell.column.columnDef.cell,
                                 cell.getContext()
@@ -300,7 +308,7 @@ export function ProjectsList({ data }: ProjectsListProps) {
                 </TableBody>
                 </Table>
             </div>
-            <div className="flex items-center justify-end space-x-2 py-4">
+            <div className="flex items-center justify-end space-x-2 py-2">
                 <div className="flex-1 text-sm text-muted-foreground">
                 {table.getFilteredSelectedRowModel().rows.length} of{' '}
                 {table.getFilteredRowModel().rows.length} row(s) selected.

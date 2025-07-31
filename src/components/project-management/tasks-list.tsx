@@ -77,6 +77,14 @@ const priorityColors = {
     'high': 'text-red-600',
 }
 
+// Helper function to format dates consistently
+const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return 'N/A';
+    // Append 'T00:00:00Z' to treat date strings as UTC, preventing timezone shifts.
+    const date = new Date(dateString.includes('T') ? dateString : `${dateString}T00:00:00Z`);
+    return date.toLocaleDateString('en-US', { timeZone: 'UTC' });
+};
+
 export const columns: ColumnDef<Task>[] = [
   {
     id: 'select',
@@ -131,12 +139,12 @@ export const columns: ColumnDef<Task>[] = [
    {
     accessorKey: 'startDate',
     header: 'Start Date',
-    cell: ({ row }) => row.getValue('startDate') ? <div>{new Date(row.getValue('startDate')).toLocaleDateString()}</div> : 'N/A',
+    cell: ({ row }) => <div>{formatDate(row.getValue('startDate'))}</div>,
   },
   {
     accessorKey: 'endDate',
     header: 'End Date',
-    cell: ({ row }) => row.getValue('endDate') ? <div>{new Date(row.getValue('endDate')).toLocaleDateString()}</div> : 'N/A',
+    cell: ({ row }) => <div>{formatDate(row.getValue('endDate'))}</div>,
   },
   {
     accessorKey: 'completionPercentage',
@@ -234,20 +242,20 @@ export function TasksList({ data, projects }: TasksListProps) {
 
   return (
      <Card>
-        <CardHeader>
+        <CardHeader className="p-2">
             <CardTitle>Tasks</CardTitle>
             <CardDescription>A list of all tasks for the current project.</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-2 pt-0">
             <div className="w-full">
-            <div className="flex items-center justify-between py-4">
+            <div className="flex items-center justify-between py-2">
                 <Input
                 placeholder="Filter tasks by title..."
                 value={(table.getColumn('title')?.getFilterValue() as string) ?? ''}
                 onChange={(event) =>
                     table.getColumn('title')?.setFilterValue(event.target.value)
                 }
-                className="max-w-sm"
+                className="max-w-sm h-8"
                 />
                  <div className="flex items-center gap-2">
                     <Select
@@ -256,7 +264,7 @@ export function TasksList({ data, projects }: TasksListProps) {
                             table.getColumn('projectId')?.setFilterValue(value === 'all' ? '' : value)
                         }
                     >
-                        <SelectTrigger className="w-[180px]">
+                        <SelectTrigger className="w-[180px] h-8">
                             <SelectValue placeholder="Filter by project" />
                         </SelectTrigger>
                         <SelectContent>
@@ -273,7 +281,7 @@ export function TasksList({ data, projects }: TasksListProps) {
                 <AddTaskDialog projects={projects} />
                 <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="ml-auto">
+                    <Button variant="outline" className="ml-auto h-8">
                     Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
                     </Button>
                 </DropdownMenuTrigger>
@@ -306,7 +314,7 @@ export function TasksList({ data, projects }: TasksListProps) {
                     <TableRow key={headerGroup.id}>
                         {headerGroup.headers.map((header) => {
                         return (
-                            <TableHead key={header.id}>
+                            <TableHead key={header.id} className="p-2">
                             {header.isPlaceholder
                                 ? null
                                 : flexRender(
@@ -327,7 +335,7 @@ export function TasksList({ data, projects }: TasksListProps) {
                         data-state={row.getIsSelected() && 'selected'}
                         >
                         {row.getVisibleCells().map((cell) => (
-                            <TableCell key={cell.id}>
+                            <TableCell key={cell.id} className="p-2">
                             {flexRender(
                                 cell.column.columnDef.cell,
                                 cell.getContext()
@@ -349,7 +357,7 @@ export function TasksList({ data, projects }: TasksListProps) {
                 </TableBody>
                 </Table>
             </div>
-            <div className="flex items-center justify-end space-x-2 py-4">
+            <div className="flex items-center justify-end space-x-2 py-2">
                 <div className="flex-1 text-sm text-muted-foreground">
                 {table.getFilteredSelectedRowModel().rows.length} of{' '}
                 {table.getFilteredRowModel().rows.length} row(s) selected.
