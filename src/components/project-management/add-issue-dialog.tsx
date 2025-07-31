@@ -121,6 +121,9 @@ export function AddIssueDialog({ tasks, defaultTaskId, trigger }: AddIssueDialog
                 ))}
               </SelectContent>
             </Select>
+             {/* If defaultTaskId is provided, the Select above is disabled. Disabled inputs are not submitted.
+                 So we add a hidden input to make sure the taskId is always in the form data. */}
+            {defaultTaskId && <input type="hidden" name="taskId" value={defaultTaskId} />}
             {state.errors?.taskId && (
                 <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.taskId[0]}</p>
             )}
