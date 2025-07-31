@@ -60,7 +60,7 @@ function DashboardSidebarItems() {
             <SidebarMenuButton asChild isActive={pathname === '/project-management'}>
               <Link href="/project-management">
                 <Briefcase />
-                Projects
+                Project Management
               </Link>
             </SidebarMenuButton>
          </SidebarMenuItem>
