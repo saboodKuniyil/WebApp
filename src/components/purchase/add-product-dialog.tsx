@@ -52,7 +52,7 @@ function SubmitButton() {
 }
 
 const formatFileSize = (bytes: number | null) => {
-    if (bytes === null) return '';
+    if (bytes === null || bytes === undefined) return '';
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
@@ -70,7 +70,7 @@ export function AddProductDialog() {
   const [subcategories, setSubcategories] = React.useState<Subcategory[]>([]);
   
   const [categories, setCategories] = React.useState<ProductCategory[]>([]);
-  const [units, setUnits] areact.useState<Unit[]>([]);
+  const [units, setUnits] = React.useState<Unit[]>([]);
   const [allProducts, setAllProducts] = React.useState<Product[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const { currency } = useModules();
@@ -626,5 +626,3 @@ export function AddProductDialog() {
     </Dialog>
   );
 }
-
-    
