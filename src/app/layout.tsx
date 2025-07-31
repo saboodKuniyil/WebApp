@@ -18,7 +18,7 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
-import { Calendar, LayoutDashboard, LogOut } from 'lucide-react';
+import { Box, Calendar, LayoutDashboard, LogOut } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'BizView',
@@ -53,6 +53,14 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
                 <Link href="/calendar">
                   <Calendar />
                   Calendar
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild isActive={pathname === '/modules'}>
+                <Link href="/modules">
+                  <Box />
+                  Modules
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
