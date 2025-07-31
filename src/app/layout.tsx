@@ -1,4 +1,6 @@
-import type { Metadata } from 'next';
+
+'use client';
+
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import * as React from 'react';
@@ -18,18 +20,56 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
-import { Box, Calendar, LayoutDashboard, LogOut } from 'lucide-react';
+import { Box, Calendar, LayoutDashboard, LogOut, Briefcase } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { ModulesProvider, useModules } from '@/context/modules-context';
 
-export const metadata: Metadata = {
-  title: 'BizView',
-  description: 'A basic ERP for small businesses',
-};
+
+function DashboardSidebarItems() {
+  const pathname = usePathname();
+  const { isProjectManagementEnabled } = useModules();
+
+  return (
+    <SidebarMenu>
+      <SidebarMenuItem>
+        <SidebarMenuButton asChild isActive={pathname === '/'}>
+          <Link href="/">
+            <LayoutDashboard />
+            Dashboard
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+      <SidebarMenuItem>
+        <SidebarMenuButton asChild isActive={pathname === '/calendar'}>
+          <Link href="/calendar">
+            <Calendar />
+            Calendar
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+      <SidebarMenuItem>
+        <SidebarMenuButton asChild isActive={pathname === '/modules'}>
+          <Link href="/modules">
+            <Box />
+            Modules
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+      {isProjectManagementEnabled && (
+         <SidebarMenuItem>
+            <SidebarMenuButton asChild isActive={pathname === '/project-management'}>
+              <Link href="/project-management">
+                <Briefcase />
+                Projects
+              </Link>
+            </SidebarMenuButton>
+         </SidebarMenuItem>
+      )}
+    </SidebarMenu>
+  );
+}
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
-  // As we don't have a router, we can't use usePathname.
-  // We'll default to the dashboard being active.
-  const pathname = '/';
-
   return (
     <SidebarProvider>
       <Sidebar>
@@ -39,32 +79,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
           </div>
         </SidebarHeader>
         <SidebarContent>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={pathname === '/'}>
-                <Link href="/">
-                  <LayoutDashboard />
-                  Dashboard
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={pathname === '/calendar'}>
-                <Link href="/calendar">
-                  <Calendar />
-                  Calendar
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={pathname === '/modules'}>
-                <Link href="/modules">
-                  <Box />
-                  Modules
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
+          <DashboardSidebarItems />
         </SidebarContent>
         <SidebarFooter>
           <div className="flex items-center gap-3 p-2">
@@ -107,9 +122,11 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased" suppressHydrationWarning>
-        <DashboardLayout>
-          {children}
-        </DashboardLayout>
+        <ModulesProvider>
+          <DashboardLayout>
+            {children}
+          </DashboardLayout>
+        </ModulesProvider>
         <Toaster />
       </body>
     </html>

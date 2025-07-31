@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -5,9 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Briefcase } from 'lucide-react';
+import { useModules } from '@/context/modules-context';
 
 export default function ModulesPage() {
-  const [isProjectManagementEnabled, setIsProjectManagementEnabled] = React.useState(true);
+  const { isProjectManagementEnabled, setIsProjectManagementEnabled } = useModules();
 
   return (
     <main className="flex-1 space-y-4 p-4 md:p-8 pt-6">
