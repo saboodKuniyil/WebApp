@@ -22,7 +22,7 @@ import {
   SidebarMenuSubButton,
 } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
-import { Box, Calendar, LayoutDashboard, LogOut, Briefcase, ShoppingCart, Home, Package, Users, FileText, Landmark, Truck, CheckSquare, AlertTriangle } from 'lucide-react';
+import { Box, Calendar, LayoutDashboard, LogOut, Briefcase, ShoppingCart, Home, Package, Users, FileText, Landmark, Truck, CheckSquare, AlertTriangle, ClipboardList } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { ModulesProvider, useModules } from '@/context/modules-context';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -88,6 +88,11 @@ function DashboardSidebarItems() {
                   <SidebarMenuItem>
                     <SidebarMenuSubButton asChild isActive={pathname === '/project-management/tasks'}>
                       <Link href="/project-management/tasks"><CheckSquare />Tasks</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/project-management/task-blueprints'}>
+                      <Link href="/project-management/task-blueprints"><ClipboardList />Task Blueprints</Link>
                     </SidebarMenuSubButton>
                   </SidebarMenuItem>
                   <SidebarMenuItem>
