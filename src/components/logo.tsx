@@ -5,7 +5,7 @@ export function Logo(props: React.SVGProps<SVGSVGElement>) {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 200 50"
-      aria-label="BizView logo"
+      aria-label="Pro_Management_D01 logo"
       {...props}
     >
       <defs>
@@ -19,12 +19,12 @@ export function Logo(props: React.SVGProps<SVGSVGElement>) {
         y="50%"
         dominantBaseline="middle"
         textAnchor="middle"
-        fontSize="36"
+        fontSize="24"
         fontFamily="'PT Sans', sans-serif"
         fontWeight="bold"
         fill="url(#grad1)"
       >
-        BizView
+        Pro_Management_D01
       </text>
     </svg>
   );
