@@ -1,21 +1,15 @@
-
 import { ProjectsList } from "@/components/project-management/projects-list";
-import db from '@/lib/db';
+import { db } from '@/lib/db';
 import type { Project } from "@/components/project-management/projects-list";
 import { unstable_noStore as noStore } from 'next/cache';
 
 async function getProjects(): Promise<Project[]> {
   noStore();
   try {
-    // Attempt to connect to the database and fetch projects
-    const [rows] = await db.query("SELECT id, title, description, status, manager, customer, DATE_FORMAT(startDate, '%Y-%m-%d') as startDate, DATE_FORMAT(endDate, '%Y-%m-%d') as endDate FROM projects");
-    // The library returns a strange type, so we need to cast it
-    return rows as Project[];
+    const projects = await db.getProjects();
+    return projects;
   } catch (error) {
-    // Log the error for debugging, but don't let it crash the page
-    console.error('Database connection failed:', error);
-    // In case of an error (like ECONNREFUSED), return an empty array
-    // This allows the page to render without a database connection.
+    console.error('Failed to read database:', error);
     return [];
   }
 }

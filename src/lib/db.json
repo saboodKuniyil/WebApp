@@ -1,0 +1,24 @@
+{
+  "projects": [
+    {
+      "id": "PR_9001",
+      "title": "Website Redesign",
+      "description": "Complete overhaul of the corporate website.",
+      "status": "in-progress",
+      "manager": "Alice Johnson",
+      "customer": "Innovate Inc.",
+      "startDate": "2024-05-01",
+      "endDate": "2024-09-30"
+    },
+    {
+      "id": "PR_9002",
+      "title": "Mobile App Development",
+      "description": "Create a new mobile app for iOS and Android.",
+      "status": "on-hold",
+      "manager": "Bob Smith",
+      "customer": "Quantum Solutions",
+      "startDate": "2024-06-15",
+      "endDate": "2024-12-31"
+    }
+  ]
+}

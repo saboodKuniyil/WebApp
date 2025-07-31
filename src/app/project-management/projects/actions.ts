@@ -1,10 +1,8 @@
-
 'use server';
 
 import { z } from 'zod';
-import db from '@/lib/db';
+import { db } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
-import type { RowDataPacket } from 'mysql2';
 
 const projectSchema = z.object({
   id: z.string(),
@@ -36,16 +34,18 @@ export type ProjectFormState = {
 };
 
 export async function getNextProjectId(): Promise<string> {
-    const [rows] = await db.query<RowDataPacket[]>(
-      "SELECT id FROM projects WHERE id LIKE 'PR_%' ORDER BY CAST(SUBSTRING(id, 4) AS UNSIGNED) DESC LIMIT 1"
-    );
+    const projects = await db.getProjects();
+    const prIds = projects
+      .map(p => p.id)
+      .filter(id => id.startsWith('PR_'))
+      .map(id => parseInt(id.replace('PR_', ''), 10))
+      .filter(num => !isNaN(num));
 
-    if (rows.length === 0) {
+    if (prIds.length === 0) {
         return 'PR_9001';
     }
 
-    const lastId = rows[0].id;
-    const lastNumber = parseInt(lastId.replace('PR_', ''), 10);
+    const lastNumber = Math.max(...prIds);
     const nextNumber = lastNumber + 1;
     return `PR_${nextNumber}`;
 }
@@ -75,19 +75,28 @@ export async function createProject(
   const { id, title, description, manager, customer, startDate, endDate, status } = validatedFields.data;
 
   try {
-    await db.query(
-      'INSERT INTO projects (id, title, description, manager, customer, startDate, endDate, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [id, title, description, manager, customer, new Date(startDate), new Date(endDate), status]
-    );
+     const projects = await db.getProjects();
+     const idExists = projects.some(p => p.id === id);
+
+     if (idExists) {
+        return { message: 'Failed to create project. The Project ID already exists.' };
+     }
+
+    await db.createProject({
+        id,
+        title,
+        description,
+        manager,
+        customer,
+        startDate,
+        endDate,
+        status,
+    });
 
     revalidatePath('/project-management/projects');
     return { message: 'Project created successfully.' };
   } catch (error) {
     console.error('Database Error:', error);
-    // Check for unique key violation
-    if (error.code === 'ER_DUP_ENTRY') {
-        return { message: 'Failed to create project. The Project ID already exists.' };
-    }
     return { message: 'Failed to create project.' };
   }
 }
