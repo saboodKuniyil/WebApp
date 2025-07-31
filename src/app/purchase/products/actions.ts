@@ -122,7 +122,7 @@ export async function createProduct(
             return acc + (product ? product.purchasePrice * item.quantity : 0);
         }, 0);
 
-        newProduct.purchasePrice = calculatedCost;
+        newProduct.purchasePrice = parseFloat(calculatedCost.toFixed(2));
         newProduct.billOfMaterials = billOfMaterials;
 
      } else {
@@ -138,3 +138,5 @@ export async function createProduct(
     return { message: 'Failed to create product.' };
   }
 }
+
+    
