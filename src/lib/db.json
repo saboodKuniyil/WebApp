@@ -91,14 +91,14 @@
       "id": "TASK-8686",
       "title": "I'll parse the wireless SSL protocol, that should driver the API panel!",
       "description": "Develop the new wireless SSL protocol for the API.",
-      "status": "in-progress",
+      "status": "to-do",
       "label": "feature",
       "priority": "medium",
       "assignee": "Eve",
       "projectId": "PR_9001",
-      "startDate": "2024-07-10",
-      "endDate": "2024-09-01",
-      "completionPercentage": 50
+      "startDate": "2024-07-09T20:00:00.000Z",
+      "endDate": "2024-08-31T20:00:00.000Z",
+      "completionPercentage": 10
     },
     {
       "id": "TS_9001",
@@ -193,35 +193,109 @@
       "id": "bp-1",
       "name": "Default Blueprint",
       "statuses": [
-        { "name": "Backlog", "completionPercentage": 0 },
-        { "name": "To Do", "completionPercentage": 10 },
-        { "name": "In Progress", "completionPercentage": 50 },
-        { "name": "Done", "completionPercentage": 100 },
-        { "name": "Canceled", "completionPercentage": 0 }
+        {
+          "name": "Backlog",
+          "completionPercentage": 0
+        },
+        {
+          "name": "To Do",
+          "completionPercentage": 10
+        },
+        {
+          "name": "In Progress",
+          "completionPercentage": 50
+        },
+        {
+          "name": "Done",
+          "completionPercentage": 100
+        },
+        {
+          "name": "Canceled",
+          "completionPercentage": 0
+        }
       ]
     },
     {
       "id": "bp-2",
       "name": "Agile Blueprint",
       "statuses": [
-        { "name": "Backlog", "completionPercentage": 0 },
-        { "name": "In Development", "completionPercentage": 25 },
-        { "name": "In Review", "completionPercentage": 75 },
-        { "name": "Merged", "completionPercentage": 90 },
-        { "name": "Done", "completionPercentage": 100 }
+        {
+          "name": "Backlog",
+          "completionPercentage": 0
+        },
+        {
+          "name": "In Development",
+          "completionPercentage": 25
+        },
+        {
+          "name": "In Review",
+          "completionPercentage": 75
+        },
+        {
+          "name": "Merged",
+          "completionPercentage": 90
+        },
+        {
+          "name": "Done",
+          "completionPercentage": 100
+        }
       ]
     },
     {
       "id": "bp-3",
       "name": "Sab001",
       "statuses": [
-        { "name": "Drawing", "completionPercentage": 15 },
-        { "name": "Approval", "completionPercentage": 30 },
-        { "name": "Carpentry", "completionPercentage": 60 },
-        { "name": "Sight", "completionPercentage": 80 },
-        { "name": "Delivered", "completionPercentage": 95 },
-        { "name": "Completed", "completionPercentage": 100 }
+        {
+          "name": "Drawing",
+          "completionPercentage": 15
+        },
+        {
+          "name": "Approval",
+          "completionPercentage": 30
+        },
+        {
+          "name": "Carpentry",
+          "completionPercentage": 60
+        },
+        {
+          "name": "Sight",
+          "completionPercentage": 80
+        },
+        {
+          "name": "Delivered",
+          "completionPercentage": 95
+        },
+        {
+          "name": "Completed",
+          "completionPercentage": 100
+        }
       ]
+    }
+  ],
+  "products": [
+    {
+      "id": "PROD-001",
+      "name": "Laptop Pro 15",
+      "description": "High-performance laptop for professionals.",
+      "category": "Electronics",
+      "price": 1499.99,
+      "stock": 50
+    },
+    {
+      "id": "PROD-002",
+      "name": "Ergonomic Office Chair",
+      "description": "Comfortable chair for long working hours.",
+      "category": "Furniture",
+      "price": 349.99,
+      "stock": 120
+    },
+    {
+      "id": "PROD-003",
+      "name": "Wireless Mechanical Keyboard",
+      "description": "A tactile and responsive keyboard for coders and writers.",
+      "category": "Peripherals",
+      "price": 129.99,
+      "stock": 200
     }
   ]
 }
