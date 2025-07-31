@@ -101,7 +101,15 @@ const getColumns = (
   },
   {
     accessorKey: 'id',
-    header: 'ID',
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+      >
+        ID
+        <CaretSortIcon className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => <div>{row.getValue('id')}</div>,
   },
   {
@@ -126,7 +134,15 @@ const getColumns = (
   },
   {
     accessorKey: 'type',
-    header: 'Type',
+    header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Type
+          <CaretSortIcon className="ml-2 h-4 w-4" />
+        </Button>
+      ),
     cell: ({ row }) => <Badge variant="default">{row.getValue('type')}</Badge>,
     filterFn: (row, id, value) => {
         return value.includes(row.getValue(id));
@@ -134,32 +150,80 @@ const getColumns = (
   },
   {
     accessorKey: 'category',
-    header: 'Category',
+    header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Category
+          <CaretSortIcon className="ml-2 h-4 w-4" />
+        </Button>
+      ),
     cell: ({ row }) => <Badge variant="outline">{row.getValue('category')}</Badge>,
   },
   {
     accessorKey: 'subcategory',
-    header: 'Subcategory',
+    header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Subcategory
+          <CaretSortIcon className="ml-2 h-4 w-4" />
+        </Button>
+      ),
     cell: ({ row }) => <Badge variant="secondary">{row.getValue('subcategory')}</Badge>,
   },
   {
     accessorKey: 'purchasePrice',
-    header: 'Purchase Price',
+    header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Purchase Price
+          <CaretSortIcon className="ml-2 h-4 w-4" />
+        </Button>
+      ),
     cell: ({ row }) => <div>{formatCurrency(row.getValue('purchasePrice'))}</div>,
   },
   {
     accessorKey: 'salesPrice',
-    header: 'Sales Price',
+    header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Sales Price
+          <CaretSortIcon className="ml-2 h-4 w-4" />
+        </Button>
+      ),
     cell: ({ row }) => <div>{formatCurrency(row.getValue('salesPrice'))}</div>,
   },
   {
     accessorKey: 'stock',
-    header: 'Stock',
+    header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Stock
+          <CaretSortIcon className="ml-2 h-4 w-4" />
+        </Button>
+      ),
     cell: ({ row }) => <div>{row.getValue('stock')}</div>,
   },
   {
     accessorKey: 'unit',
-    header: 'Unit',
+    header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Unit
+          <CaretSortIcon className="ml-2 h-4 w-4" />
+        </Button>
+      ),
     cell: ({ row }) => <div>{row.getValue('unit')}</div>,
   },
   {
