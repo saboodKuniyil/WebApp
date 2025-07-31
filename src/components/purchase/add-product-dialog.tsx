@@ -31,6 +31,11 @@ import type { ProductCategory, Subcategory } from '../settings/product-preferenc
 
 const initialState = { message: '', errors: {} };
 
+const productTypes = [
+    { name: 'Finished Good', abbreviation: 'FG' },
+    { name: 'Raw Material', abbreviation: 'RM' },
+    { name: 'Service', abbreviation: 'SRV' },
+];
 
 function SubmitButton() {
     return <Button type="submit">Create Product</Button>;
@@ -44,6 +49,7 @@ export function AddProductDialog({ categories }: AddProductDialogProps) {
   const [state, dispatch] = useActionState(createProduct, initialState);
   const [isOpen, setIsOpen] = React.useState(false);
   const [nextId, setNextId] = React.useState('');
+  const [selectedTypeName, setSelectedTypeName] = React.useState('');
   const [selectedCategoryName, setSelectedCategoryName] = React.useState('');
   const [selectedSubcategoryName, setSelectedSubcategoryName] = React.useState('');
   const [subcategories, setSubcategories] = React.useState<Subcategory[]>([]);
@@ -66,6 +72,7 @@ export function AddProductDialog({ categories }: AddProductDialogProps) {
         });
         setIsOpen(false);
         formRef.current?.reset();
+        setSelectedTypeName('');
         setSelectedCategoryName('');
         setSelectedSubcategoryName('');
         setSubcategories([]);
@@ -82,16 +89,17 @@ export function AddProductDialog({ categories }: AddProductDialogProps) {
   }, [selectedCategoryName, categories]);
 
   React.useEffect(() => {
-      if(selectedCategoryName && selectedSubcategoryName) {
+      if(selectedTypeName && selectedCategoryName && selectedSubcategoryName) {
+        const type = productTypes.find(t => t.name === selectedTypeName);
         const category = categories.find(c => c.name === selectedCategoryName);
         const subcategory = category?.subcategories.find(s => s.name === selectedSubcategoryName);
-        if (category && subcategory) {
-            getNextProductId(category.abbreviation, subcategory.abbreviation).then(setNextId);
+        if (type && category && subcategory) {
+            getNextProductId(type.abbreviation, category.abbreviation, subcategory.abbreviation).then(setNextId);
         }
       } else {
         setNextId('');
       }
-  }, [selectedCategoryName, selectedSubcategoryName, categories]);
+  }, [selectedTypeName, selectedCategoryName, selectedSubcategoryName, categories]);
 
 
   return (
@@ -130,6 +138,26 @@ export function AddProductDialog({ categories }: AddProductDialogProps) {
               Description
             </Label>
             <Textarea id="description" name="description" className="col-span-3" />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="type" className="text-right">
+              Type
+            </Label>
+             <Select name="type" onValueChange={setSelectedTypeName}>
+              <SelectTrigger className="col-span-3">
+                <SelectValue placeholder="Select a type" />
+              </SelectTrigger>
+              <SelectContent>
+                {productTypes.map((type) => (
+                  <SelectItem key={type.name} value={type.name}>
+                    {type.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+             {state.errors?.type && (
+              <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.type[0]}</p>
+            )}
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="category" className="text-right">
@@ -200,5 +228,3 @@ export function AddProductDialog({ categories }: AddProductDialogProps) {
     </Dialog>
   );
 }
-
-    

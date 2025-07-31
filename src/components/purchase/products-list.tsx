@@ -47,6 +47,7 @@ export type Product = {
   id: string;
   name: string;
   description?: string;
+  type: string;
   category: string;
   subcategory: string;
   price: number;
@@ -107,6 +108,11 @@ export const columns: ColumnDef<Product>[] = [
     accessorKey: 'description',
     header: 'Description',
     cell: ({ row }) => <div className="max-w-xs truncate">{row.getValue('description') ?? 'N/A'}</div>,
+  },
+  {
+    accessorKey: 'type',
+    header: 'Type',
+    cell: ({ row }) => <Badge variant="default">{row.getValue('type')}</Badge>,
   },
   {
     accessorKey: 'category',

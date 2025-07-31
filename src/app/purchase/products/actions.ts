@@ -9,6 +9,7 @@ const productSchema = z.object({
   id: z.string(),
   name: z.string().min(1, 'Name is required'),
   description: z.string().optional(),
+  type: z.string().min(1, 'Type is required'),
   category: z.string().min(1, 'Category is required'),
   subcategory: z.string().min(1, 'Subcategory is required'),
   price: z.coerce.number().min(0, 'Price must be a positive number'),
@@ -21,6 +22,7 @@ export type ProductFormState = {
     id?: string[];
     name?: string[];
     description?: string[];
+    type?: string[];
     category?: string[];
     subcategory?: string[];
     price?: string[];
@@ -28,11 +30,11 @@ export type ProductFormState = {
   };
 };
 
-export async function getNextProductId(categoryAbbr: string, subcategoryAbbr: string): Promise<string> {
-    if (!categoryAbbr || !subcategoryAbbr) {
+export async function getNextProductId(typeAbbr: string, categoryAbbr: string, subcategoryAbbr: string): Promise<string> {
+    if (!typeAbbr || !categoryAbbr || !subcategoryAbbr) {
         return '';
     }
-    const prefix = `${categoryAbbr.toUpperCase()}-${subcategoryAbbr.toUpperCase()}-`;
+    const prefix = `${typeAbbr.toUpperCase()}-${categoryAbbr.toUpperCase()}-${subcategoryAbbr.toUpperCase()}-`;
     
     const products = await getProducts();
     const productIds = products
@@ -58,6 +60,7 @@ export async function createProduct(
     id: formData.get('id'),
     name: formData.get('name'),
     description: formData.get('description'),
+    type: formData.get('type'),
     category: formData.get('category'),
     subcategory: formData.get('subcategory'),
     price: formData.get('price'),
@@ -71,7 +74,7 @@ export async function createProduct(
     };
   }
 
-  const { id, name, description, category, subcategory, price, stock } = validatedFields.data;
+  const { id, name, description, type, category, subcategory, price, stock } = validatedFields.data;
 
   try {
      const products = await getProducts();
@@ -85,6 +88,7 @@ export async function createProduct(
         id,
         name,
         description,
+        type,
         category,
         subcategory,
         price,
@@ -98,4 +102,3 @@ export async function createProduct(
     return { message: 'Failed to create product.' };
   }
 }
-
