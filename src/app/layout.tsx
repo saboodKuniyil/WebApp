@@ -22,7 +22,7 @@ import {
   SidebarMenuSubButton,
 } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
-import { Box, Calendar, LayoutDashboard, LogOut, Briefcase, ShoppingCart, Home, Package, Users, FileText, Landmark, Truck } from 'lucide-react';
+import { Box, Calendar, LayoutDashboard, LogOut, Briefcase, ShoppingCart, Home, Package, Users, FileText, Landmark, Truck, CheckSquare, AlertTriangle } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { ModulesProvider, useModules } from '@/context/modules-context';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -33,6 +33,7 @@ function DashboardSidebarItems() {
   const pathname = usePathname();
   const { isProjectManagementEnabled, isPurchaseModuleEnabled } = useModules();
   const [isPurchaseOpen, setIsPurchaseOpen] = React.useState(true);
+  const [isProjectManagementOpen, setIsProjectManagementOpen] = React.useState(true);
 
   return (
     <SidebarMenu>
@@ -62,12 +63,41 @@ function DashboardSidebarItems() {
       </SidebarMenuItem>
       {isProjectManagementEnabled && (
          <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={pathname.startsWith('/project-management')}>
-              <Link href="/project-management">
-                <Briefcase />
-                Project Management
-              </Link>
-            </SidebarMenuButton>
+            <Collapsible open={isProjectManagementOpen} onOpenChange={setIsProjectManagementOpen}>
+              <CollapsibleTrigger asChild>
+                  <SidebarMenuButton className="w-full justify-between">
+                      <div className="flex items-center gap-2">
+                          <Briefcase />
+                          Project Management
+                      </div>
+                      <ChevronDown className={`h-4 w-4 transition-transform ${isProjectManagementOpen ? 'rotate-180' : ''}`} />
+                  </SidebarMenuButton>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <SidebarMenuSub>
+                  <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/project-management/dashboard'}>
+                      <Link href="/project-management/dashboard"><Home />Dashboard</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/project-management/projects'}>
+                      <Link href="/project-management/projects"><Briefcase />Projects</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/project-management/tasks'}>
+                      <Link href="/project-management/tasks"><CheckSquare />Tasks</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/project-management/issues'}>
+                      <Link href="/project-management/issues"><AlertTriangle />Issues</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                </SidebarMenuSub>
+              </CollapsibleContent>
+            </Collapsible>
          </SidebarMenuItem>
       )}
       {isPurchaseModuleEnabled && (
