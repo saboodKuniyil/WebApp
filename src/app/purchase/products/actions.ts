@@ -30,11 +30,11 @@ export type ProductFormState = {
   };
 };
 
-export async function getNextProductId(typeAbbr: string, categoryAbbr: string, subcategoryAbbr: string): Promise<string> {
-    if (!typeAbbr || !categoryAbbr || !subcategoryAbbr) {
+export async function getNextProductId(typeAbbr: string, categoryAbbr: string): Promise<string> {
+    if (!typeAbbr || !categoryAbbr) {
         return '';
     }
-    const prefix = `${typeAbbr.toUpperCase()}-${categoryAbbr.toUpperCase()}-${subcategoryAbbr.toUpperCase()}-`;
+    const prefix = `${typeAbbr.toUpperCase()}_${categoryAbbr.toUpperCase()}_`;
     
     const products = await getProducts();
     const productIds = products
