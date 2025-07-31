@@ -2,7 +2,7 @@
 'use server';
 
 import { z } from 'zod';
-import { db } from '@/lib/db';
+import { getIssues, createIssue as createDbIssue } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 
 const issueSchema = z.object({
@@ -27,7 +27,7 @@ export type IssueFormState = {
 };
 
 export async function getNextIssueId(): Promise<string> {
-    const issues = await db.getIssues();
+    const issues = await getIssues();
     const issueIds = issues
       .map(i => i.id)
       .filter(id => id.startsWith('ISSUE-'))
@@ -83,14 +83,14 @@ export async function createIssue(
   };
 
   try {
-     const issues = await db.getIssues();
+     const issues = await getIssues();
      const idExists = issues.some(p => p.id === id);
 
      if (idExists) {
         return { message: 'Failed to create issue. The Issue ID already exists.' };
      }
 
-    await db.createIssue(newIssue);
+    await createDbIssue(newIssue);
 
     revalidatePath('/project-management/issues');
     revalidatePath(`/project-management/tasks/${taskId}`); // Revalidate related task page

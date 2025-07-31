@@ -1,8 +1,8 @@
 
-import { db } from '@/lib/db';
+import { getTaskById, getProjects as fetchProjects, getIssuesByTaskId, getTaskBlueprints as fetchTaskBlueprints } from '@/lib/db';
 import type { Task } from "@/components/project-management/tasks-list";
-import type { Project } from '@/components/project-management/projects-list';
-import type { Issue } from '@/components/project-management/issues-list';
+import type { Project } from "@/components/project-management/projects-list";
+import type { Issue } from "@/components/project-management/issues-list";
 import type { TaskBlueprint } from '@/components/project-management/task-blueprints-list';
 import { unstable_noStore as noStore } from 'next/cache';
 import { notFound } from 'next/navigation';
@@ -13,22 +13,22 @@ import { ChevronLeft } from 'lucide-react';
 
 async function getTask(id: string): Promise<Task | undefined> {
   noStore();
-  return await db.getTaskById(id);
+  return await getTaskById(id);
 }
 
 async function getProjects(): Promise<Project[]> {
     noStore();
-    return await db.getProjects();
+    return await fetchProjects();
 }
 
 async function getIssues(taskId: string): Promise<Issue[]> {
     noStore();
-    return await db.getIssuesByTaskId(taskId);
+    return await getIssuesByTaskId(taskId);
 }
 
 async function getTaskBlueprints(): Promise<TaskBlueprint[]> {
     noStore();
-    return await db.getTaskBlueprints();
+    return await fetchTaskBlueprints();
 }
 
 export default async function TaskDetailPage({ params }: { params: { id: string } }) {

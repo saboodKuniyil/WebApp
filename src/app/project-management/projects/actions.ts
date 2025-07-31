@@ -2,7 +2,7 @@
 'use server';
 
 import { z } from 'zod';
-import { db } from '@/lib/db';
+import { getProjects, createProject as createDbProject, updateProject as updateDbProject, deleteProject as deleteDbProject } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import type { Project } from '@/components/project-management/projects-list';
@@ -39,7 +39,7 @@ export type ProjectFormState = {
 };
 
 export async function getNextProjectId(): Promise<string> {
-    const projects = await db.getProjects();
+    const projects = await getProjects();
     const prIds = projects
       .map(p => p.id)
       .filter(id => id.startsWith('PR_'))
@@ -81,14 +81,14 @@ export async function createProject(
   const { id, title, description, manager, customer, startDate, endDate, status, taskBlueprintId } = validatedFields.data;
 
   try {
-     const projects = await db.getProjects();
+     const projects = await getProjects();
      const idExists = projects.some(p => p.id === id);
 
      if (idExists) {
         return { message: 'Failed to create project. The Project ID already exists.' };
      }
 
-    await db.createProject({
+    await createDbProject({
         id,
         title,
         description,
@@ -134,7 +134,7 @@ export async function updateProject(
     const { id, ...projectData } = validatedFields.data;
 
     try {
-        await db.updateProject({
+        await updateDbProject({
             id,
             ...projectData
         });
@@ -150,7 +150,7 @@ export async function updateProject(
 
 export async function deleteProject(projectId: string): Promise<{ message: string }> {
     try {
-        await db.deleteProject(projectId);
+        await deleteDbProject(projectId);
         revalidatePath('/project-management/projects');
         // This redirect will be caught by the try-catch block
         // but it will still work as expected.

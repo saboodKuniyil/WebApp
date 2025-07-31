@@ -1,5 +1,5 @@
 
-import { db } from '@/lib/db';
+import { getIssueById, getTaskById } from '@/lib/db';
 import type { Issue } from "@/components/project-management/issues-list";
 import type { Task } from '@/components/project-management/tasks-list';
 import { unstable_noStore as noStore } from 'next/cache';
@@ -11,12 +11,12 @@ import { ChevronLeft } from 'lucide-react';
 
 async function getIssue(id: string): Promise<Issue | undefined> {
   noStore();
-  return await db.getIssueById(id);
+  return await getIssueById(id);
 }
 
 async function getTask(id: string): Promise<Task | undefined> {
   noStore();
-  return await db.getTaskById(id);
+  return await getTaskById(id);
 }
 
 

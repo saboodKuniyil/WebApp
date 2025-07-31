@@ -1,5 +1,5 @@
 
-import { db } from '@/lib/db';
+import { getProjectById, getTasksByProjectId, getTaskBlueprints as fetchTaskBlueprints } from '@/lib/db';
 import type { Project } from "@/components/project-management/projects-list";
 import type { Task } from "@/components/project-management/tasks-list";
 import type { TaskBlueprint } from '@/components/project-management/task-blueprints-list';
@@ -12,17 +12,17 @@ import { ChevronLeft } from 'lucide-react';
 
 async function getProject(id: string): Promise<Project | undefined> {
   noStore();
-  return await db.getProjectById(id);
+  return await getProjectById(id);
 }
 
 async function getProjectTasks(projectId: string): Promise<Task[]> {
   noStore();
-  return await db.getTasksByProjectId(projectId);
+  return await getTasksByProjectId(projectId);
 }
 
 async function getTaskBlueprints(): Promise<TaskBlueprint[]> {
   noStore();
-  return await db.getTaskBlueprints();
+  return await fetchTaskBlueprints();
 }
 
 export default async function ProjectDetailPage({ params }: { params: { id: string } }) {

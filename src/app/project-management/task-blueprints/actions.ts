@@ -2,7 +2,7 @@
 'use server';
 
 import { z } from 'zod';
-import { db } from '@/lib/db';
+import { getTaskBlueprints, createTaskBlueprint as createDbTaskBlueprint } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 
 const blueprintSchema = z.object({
@@ -21,7 +21,7 @@ export type BlueprintFormState = {
 };
 
 export async function getNextTaskBlueprintId(): Promise<string> {
-    const blueprints = await db.getTaskBlueprints();
+    const blueprints = await getTaskBlueprints();
     const bpIds = blueprints
       .map(p => p.id)
       .filter(id => id.startsWith('bp-'))
@@ -57,14 +57,14 @@ export async function createTaskBlueprint(
   const { id, name, statuses } = validatedFields.data;
 
   try {
-     const blueprints = await db.getTaskBlueprints();
+     const blueprints = await getTaskBlueprints();
      const idExists = blueprints.some(p => p.id === id);
 
      if (idExists) {
         return { message: 'Failed to create blueprint. The ID already exists.' };
      }
 
-    await db.createTaskBlueprint({
+    await createDbTaskBlueprint({
         id,
         name,
         statuses,

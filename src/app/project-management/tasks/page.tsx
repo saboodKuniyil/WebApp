@@ -1,6 +1,6 @@
 
 import { TasksList } from "@/components/project-management/tasks-list";
-import { db } from '@/lib/db';
+import { getTasks as fetchTasks, getProjects as fetchProjects, getTaskBlueprints as fetchTaskBlueprints } from '@/lib/db';
 import type { Task } from "@/components/project-management/tasks-list";
 import type { Project } from "@/components/project-management/projects-list";
 import type { TaskBlueprint } from "@/components/project-management/task-blueprints-list";
@@ -9,7 +9,7 @@ import { unstable_noStore as noStore } from 'next/cache';
 async function getTasks(): Promise<Task[]> {
   noStore();
   try {
-    const tasks = await db.getTasks();
+    const tasks = await fetchTasks();
     return tasks;
   } catch (error) {
     console.error('Failed to read database:', error);
@@ -20,7 +20,7 @@ async function getTasks(): Promise<Task[]> {
 async function getProjects(): Promise<Project[]> {
     noStore();
     try {
-        const projects = await db.getProjects();
+        const projects = await fetchProjects();
         return projects;
     } catch (error) {
         console.error('Failed to read database:', error);
@@ -31,7 +31,7 @@ async function getProjects(): Promise<Project[]> {
 async function getTaskBlueprints(): Promise<TaskBlueprint[]> {
     noStore();
     try {
-        const blueprints = await db.getTaskBlueprints();
+        const blueprints = await fetchTaskBlueprints();
         return blueprints;
     } catch (error) {
         console.error('Failed to read database:', error);

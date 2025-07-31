@@ -1,12 +1,12 @@
 
-import { db } from '@/lib/db';
+import { getTaskBlueprints as fetchTaskBlueprints } from '@/lib/db';
 import { TaskBlueprintsList } from "@/components/project-management/task-blueprints-list";
 import { unstable_noStore as noStore } from 'next/cache';
 import type { TaskBlueprint } from '@/components/project-management/task-blueprints-list';
 
 async function getTaskBlueprints(): Promise<TaskBlueprint[]> {
   noStore();
-  return db.getTaskBlueprints();
+  return fetchTaskBlueprints();
 }
 
 export default async function TaskBlueprintsPage() {

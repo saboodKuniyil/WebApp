@@ -1,23 +1,23 @@
 
 import { IssuesList } from "@/components/project-management/issues-list";
-import { db } from '@/lib/db';
+import { getIssues, getTasks } from '@/lib/db';
 import type { Issue } from "@/components/project-management/issues-list";
 import type { Task } from "@/components/project-management/tasks-list";
 import { unstable_noStore as noStore } from 'next/cache';
 
-async function getIssues(): Promise<Issue[]> {
+async function fetchIssues(): Promise<Issue[]> {
     noStore();
-    return db.getIssues();
+    return getIssues();
 }
 
-async function getTasks(): Promise<Task[]> {
+async function fetchTasks(): Promise<Task[]> {
     noStore();
-    return db.getTasks();
+    return getTasks();
 }
 
 export default async function IssuesPage() {
-  const issues = await getIssues();
-  const tasks = await getTasks();
+  const issues = await fetchIssues();
+  const tasks = await fetchTasks();
 
   return (
     <main className="flex-1 space-y-4 p-2 md:p-4 pt-4">

@@ -2,7 +2,7 @@
 'use server';
 
 import { z } from 'zod';
-import { db } from '@/lib/db';
+import { getTasks, createTask as createDbTask, updateTask as updateDbTask, deleteTask as deleteDbTask } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
@@ -38,7 +38,7 @@ export type TaskFormState = {
 };
 
 export async function getNextTaskId(): Promise<string> {
-    const tasks = await db.getTasks();
+    const tasks = await getTasks();
     const taskIds = tasks
       .map(t => t.id)
       .filter(id => id.startsWith('TS_'))
@@ -82,14 +82,14 @@ export async function createTask(
   const { id, title, description, label, status, priority, assignee, projectId, startDate, endDate, completionPercentage } = validatedFields.data;
 
   try {
-     const tasks = await db.getTasks();
+     const tasks = await getTasks();
      const idExists = tasks.some(p => p.id === id);
 
      if (idExists) {
         return { message: 'Failed to create task. The Task ID already exists.' };
      }
 
-    await db.createTask({
+    await createDbTask({
         id,
         title,
         description,
@@ -139,7 +139,7 @@ export async function updateTask(
     const { id, ...taskData } = validatedFields.data;
 
     try {
-        await db.updateTask({
+        await updateDbTask({
             id,
             ...taskData
         });
@@ -155,7 +155,7 @@ export async function updateTask(
 
 export async function deleteTask(taskId: string): Promise<{ message: string }> {
     try {
-        await db.deleteTask(taskId);
+        await deleteDbTask(taskId);
         revalidatePath('/project-management/tasks');
         revalidatePath('/project-management/projects'); // Also revalidate projects in case task lists are shown
     } catch (error: any) {
@@ -168,7 +168,7 @@ export async function deleteTask(taskId: string): Promise<{ message: string }> {
 
 export async function updateTaskCompletion(taskId: string, completionPercentage: number) {
   try {
-    await db.updateTask({ id: taskId, completionPercentage });
+    await updateDbTask({ id: taskId, completionPercentage });
     revalidatePath('/project-management/tasks');
     revalidatePath(`/project-management/projects`); // Revalidate projects to update progress
     return { success: true };
