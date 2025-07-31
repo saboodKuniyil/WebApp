@@ -109,3 +109,14 @@ export async function createTask(
     return { message: 'Failed to create task.' };
   }
 }
+
+export async function updateTaskCompletion(taskId: string, completionPercentage: number) {
+  try {
+    await db.updateTask({ id: taskId, completionPercentage });
+    revalidatePath('/project-management/tasks');
+    return { success: true };
+  } catch (error) {
+    console.error('Database Error:', error);
+    return { success: false, message: 'Failed to update task completion.' };
+  }
+}

@@ -49,6 +49,16 @@ export const db = {
     data.tasks.push(newTask);
     await writeDb(data);
   },
+  updateTask: async (updatedTask: Partial<Task> & { id: string }): Promise<void> => {
+    const data = await readDb();
+    const taskIndex = data.tasks.findIndex(t => t.id === updatedTask.id);
+    if (taskIndex !== -1) {
+      data.tasks[taskIndex] = { ...data.tasks[taskIndex], ...updatedTask };
+      await writeDb(data);
+    } else {
+      throw new Error(`Task with id ${updatedTask.id} not found.`);
+    }
+  },
 };
 
 export default db;

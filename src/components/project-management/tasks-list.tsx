@@ -45,7 +45,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { AddTaskDialog } from './add-task-dialog';
 import type { Project } from './projects-list';
-import { Progress } from '../ui/progress';
+import { EditableCompletionCell } from './editable-completion-cell';
 
 export type Task = {
   id: string;
@@ -135,14 +135,9 @@ export const columns: ColumnDef<Task>[] = [
     cell: ({ row }) => row.getValue('endDate') ? <div>{new Date(row.getValue('endDate')).toLocaleDateString()}</div> : 'N/A',
   },
   {
-      accessorKey: 'completionPercentage',
-      header: 'Completion',
-      cell: ({ row }) => (
-          <div className="flex items-center gap-2">
-              <Progress value={row.getValue('completionPercentage') ?? 0} className="w-24" />
-              <span>{row.getValue('completionPercentage') ?? 0}%</span>
-          </div>
-      )
+    accessorKey: 'completionPercentage',
+    header: 'Completion',
+    cell: ({ row }) => <EditableCompletionCell task={row.original} />,
   },
   {
     accessorKey: 'projectId',
