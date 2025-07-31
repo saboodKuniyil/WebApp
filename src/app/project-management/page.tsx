@@ -1,8 +1,8 @@
 
-import { TaskSummary } from '@/components/project-management/task-summary';
-import { ProjectProgress } from '@/components/project-management/project-progress';
-import { TeamActivity } from '@/components/project-management/team-activity';
-
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ProjectsList } from "@/components/project-management/projects-list";
+import { TasksList } from "@/components/project-management/tasks-list";
+import { IssuesList } from "@/components/project-management/issues-list";
 
 export default function ProjectManagementPage() {
   return (
@@ -11,18 +11,22 @@ export default function ProjectManagementPage() {
         <h1 className="text-3xl font-bold tracking-tight font-headline">Project Management</h1>
       </div>
       
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <TaskSummary />
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <div className="lg:col-span-4">
-          <ProjectProgress />
-        </div>
-        <div className="lg:col-span-3">
-          <TeamActivity />
-        </div>
-      </div>
+      <Tabs defaultValue="projects" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="projects">Projects</TabsTrigger>
+          <TabsTrigger value="tasks">Tasks</TabsTrigger>
+          <TabsTrigger value="issues">Issues</TabsTrigger>
+        </TabsList>
+        <TabsContent value="projects" className="space-y-4">
+          <ProjectsList />
+        </TabsContent>
+        <TabsContent value="tasks" className="space-y-4">
+          <TasksList />
+        </TabsContent>
+        <TabsContent value="issues" className="space-y-4">
+          <IssuesList />
+        </TabsContent>
+      </Tabs>
     </main>
   );
 }
