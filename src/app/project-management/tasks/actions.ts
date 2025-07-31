@@ -17,7 +17,6 @@ const taskSchema = z.object({
   projectId: z.string().min(1, 'Project is required'),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
-  completionPercentage: z.coerce.number().min(0).max(100).optional(),
 });
 
 export type TaskFormState = {
@@ -83,7 +82,6 @@ export async function createTask(
     projectId: formData.get('projectId'),
     startDate: formData.get('startDate') || undefined,
     endDate: formData.get('endDate') || undefined,
-    completionPercentage: formData.get('completionPercentage'),
   });
 
   if (!validatedFields.success) {
@@ -143,7 +141,6 @@ export async function updateTask(
         projectId: formData.get('projectId'),
         startDate: formData.get('startDate') || undefined,
         endDate: formData.get('endDate') || undefined,
-        completionPercentage: formData.get('completionPercentage'),
     });
 
     if (!validatedFields.success) {
