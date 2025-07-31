@@ -41,59 +41,10 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { PlusCircle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-
-
-const data: Task[] = [
-  {
-    id: 'TASK-8782',
-    title: "You can't compress the program without quantifying the open-source SSD pixel!",
-    status: 'in-progress',
-    label: 'documentation',
-    priority: 'medium',
-    assignee: 'Alice',
-    projectId: 'PROJ-1',
-  },
-  {
-    id: 'TASK-7878',
-    title: 'Try to calculate the EXE feed, maybe it will index the multi-byte pixel!',
-    status: 'backlog',
-    label: 'feature',
-    priority: 'medium',
-    assignee: 'Bob',
-    projectId: 'PROJ-1',
-  },
-  {
-    id: 'TASK-7839',
-    title: 'We need to bypass the neural TCP card!',
-    status: 'todo',
-    label: 'bug',
-    priority: 'high',
-    assignee: 'Charlie',
-    projectId: 'PROJ-2',
-  },
-  {
-    id: 'TASK-5562',
-    title: 'The SAS interface is down, navigate the annual interface without connecting the backup RAM!',
-    status: 'canceled',
-    label: 'bug',
-    priority: 'low',
-    assignee: 'David',
-    projectId: 'PROJ-3',
-  },
-  {
-    id: 'TASK-8686',
-    title: "I'll parse the wireless SSL protocol, that should driver the API panel!",
-    status: 'in-progress',
-    label: 'feature',
-    priority: 'medium',
-    assignee: 'Eve',
-    projectId: 'PROJ-1',
-  },
-];
-
+import { AddTaskDialog } from './add-task-dialog';
+import type { Project } from './projects-list';
 
 export type Task = {
   id: string;
@@ -210,7 +161,12 @@ export const columns: ColumnDef<Task>[] = [
   },
 ];
 
-export function TasksList() {
+interface TasksListProps {
+    data: Task[];
+    projects: Project[];
+}
+
+export function TasksList({ data, projects }: TasksListProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -256,10 +212,7 @@ export function TasksList() {
                 className="max-w-sm"
                 />
                 <div className="flex space-x-2">
-                <Button>
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Add Task
-                </Button>
+                <AddTaskDialog projects={projects} />
                 <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="outline" className="ml-auto">

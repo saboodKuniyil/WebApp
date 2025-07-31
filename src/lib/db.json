@@ -19,6 +19,63 @@
       "customer": "Quantum Solutions",
       "startDate": "2024-06-15",
       "endDate": "2024-12-31"
+    },
+    {
+      "id": "PR_9003",
+      "title": "Re Design rooms",
+      "description": "roos",
+      "manager": "manager",
+      "customer": "Quantum Solutions",
+      "startDate": "2025-07-30T20:00:00.000Z",
+      "endDate": "2025-08-03T20:00:00.000Z",
+      "status": "in-progress"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "TASK-8782",
+      "title": "You can't compress the program without quantifying the open-source SSD pixel!",
+      "status": "in-progress",
+      "label": "documentation",
+      "priority": "medium",
+      "assignee": "Alice",
+      "projectId": "PR_9001"
+    },
+    {
+      "id": "TASK-7878",
+      "title": "Try to calculate the EXE feed, maybe it will index the multi-byte pixel!",
+      "status": "backlog",
+      "label": "feature",
+      "priority": "medium",
+      "assignee": "Bob",
+      "projectId": "PR_9001"
+    },
+    {
+      "id": "TASK-7839",
+      "title": "We need to bypass the neural TCP card!",
+      "status": "todo",
+      "label": "bug",
+      "priority": "high",
+      "assignee": "Charlie",
+      "projectId": "PR_9002"
+    },
+    {
+      "id": "TASK-5562",
+      "title": "The SAS interface is down, navigate the annual interface without connecting the backup RAM!",
+      "status": "canceled",
+      "label": "bug",
+      "priority": "low",
+      "assignee": "David",
+      "projectId": "PR_9003"
+    },
+    {
+      "id": "TASK-8686",
+      "title": "I'll parse the wireless SSL protocol, that should driver the API panel!",
+      "status": "in-progress",
+      "label": "feature",
+      "priority": "medium",
+      "assignee": "Eve",
+      "projectId": "PR_9001"
     }
   ]
 }
