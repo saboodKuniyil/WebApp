@@ -101,7 +101,7 @@ function DashboardSidebarItems() {
                 </SidebarMenuItem>
                 <SidebarMenuItem>
                   <SidebarMenuSubButton asChild isActive={pathname === '/purchase/orders'}>
-                    <Link href="/purchase/orders"><Truck />Purchase of products</Link>
+                    <Link href="/purchase/orders"><Truck />Purchase Order</Link>
                   </SidebarMenuSubButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
