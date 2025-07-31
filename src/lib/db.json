@@ -2,13 +2,13 @@
   "projects": [
     {
       "id": "PR_9001",
-      "title": "Website Redesign",
+      "title": "Website Redesign for you",
       "description": "Complete overhaul of the corporate website.",
-      "status": "in-progress",
       "manager": "Alice Johnson",
       "customer": "Innovate Inc.",
-      "startDate": "2024-05-01",
-      "endDate": "2024-09-30"
+      "startDate": "2024-05-01T00:00:00.000Z",
+      "endDate": "2024-09-30T00:00:00.000Z",
+      "status": "in-progress"
     },
     {
       "id": "PR_9002",

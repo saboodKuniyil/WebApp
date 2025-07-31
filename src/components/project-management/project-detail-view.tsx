@@ -47,8 +47,8 @@ const formatDate = (dateString: string) => {
 
 export function ProjectDetailView({ project, tasks }: ProjectDetailViewProps) {
     const totalTasks = tasks.length;
-    const completedTasks = tasks.filter(t => t.status === 'done').length;
-    const overallProgress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+    const totalCompletion = tasks.reduce((sum, task) => sum + (task.completionPercentage ?? 0), 0);
+    const overallProgress = totalTasks > 0 ? totalCompletion / totalTasks : 0;
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
 
@@ -56,7 +56,7 @@ export function ProjectDetailView({ project, tasks }: ProjectDetailViewProps) {
     return (
         <div className="space-y-6">
              <Card>
-                <CardHeader>
+                <CardHeader className="p-4">
                     <div className="flex items-center justify-between">
                         <div>
                             <CardTitle className="text-3xl font-bold font-headline">{project.title}</CardTitle>
@@ -75,7 +75,7 @@ export function ProjectDetailView({ project, tasks }: ProjectDetailViewProps) {
                         </div>
                     </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 p-4 pt-0">
                     {project.description && <p className="text-muted-foreground">{project.description}</p>}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
@@ -106,30 +106,30 @@ export function ProjectDetailView({ project, tasks }: ProjectDetailViewProps) {
             </Card>
 
             <Card>
-                <CardHeader>
+                <CardHeader className="p-4">
                     <CardTitle>Tasks</CardTitle>
                     <CardDescription>A list of tasks associated with this project.</CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-4 pt-0">
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Task ID</TableHead>
-                                <TableHead>Title</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Priority</TableHead>
-                                <TableHead>Assignee</TableHead>
-                                <TableHead className="text-right">Completion</TableHead>
+                                <TableHead className="p-2">Task ID</TableHead>
+                                <TableHead className="p-2">Title</TableHead>
+                                <TableHead className="p-2">Status</TableHead>
+                                <TableHead className="p-2">Priority</TableHead>
+                                <TableHead className="p-2">Assignee</TableHead>
+                                <TableHead className="text-right p-2">Completion</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {tasks.map((task) => (
                                 <TableRow key={task.id}>
-                                    <TableCell>{task.id}</TableCell>
-                                    <TableCell className="font-medium max-w-xs truncate">{task.title}</TableCell>
-                                    <TableCell><Badge variant="outline" className={`capitalize border-0 ${taskStatusColors[task.status]}`}>{task.status}</Badge></TableCell>
-                                    <TableCell><div className={`capitalize font-medium ${taskPriorityColors[task.priority]}`}>{task.priority}</div></TableCell>
-                                    <TableCell>
+                                    <TableCell className="p-2">{task.id}</TableCell>
+                                    <TableCell className="font-medium max-w-xs truncate p-2">{task.title}</TableCell>
+                                    <TableCell className="p-2"><Badge variant="outline" className={`capitalize border-0 ${taskStatusColors[task.status]}`}>{task.status}</Badge></TableCell>
+                                    <TableCell className="p-2"><div className={`capitalize font-medium ${taskPriorityColors[task.priority]}`}>{task.priority}</div></TableCell>
+                                    <TableCell className="p-2">
                                         <div className="flex items-center gap-2">
                                             <Avatar className="h-6 w-6">
                                                 <AvatarImage src={`https://placehold.co/100x100.png?text=${task.assignee.charAt(0)}`} />
@@ -138,12 +138,12 @@ export function ProjectDetailView({ project, tasks }: ProjectDetailViewProps) {
                                             {task.assignee}
                                         </div>
                                     </TableCell>
-                                    <TableCell className="text-right">{task.completionPercentage ?? 0}%</TableCell>
+                                    <TableCell className="text-right p-2">{task.completionPercentage ?? 0}%</TableCell>
                                 </TableRow>
                             ))}
                             {tasks.length === 0 && (
                                 <TableRow>
-                                    <TableCell colSpan={6} className="h-24 text-center">No tasks for this project.</TableCell>
+                                    <TableCell colSpan={6} className="h-24 text-center p-2">No tasks for this project.</TableCell>
                                 </TableRow>
                             )}
                         </TableBody>
