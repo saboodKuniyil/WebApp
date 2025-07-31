@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import { useFormState } from 'react-dom';
+import { useActionState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -51,7 +51,7 @@ function SubmitButton() {
 }
 
 export function AddProjectDialog() {
-  const [state, dispatch] = useFormState(createProject, initialState);
+  const [state, dispatch] = useActionState(createProject, initialState);
   const [isOpen, setIsOpen] = React.useState(false);
   const [startDate, setStartDate] = React.useState<Date>();
   const [endDate, setEndDate] = React.useState<Date>();
