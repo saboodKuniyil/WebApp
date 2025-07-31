@@ -28,7 +28,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Calendar } from '../ui/calendar';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { createProject } from '@/app/project-management/projects/actions';
+import { createProject, getNextProjectId } from '@/app/project-management/projects/actions';
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '../ui/textarea';
 
@@ -55,6 +55,7 @@ export function AddProjectDialog() {
   const [isOpen, setIsOpen] = React.useState(false);
   const [startDate, setStartDate] = React.useState<Date>();
   const [endDate, setEndDate] = React.useState<Date>();
+  const [nextId, setNextId] = React.useState('');
 
   const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
@@ -80,6 +81,12 @@ export function AddProjectDialog() {
     }
   }, [state, toast]);
 
+  React.useEffect(() => {
+    if (isOpen) {
+      getNextProjectId().then(setNextId);
+    }
+  }, [isOpen]);
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -92,10 +99,16 @@ export function AddProjectDialog() {
         <DialogHeader>
           <DialogTitle>Add New Project</DialogTitle>
           <DialogDescription>
-            Fill in the details below to create a new project. A unique Project ID will be generated automatically.
+            Fill in the details below to create a new project.
           </DialogDescription>
         </DialogHeader>
         <form ref={formRef} action={dispatch} className="grid gap-4 py-4">
+           <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="id" className="text-right">
+              Project ID
+            </Label>
+            <Input id="id" name="id" className="col-span-3" value={nextId} readOnly />
+          </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="title" className="text-right">
               Title

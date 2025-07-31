@@ -7,6 +7,7 @@ import { revalidatePath } from 'next/cache';
 import type { RowDataPacket } from 'mysql2';
 
 const projectSchema = z.object({
+  id: z.string(),
   title: z.string().min(1, 'Title is required'),
   description: z.string().optional(),
   manager: z.string().min(1, 'Manager is required'),
@@ -34,7 +35,7 @@ export type ProjectFormState = {
   };
 };
 
-async function getNextProjectId(): Promise<string> {
+export async function getNextProjectId(): Promise<string> {
     const [rows] = await db.query<RowDataPacket[]>(
       "SELECT id FROM projects WHERE id LIKE 'PR_%' ORDER BY CAST(SUBSTRING(id, 4) AS UNSIGNED) DESC LIMIT 1"
     );
@@ -54,6 +55,7 @@ export async function createProject(
   formData: FormData
 ): Promise<ProjectFormState> {
   const validatedFields = projectSchema.safeParse({
+    id: formData.get('id'),
     title: formData.get('title'),
     description: formData.get('description'),
     manager: formData.get('manager'),
@@ -70,19 +72,22 @@ export async function createProject(
     };
   }
 
-  const { title, description, manager, customer, startDate, endDate, status } = validatedFields.data;
+  const { id, title, description, manager, customer, startDate, endDate, status } = validatedFields.data;
 
   try {
-    const newProjectId = await getNextProjectId();
     await db.query(
       'INSERT INTO projects (id, title, description, manager, customer, startDate, endDate, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [newProjectId, title, description, manager, customer, new Date(startDate), new Date(endDate), status]
+      [id, title, description, manager, customer, new Date(startDate), new Date(endDate), status]
     );
 
     revalidatePath('/project-management/projects');
     return { message: 'Project created successfully.' };
   } catch (error) {
     console.error('Database Error:', error);
+    // Check for unique key violation
+    if (error.code === 'ER_DUP_ENTRY') {
+        return { message: 'Failed to create project. The Project ID already exists.' };
+    }
     return { message: 'Failed to create project.' };
   }
 }
