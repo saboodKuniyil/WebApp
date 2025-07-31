@@ -35,8 +35,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <SidebarContent>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={pathname === '/dashboard'}>
-                <Link href="/dashboard">
+              <SidebarMenuButton asChild isActive={pathname === '/'}>
+                <Link href="/">
                   <LayoutDashboard />
                   Dashboard
                 </Link>
