@@ -20,6 +20,7 @@ import {
   SidebarContent,
   SidebarInset,
   SidebarTrigger,
+  SidebarHeader,
 } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
 import { LogOut } from 'lucide-react';
@@ -45,6 +46,9 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <Sidebar>
+        <SidebarHeader>
+          <Logo className="h-10 w-auto" />
+        </SidebarHeader>
         <SidebarContent>
           <DashboardSidebarItems />
         </SidebarContent>
@@ -54,7 +58,6 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
             <div className="flex w-full items-center justify-between">
                 <div className="flex items-center gap-4">
                     <SidebarTrigger className="md:hidden" />
-                    <Logo className="h-10 w-auto hidden md:block" />
                 </div>
                 
                 <div className="flex items-center gap-4">
