@@ -48,6 +48,7 @@ export type Product = {
   name: string;
   description?: string;
   category: string;
+  subcategory: string;
   price: number;
   stock: number;
 };
@@ -111,6 +112,11 @@ export const columns: ColumnDef<Product>[] = [
     accessorKey: 'category',
     header: 'Category',
     cell: ({ row }) => <Badge variant="outline">{row.getValue('category')}</Badge>,
+  },
+  {
+    accessorKey: 'subcategory',
+    header: 'Subcategory',
+    cell: ({ row }) => <Badge variant="secondary">{row.getValue('subcategory')}</Badge>,
   },
   {
     accessorKey: 'price',

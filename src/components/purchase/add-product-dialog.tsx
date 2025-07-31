@@ -16,12 +16,35 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { PlusCircle } from 'lucide-react';
 import { createProduct, getNextProductId } from '@/app/purchase/products/actions';
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '../ui/textarea';
 
 const initialState = { message: '', errors: {} };
+
+// Mock categories and subcategories - in a real app, this would come from an API
+const categories = [
+    { 
+        name: 'Electronics', 
+        subcategories: ['Laptops', 'Keyboards', 'Monitors', 'Accessories'] 
+    },
+    { 
+        name: 'Furniture', 
+        subcategories: ['Chairs', 'Desks', 'Storage'] 
+    },
+    {
+        name: 'Office Supplies',
+        subcategories: ['Pens', 'Notebooks', 'Binders']
+    }
+];
 
 function SubmitButton() {
     return <Button type="submit">Create Product</Button>;
@@ -31,6 +54,8 @@ export function AddProductDialog() {
   const [state, dispatch] = useActionState(createProduct, initialState);
   const [isOpen, setIsOpen] = React.useState(false);
   const [nextId, setNextId] = React.useState('');
+  const [selectedCategory, setSelectedCategory] = React.useState('');
+  const [subcategories, setSubcategories] = React.useState<string[]>([]);
 
   const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
@@ -50,6 +75,8 @@ export function AddProductDialog() {
         });
         setIsOpen(false);
         formRef.current?.reset();
+        setSelectedCategory('');
+        setSubcategories([]);
       }
     }
   }, [state, toast]);
@@ -59,6 +86,11 @@ export function AddProductDialog() {
       getNextProductId().then(setNextId);
     }
   }, [isOpen]);
+  
+  React.useEffect(() => {
+    const category = categories.find(c => c.name === selectedCategory);
+    setSubcategories(category ? category.subcategories : []);
+  }, [selectedCategory]);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -101,9 +133,40 @@ export function AddProductDialog() {
             <Label htmlFor="category" className="text-right">
               Category
             </Label>
-            <Input id="category" name="category" className="col-span-3" />
+             <Select name="category" onValueChange={setSelectedCategory}>
+              <SelectTrigger className="col-span-3">
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((category) => (
+                  <SelectItem key={category.name} value={category.name}>
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
              {state.errors?.category && (
               <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.category[0]}</p>
+            )}
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="subcategory" className="text-right">
+                Subcategory
+            </Label>
+            <Select name="subcategory" disabled={!selectedCategory}>
+                <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder={selectedCategory ? "Select a subcategory" : "Select a category first"} />
+                </SelectTrigger>
+                <SelectContent>
+                    {subcategories.map((subcategory) => (
+                        <SelectItem key={subcategory} value={subcategory}>
+                            {subcategory}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+            {state.errors?.subcategory && (
+                <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.subcategory[0]}</p>
             )}
           </div>
            <div className="grid grid-cols-4 items-center gap-4">
