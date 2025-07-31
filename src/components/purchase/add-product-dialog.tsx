@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { PlusCircle, Plus, X, Trash2 } from 'lucide-react';
+import { PlusCircle, Plus, X, Trash2, Upload } from 'lucide-react';
 import { createProduct, getNextProductId } from '@/app/purchase/products/actions';
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '../ui/textarea';
@@ -37,6 +37,7 @@ import { Skeleton } from '../ui/skeleton';
 import type { Product, BillOfMaterialItem, BillOfServiceItem } from './products-list';
 import { Card } from '../ui/card';
 import { useModules } from '@/context/modules-context';
+import Image from 'next/image';
 
 const initialState = { message: '', errors: {} };
 
@@ -64,6 +65,11 @@ export function AddProductDialog() {
   const [allProducts, setAllProducts] = React.useState<Product[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const { currency } = useModules();
+
+  // Image state
+  const [imagePreview, setImagePreview] = React.useState<string | null>(null);
+  const [imageData, setImageData] = React.useState<string | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // BOM state
   const [bom, setBom] = React.useState<BillOfMaterialItem[]>([]);
@@ -132,6 +138,8 @@ export function AddProductDialog() {
     setSalesPrice(0);
     setMarginAmount(0);
     setMarginPercent(0);
+    setImagePreview(null);
+    setImageData(null);
   }, []);
 
   React.useEffect(() => {
@@ -261,6 +269,19 @@ export function AddProductDialog() {
     setBos(bos.filter(item => item.productId !== productId));
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setImagePreview(base64String);
+        setImageData(base64String);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -281,6 +302,7 @@ export function AddProductDialog() {
             <input type="hidden" name="billOfServices" value={JSON.stringify(bos)} />
             <input type="hidden" name="purchasePrice" value={purchasePrice} />
             <input type="hidden" name="salesPrice" value={salesPrice} />
+            <input type="hidden" name="imageUrl" value={imageData || ''} />
 
             <ScrollArea className="h-[70vh] pr-4">
               {isLoading ? (
@@ -357,20 +379,46 @@ export function AddProductDialog() {
                         <Label htmlFor="id">Product ID</Label>
                         <Input id="id" name="id" value={nextId} readOnly className="font-mono bg-muted" />
                     </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="name">Product Name</Label>
-                        <Input id="name" name="name" />
-                        {state.errors?.name && (
-                        <p className="text-red-500 text-xs">{state.errors.name[0]}</p>
-                        )}
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="description">Description</Label>
-                        <Textarea id="description" name="description" />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="imageUrl">Image URL</Label>
-                        <Input id="imageUrl" name="imageUrl" placeholder="https://example.com/image.png" />
+                    <div className="grid grid-cols-[120px_1fr] gap-4 items-start">
+                      <div className="space-y-2">
+                        <Label>Image</Label>
+                        <div 
+                          className="aspect-square w-full border border-dashed rounded-lg flex items-center justify-center cursor-pointer relative overflow-hidden"
+                          onClick={() => fileInputRef.current?.click()}
+                        >
+                          {imagePreview ? (
+                            <Image src={imagePreview} alt="Product preview" fill className="object-cover" />
+                          ) : (
+                            <div className="text-center text-muted-foreground">
+                              <Upload className="mx-auto h-8 w-8" />
+                              <p className="text-xs mt-1">Click to upload</p>
+                            </div>
+                          )}
+                        </div>
+                         <Input 
+                            ref={fileInputRef}
+                            type="file" 
+                            className="hidden" 
+                            accept="image/*"
+                            onChange={handleImageChange}
+                          />
+                          {state.errors?.imageUrl && (
+                            <p className="text-red-500 text-xs">{state.errors.imageUrl[0]}</p>
+                          )}
+                      </div>
+                      <div className="space-y-2">
+                        <div className="space-y-2">
+                            <Label htmlFor="name">Product Name</Label>
+                            <Input id="name" name="name" />
+                            {state.errors?.name && (
+                            <p className="text-red-500 text-xs">{state.errors.name[0]}</p>
+                            )}
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="description">Description</Label>
+                            <Textarea id="description" name="description" rows={4} />
+                        </div>
+                      </div>
                     </div>
 
                     {selectedTypeName === 'Finished Good' && (
