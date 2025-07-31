@@ -5,6 +5,11 @@ import { z } from 'zod';
 import { getProducts, getProductCategories, createProduct as createDbProduct } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 
+const billOfMaterialItemSchema = z.object({
+  productId: z.string(),
+  quantity: z.coerce.number().min(0.001, "Quantity must be positive"),
+});
+
 const productSchema = z.object({
   id: z.string(),
   name: z.string().min(1, 'Name is required'),
@@ -16,6 +21,7 @@ const productSchema = z.object({
   salesPrice: z.coerce.number().min(0, 'Sales price must be a positive number'),
   stock: z.coerce.number().int().min(0, 'Stock must be a positive integer'),
   unit: z.string().min(1, 'Unit is required'),
+  billOfMaterials: z.string().transform(val => JSON.parse(val)).pipe(z.array(billOfMaterialItemSchema)).optional(),
 });
 
 export type ProductFormState = {
@@ -31,6 +37,7 @@ export type ProductFormState = {
     salesPrice?: string[];
     stock?: string[];
     unit?: string[];
+    billOfMaterials?: string[];
   };
 };
 
@@ -71,6 +78,7 @@ export async function createProduct(
     salesPrice: formData.get('salesPrice'),
     stock: formData.get('stock'),
     unit: formData.get('unit'),
+    billOfMaterials: formData.get('billOfMaterials')
   });
 
   if (!validatedFields.success) {
@@ -80,7 +88,8 @@ export async function createProduct(
     };
   }
 
-  const { id, name, description, type, category, subcategory, purchasePrice, salesPrice, stock, unit } = validatedFields.data;
+  const { id, name, description, type, category, subcategory, salesPrice, stock, unit, billOfMaterials } = validatedFields.data;
+  let { purchasePrice } = validatedFields.data;
 
   try {
      const products = await getProducts();
@@ -90,18 +99,37 @@ export async function createProduct(
         return { message: 'Failed to create product. The Product ID already exists.' };
      }
 
-    await createDbProduct({
+     const newProduct: any = {
         id,
         name,
         description,
         type,
         category,
         subcategory,
-        purchasePrice,
         salesPrice,
         stock,
-        unit,
-    });
+        unit
+     };
+     
+     if(type === 'Finished Good') {
+        if(!billOfMaterials || billOfMaterials.length === 0) {
+            return { message: 'Failed to create product.', errors: { billOfMaterials: ['A finished good must have at least one raw material.']}};
+        }
+        
+        const rawMaterials = products.filter(p => p.type === 'Raw Material');
+        const calculatedCost = billOfMaterials.reduce((acc, item) => {
+            const product = rawMaterials.find(p => p.id === item.productId);
+            return acc + (product ? product.purchasePrice * item.quantity : 0);
+        }, 0);
+
+        newProduct.purchasePrice = calculatedCost;
+        newProduct.billOfMaterials = billOfMaterials;
+
+     } else {
+        newProduct.purchasePrice = purchasePrice;
+     }
+
+    await createDbProduct(newProduct);
 
     revalidatePath('/purchase/products');
     return { message: 'Product created successfully.' };

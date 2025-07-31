@@ -44,6 +44,11 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { AddProductDialog } from './add-product-dialog';
 
+export type BillOfMaterialItem = {
+    productId: string;
+    quantity: number;
+};
+
 export type Product = {
   id: string;
   name: string;
@@ -55,6 +60,7 @@ export type Product = {
   salesPrice: number;
   stock: number;
   unit: string;
+  billOfMaterials?: BillOfMaterialItem[];
 };
 
 const formatCurrency = (amount: number) => {
@@ -229,7 +235,7 @@ export function ProductsList({ data }: ProductsListProps) {
                 className="max-w-sm h-8"
                 />
                 <div className="flex space-x-2">
-                {isMounted && <AddProductDialog />}
+                {isMounted && <AddProductDialog allProducts={data} />}
                 <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="outline" className="ml-auto h-8">

@@ -1,11 +1,8 @@
 
 import { ProductsList } from "@/components/purchase/products-list";
-import { getProducts as fetchProducts, getProductCategories as fetchProductCategories, getUnits as fetchUnits } from '@/lib/db';
+import { getProducts as fetchProducts } from '@/lib/db';
 import type { Product } from "@/components/purchase/products-list";
-import type { ProductCategory } from "@/components/settings/product-preferences";
-import type { Unit } from "@/components/settings/units-management";
 import { unstable_noStore as noStore } from 'next/cache';
-import { AddProductDialog } from "@/components/purchase/add-product-dialog";
 
 async function getProducts(): Promise<Product[]> {
   noStore();

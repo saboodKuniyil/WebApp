@@ -287,16 +287,28 @@
   ],
   "products": [
     {
-      "id": "FG_ELC_7001",
-      "name": "Laptop Pro 15",
-      "description": "High-performance laptop for professionals.",
-      "type": "Finished Good",
-      "category": "Electronics",
-      "subcategory": "Laptops",
-      "purchasePrice": 1049.99,
-      "salesPrice": 1499.99,
-      "stock": 50,
+      "id": "RM_MDF_7001",
+      "name": "18mm MDF Board",
+      "description": "Standard Medium-Density Fibreboard",
+      "type": "Raw Material",
+      "category": "MDF",
+      "subcategory": "Plain",
+      "purchasePrice": 25.5,
+      "salesPrice": 35,
+      "stock": 500,
       "unit": "Piece"
+    },
+    {
+      "id": "RM_MDF_7002",
+      "name": "Oak Veneer",
+      "description": "Thin layer of oak for pressing onto boards.",
+      "type": "Raw Material",
+      "category": "MDF",
+      "subcategory": "Vineer Pressed",
+      "purchasePrice": 15,
+      "salesPrice": 22,
+      "stock": 1000,
+      "unit": "Meter"
     },
     {
       "id": "FG_FNT_7001",
@@ -320,7 +332,8 @@
       "purchasePrice": 90.99,
       "salesPrice": 129.99,
       "stock": 200,
-      "unit": "Piece"
+      "unit": "Piece",
+      "billOfMaterials": []
     }
   ],
   "productCategories": [
@@ -439,4 +452,3 @@
     }
   ]
 }
-    
