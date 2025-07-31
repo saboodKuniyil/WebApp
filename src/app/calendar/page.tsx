@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -49,7 +50,7 @@ export default function CalendarPage() {
   };
 
   return (
-    <main className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+    <main className="flex-1 space-y-4 p-2 md:p-4 pt-4">
       <div className="flex items-center justify-between space-y-2">
         <h1 className="text-3xl font-bold tracking-tight font-headline">Calendar</h1>
         <Button>
@@ -60,7 +61,7 @@ export default function CalendarPage() {
 
       <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <CardContent className="p-2 md:p-6">
+          <CardContent className="p-2">
             <Calendar
               mode="single"
               selected={date}
@@ -104,7 +105,7 @@ export default function CalendarPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ScrollArea className="h-96">
+            <ScrollArea className="h-[350px]">
                 {appointments.length > 0 ? (
                     <div className="space-y-4">
                         {appointments.map((app, index) => (
