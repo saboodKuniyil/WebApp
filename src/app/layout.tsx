@@ -22,7 +22,7 @@ import {
   SidebarMenuSubButton,
 } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
-import { Box, Calendar, LayoutDashboard, LogOut, Briefcase, ShoppingCart, Home, Package, Users, FileText, Landmark, Truck, CheckSquare, AlertTriangle, ClipboardList } from 'lucide-react';
+import { Box, Calendar, LayoutDashboard, LogOut, Briefcase, ShoppingCart, Home, Package, Users, FileText, Landmark, Truck, CheckSquare, AlertTriangle, ClipboardList, Settings, ChevronsRight } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { ModulesProvider, useModules } from '@/context/modules-context';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -34,6 +34,8 @@ function DashboardSidebarItems() {
   const { isProjectManagementEnabled, isPurchaseModuleEnabled } = useModules();
   const [isPurchaseOpen, setIsPurchaseOpen] = React.useState(true);
   const [isProjectManagementOpen, setIsProjectManagementOpen] = React.useState(true);
+  const [isSettingsOpen, setIsSettingsOpen] = React.useState(true);
+  const [isPreferencesOpen, setIsPreferencesOpen] = React.useState(true);
 
   return (
     <SidebarMenu>
@@ -154,6 +156,45 @@ function DashboardSidebarItems() {
           </Collapsible>
         </SidebarMenuItem>
       )}
+       <SidebarMenuItem>
+            <Collapsible open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+                <CollapsibleTrigger asChild>
+                    <SidebarMenuButton className="w-full justify-between">
+                        <div className="flex items-center gap-2">
+                            <Settings />
+                            Settings
+                        </div>
+                        <ChevronDown className={`h-4 w-4 transition-transform ${isSettingsOpen ? 'rotate-180' : ''}`} />
+                    </SidebarMenuButton>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                    <SidebarMenuSub>
+                        <SidebarMenuItem>
+                            <Collapsible open={isPreferencesOpen} onOpenChange={setIsPreferencesOpen}>
+                                <CollapsibleTrigger asChild>
+                                    <SidebarMenuSubButton className="w-full justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <ChevronsRight />
+                                            Preferences
+                                        </div>
+                                        <ChevronDown className={`h-4 w-4 transition-transform ${isPreferencesOpen ? 'rotate-180' : ''}`} />
+                                    </SidebarMenuSubButton>
+                                </CollapsibleTrigger>
+                                <CollapsibleContent>
+                                    <SidebarMenuSub>
+                                        <SidebarMenuItem>
+                                            <SidebarMenuSubButton asChild isActive={pathname === '/settings/preferences/product-preference'}>
+                                                <Link href="/settings/preferences/product-preference"><Package />Product Preference</Link>
+                                            </SidebarMenuSubButton>
+                                        </SidebarMenuItem>
+                                    </SidebarMenuSub>
+                                </CollapsibleContent>
+                            </Collapsible>
+                        </SidebarMenuItem>
+                    </SidebarMenuSub>
+                </CollapsibleContent>
+            </Collapsible>
+       </SidebarMenuItem>
     </SidebarMenu>
   );
 }

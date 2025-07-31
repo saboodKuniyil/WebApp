@@ -8,6 +8,7 @@ import type { Task } from '@/components/project-management/tasks-list';
 import type { Issue } from '@/components/project-management/issues-list';
 import type { TaskBlueprint } from '@/components/project-management/task-blueprints-list';
 import type { Product } from '@/components/purchase/products-list';
+import type { ProductCategory } from '@/components/settings/product-preferences';
 
 const dbPath = path.join(process.cwd(), 'src', 'lib', 'db.json');
 
@@ -17,6 +18,7 @@ type DbData = {
   issues: Issue[];
   taskBlueprints: TaskBlueprint[];
   products: Product[];
+  productCategories: ProductCategory[];
 };
 
 async function readDb(): Promise<DbData> {
@@ -26,7 +28,7 @@ async function readDb(): Promise<DbData> {
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
       // If the file doesn't exist, return a default structure
-      return { projects: [], tasks: [], issues: [], taskBlueprints: [], products: [] };
+      return { projects: [], tasks: [], issues: [], taskBlueprints: [], products: [], productCategories: [] };
     }
     throw error;
   }
@@ -173,5 +175,19 @@ export async function createProduct(newProduct: Product): Promise<void> {
       data.products = [];
     }
     data.products.push(newProduct);
+    await writeDb(data);
+}
+
+export async function getProductCategories(): Promise<ProductCategory[]> {
+    const data = await readDb();
+    return data.productCategories || [];
+}
+
+export async function createProductCategory(newCategory: ProductCategory): Promise<void> {
+    const data = await readDb();
+    if (!data.productCategories) {
+        data.productCategories = [];
+    }
+    data.productCategories.push(newCategory);
     await writeDb(data);
 }

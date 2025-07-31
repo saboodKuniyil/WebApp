@@ -27,30 +27,20 @@ import { PlusCircle } from 'lucide-react';
 import { createProduct, getNextProductId } from '@/app/purchase/products/actions';
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '../ui/textarea';
+import type { ProductCategory } from '../settings/product-preferences';
 
 const initialState = { message: '', errors: {} };
 
-// Mock categories and subcategories - in a real app, this would come from an API
-const categories = [
-    { 
-        name: 'Electronics', 
-        subcategories: ['Laptops', 'Keyboards', 'Monitors', 'Accessories'] 
-    },
-    { 
-        name: 'Furniture', 
-        subcategories: ['Chairs', 'Desks', 'Storage'] 
-    },
-    {
-        name: 'Office Supplies',
-        subcategories: ['Pens', 'Notebooks', 'Binders']
-    }
-];
 
 function SubmitButton() {
     return <Button type="submit">Create Product</Button>;
 }
 
-export function AddProductDialog() {
+interface AddProductDialogProps {
+  categories: ProductCategory[];
+}
+
+export function AddProductDialog({ categories }: AddProductDialogProps) {
   const [state, dispatch] = useActionState(createProduct, initialState);
   const [isOpen, setIsOpen] = React.useState(false);
   const [nextId, setNextId] = React.useState('');
@@ -90,7 +80,7 @@ export function AddProductDialog() {
   React.useEffect(() => {
     const category = categories.find(c => c.name === selectedCategory);
     setSubcategories(category ? category.subcategories : []);
-  }, [selectedCategory]);
+  }, [selectedCategory, categories]);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

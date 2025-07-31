@@ -301,5 +301,32 @@
       "price": 129.99,
       "stock": 200
     }
+  ],
+  "productCategories": [
+    {
+      "name": "Electronics",
+      "subcategories": [
+        "Laptops",
+        "Keyboards",
+        "Monitors",
+        "Accessories"
+      ]
+    },
+    {
+      "name": "Furniture",
+      "subcategories": [
+        "Chairs",
+        "Desks",
+        "Storage"
+      ]
+    },
+    {
+      "name": "Office Supplies",
+      "subcategories": [
+        "Pens",
+        "Notebooks",
+        "Binders"
+      ]
+    }
   ]
 }
