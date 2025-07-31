@@ -56,6 +56,7 @@ export function AddProductDialog({ categories, units }: AddProductDialogProps) {
   const [nextId, setNextId] = React.useState('');
   const [selectedTypeName, setSelectedTypeName] = React.useState('');
   const [selectedCategoryName, setSelectedCategoryName] = React.useState('');
+  const [availableCategories, setAvailableCategories] = React.useState<ProductCategory[]>([]);
   const [subcategories, setSubcategories] = React.useState<Subcategory[]>([]);
 
   const { toast } = useToast();
@@ -78,29 +79,42 @@ export function AddProductDialog({ categories, units }: AddProductDialogProps) {
         formRef.current?.reset();
         setSelectedTypeName('');
         setSelectedCategoryName('');
+        setAvailableCategories([]);
         setSubcategories([]);
         setNextId('');
       }
     }
   }, [state, toast]);
+
+  React.useEffect(() => {
+    if(selectedTypeName) {
+      const filteredCategories = categories.filter(c => c.productType === selectedTypeName);
+      setAvailableCategories(filteredCategories);
+    } else {
+      setAvailableCategories([]);
+    }
+    setSelectedCategoryName('');
+    setSubcategories([]);
+    setNextId('');
+  }, [selectedTypeName, categories]);
   
   React.useEffect(() => {
-    const category = categories.find(c => c.name === selectedCategoryName);
+    const category = availableCategories.find(c => c.name === selectedCategoryName);
     setSubcategories(category ? category.subcategories : []);
     setNextId(''); // Reset ID when category changes
-  }, [selectedCategoryName, categories]);
+  }, [selectedCategoryName, availableCategories]);
 
   React.useEffect(() => {
       if(selectedTypeName && selectedCategoryName) {
         const type = productTypes.find(t => t.name === selectedTypeName);
-        const category = categories.find(c => c.name === selectedCategoryName);
+        const category = availableCategories.find(c => c.name === selectedCategoryName);
         if (type && category) {
             getNextProductId(type.abbreviation, category.abbreviation).then(setNextId);
         }
       } else {
         setNextId('');
       }
-  }, [selectedTypeName, selectedCategoryName, categories]);
+  }, [selectedTypeName, selectedCategoryName, availableCategories]);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -134,47 +148,45 @@ export function AddProductDialog({ categories, units }: AddProductDialogProps) {
                   <p className="text-red-500 text-xs">{state.errors.type[0]}</p>
                   )}
               </div>
-              {selectedTypeName && (
-                <div className="space-y-2">
-                  <Label htmlFor="category">Category</Label>
-                  <Select name="category" onValueChange={setSelectedCategoryName} value={selectedCategoryName}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((category) => (
-                        <SelectItem key={category.name} value={category.name}>
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
+              
+              <div className="space-y-2">
+                <Label htmlFor="category">Category</Label>
+                <Select name="category" onValueChange={setSelectedCategoryName} value={selectedCategoryName} disabled={!selectedTypeName}>
+                  <SelectTrigger>
+                    <SelectValue placeholder={selectedTypeName ? "Select a category" : "Select a type first"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableCategories.map((category) => (
+                      <SelectItem key={category.name} value={category.name}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {state.errors?.category && (
+                  <p className="text-red-500 text-xs">{state.errors.category[0]}</p>
+                )}
+              </div>
+              
+              <div className="space-y-2">
+                  <Label htmlFor="subcategory">Subcategory</Label>
+                  <Select name="subcategory" disabled={!selectedCategoryName}>
+                      <SelectTrigger>
+                          <SelectValue placeholder={selectedCategoryName ? "Select a subcategory" : "Select a category first"} />
+                      </SelectTrigger>
+                      <SelectContent>
+                          {subcategories.map((subcategory) => (
+                              <SelectItem key={subcategory.name} value={subcategory.name}>
+                                  {subcategory.name}
+                              </SelectItem>
+                          ))}
+                      </SelectContent>
                   </Select>
-                  {state.errors?.category && (
-                    <p className="text-red-500 text-xs">{state.errors.category[0]}</p>
+                  {state.errors?.subcategory && (
+                      <p className="text-red-500 text-xs">{state.errors.subcategory[0]}</p>
                   )}
-                </div>
-              )}
+              </div>
 
-              {selectedCategoryName && (
-                  <div className="space-y-2">
-                      <Label htmlFor="subcategory">Subcategory</Label>
-                      <Select name="subcategory" disabled={!selectedCategoryName}>
-                          <SelectTrigger>
-                              <SelectValue placeholder={selectedCategoryName ? "Select a subcategory" : "Select a category first"} />
-                          </SelectTrigger>
-                          <SelectContent>
-                              {subcategories.map((subcategory) => (
-                                  <SelectItem key={subcategory.name} value={subcategory.name}>
-                                      {subcategory.name}
-                                  </SelectItem>
-                              ))}
-                          </SelectContent>
-                      </Select>
-                      {state.errors?.subcategory && (
-                          <p className="text-red-500 text-xs">{state.errors.subcategory[0]}</p>
-                      )}
-                  </div>
-              )}
               <div className="space-y-2">
                   <Label htmlFor="id">Product ID</Label>
                   <Input id="id" name="id" value={nextId} readOnly className="font-mono" />
@@ -246,3 +258,4 @@ export function AddProductDialog({ categories, units }: AddProductDialogProps) {
     </Dialog>
   );
 }
+    

@@ -25,10 +25,12 @@ export default async function ProductPreferencePage() {
       <div className="flex items-center justify-between space-y-2">
         <h1 className="text-3xl font-bold tracking-tight font-headline">Product Preferences</h1>
       </div>
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-1">
         <ProductPreferences data={categories} />
         <UnitsManagement data={units} />
       </div>
     </main>
   );
 }
+
+    

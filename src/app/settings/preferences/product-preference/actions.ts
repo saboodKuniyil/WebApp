@@ -13,6 +13,7 @@ const subcategorySchema = z.object({
 const categorySchema = z.object({
   name: z.string().min(1, 'Category name is required'),
   abbreviation: z.string().length(3, 'Abbreviation must be 3 characters'),
+  productType: z.string().min(1, 'Product type is required'),
   subcategories: z.string()
     .transform((val) => JSON.parse(val))
     .pipe(z.array(subcategorySchema))
@@ -23,6 +24,7 @@ export type CategoryFormState = {
   errors?: {
     name?: string[];
     abbreviation?: string[];
+    productType?: string[];
     subcategories?: string[];
   };
 };
@@ -34,6 +36,7 @@ export async function createProductCategory(
   const validatedFields = categorySchema.safeParse({
     name: formData.get('name'),
     abbreviation: formData.get('abbreviation'),
+    productType: formData.get('productType'),
     subcategories: formData.get('subcategories'),
   });
   
@@ -44,7 +47,7 @@ export async function createProductCategory(
     };
   }
 
-  const { name, abbreviation, subcategories } = validatedFields.data;
+  const { name, abbreviation, productType, subcategories } = validatedFields.data;
 
   try {
     const categories = await getProductCategories();
@@ -63,6 +66,7 @@ export async function createProductCategory(
     await createDbProductCategory({
         name,
         abbreviation,
+        productType,
         subcategories,
     });
 
@@ -79,6 +83,7 @@ const updateCategorySchema = z.object({
     originalName: z.string(),
     name: z.string().min(1, 'Category name cannot be empty.'),
     abbreviation: z.string().length(3, 'Abbreviation must be 3 characters'),
+    productType: z.string().min(1, 'Product type is required'),
     subcategories: z.string().transform((val) => JSON.parse(val))
 });
 
@@ -87,6 +92,7 @@ export async function updateProductCategory(prevState: CategoryFormState, formDa
         originalName: formData.get('originalName'),
         name: formData.get('name'),
         abbreviation: formData.get('abbreviation'),
+        productType: formData.get('productType'),
         subcategories: formData.get('subcategories'),
     });
     
@@ -94,7 +100,7 @@ export async function updateProductCategory(prevState: CategoryFormState, formDa
         return { message: 'Validation failed.', errors: validatedFields.error.flatten().fieldErrors };
     }
 
-    const { originalName, name, abbreviation, subcategories } = validatedFields.data;
+    const { originalName, name, abbreviation, productType, subcategories } = validatedFields.data;
 
     try {
         const categories = await getProductCategories();
@@ -113,7 +119,7 @@ export async function updateProductCategory(prevState: CategoryFormState, formDa
              }
         }
         
-        await updateDbProductCategory(originalName, { name, abbreviation, subcategories });
+        await updateDbProductCategory(originalName, { name, abbreviation, productType, subcategories });
         revalidatePath('/settings/preferences/product-preference');
         revalidatePath('/purchase/products');
         return { message: 'Category updated successfully.' };

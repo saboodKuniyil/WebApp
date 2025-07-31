@@ -327,6 +327,7 @@
     {
       "name": "Electronics",
       "abbreviation": "ELC",
+      "productType": "Finished Good",
       "subcategories": [
         {
           "name": "Laptops",
@@ -349,6 +350,7 @@
     {
       "name": "Furniture",
       "abbreviation": "FNT",
+      "productType": "Finished Good",
       "subcategories": [
         {
           "name": "Chairs",
@@ -367,6 +369,7 @@
     {
       "name": "Office Supplies",
       "abbreviation": "OFS",
+      "productType": "Finished Good",
       "subcategories": [
         {
           "name": "Pens",
@@ -385,6 +388,7 @@
     {
       "name": "MDF",
       "abbreviation": "MDF",
+      "productType": "Raw Material",
       "subcategories": [
         {
           "name": "Melamine",
@@ -397,6 +401,21 @@
         {
           "name": "Vineer Pressed",
           "abbreviation": "VNR"
+        }
+      ]
+    },
+    {
+      "name": "Consulting",
+      "abbreviation": "CNS",
+      "productType": "Service",
+      "subcategories": [
+        {
+          "name": "Financial",
+          "abbreviation": "FIN"
+        },
+        {
+          "name": "Technical",
+          "abbreviation": "TCH"
         }
       ]
     }
@@ -420,3 +439,4 @@
     }
   ]
 }
+    

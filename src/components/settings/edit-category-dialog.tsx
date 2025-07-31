@@ -19,8 +19,16 @@ import { X, Plus } from 'lucide-react';
 import { updateProductCategory } from '@/app/settings/preferences/product-preference/actions';
 import { useToast } from '@/hooks/use-toast';
 import { ProductCategory, Subcategory } from './product-preferences';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const initialState = { message: '', errors: {} };
+const productTypes = ["Raw Material", "Service", "Finished Good"];
 
 function SubmitButton() {
     return <Button type="submit">Save Changes</Button>;
@@ -39,6 +47,7 @@ export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategory
 
   const [name, setName] = React.useState(category.name);
   const [abbreviation, setAbbreviation] = React.useState(category.abbreviation);
+  const [productType, setProductType] = React.useState(category.productType);
   const [subcategories, setSubcategories] = React.useState<Subcategory[]>(category.subcategories);
   const [newSubcategoryName, setNewSubcategoryName] = React.useState('');
   const [newSubcategoryAbbr, setNewSubcategoryAbbr] = React.useState('');
@@ -47,6 +56,7 @@ export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategory
   React.useEffect(() => {
     setName(category.name);
     setAbbreviation(category.abbreviation);
+    setProductType(category.productType);
     setSubcategories(category.subcategories);
   }, [category]);
 
@@ -85,6 +95,25 @@ export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategory
         <form ref={formRef} action={dispatch} className="grid gap-4 py-4">
           <input type="hidden" name="originalName" value={category.name} />
           <input type="hidden" name="subcategories" value={JSON.stringify(subcategories)} />
+          
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="productType" className="text-right">
+              Product Type
+            </Label>
+            <Select name="productType" value={productType} onValueChange={setProductType}>
+              <SelectTrigger className="col-span-3">
+                <SelectValue placeholder="Select a product type" />
+              </SelectTrigger>
+              <SelectContent>
+                {productTypes.map((type) => (
+                  <SelectItem key={type} value={type}>{type}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {state.errors?.productType && (
+              <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.productType[0]}</p>
+            )}
+          </div>
 
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="name" className="text-right">
@@ -163,3 +192,4 @@ export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategory
     </Dialog>
   );
 }
+    

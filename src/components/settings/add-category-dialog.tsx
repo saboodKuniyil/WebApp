@@ -20,8 +20,17 @@ import { PlusCircle, Plus, X } from 'lucide-react';
 import { createProductCategory } from '@/app/settings/preferences/product-preference/actions';
 import { useToast } from '@/hooks/use-toast';
 import type { Subcategory } from './product-preferences';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const initialState = { message: '', errors: {} };
+
+const productTypes = ["Raw Material", "Service", "Finished Good"];
 
 function SubmitButton() {
     return <Button type="submit">Create Category</Button>;
@@ -88,6 +97,24 @@ export function AddCategoryDialog() {
         <form ref={formRef} action={dispatch} className="grid gap-4 py-4">
           <input type="hidden" name="subcategories" value={JSON.stringify(subcategories)} />
           <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="productType" className="text-right">
+              Product Type
+            </Label>
+            <Select name="productType">
+              <SelectTrigger className="col-span-3">
+                <SelectValue placeholder="Select a product type" />
+              </SelectTrigger>
+              <SelectContent>
+                {productTypes.map((type) => (
+                  <SelectItem key={type} value={type}>{type}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {state.errors?.productType && (
+              <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.productType[0]}</p>
+            )}
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="name" className="text-right">
               Category Name
             </Label>
@@ -153,3 +180,4 @@ export function AddCategoryDialog() {
     </Dialog>
   );
 }
+    

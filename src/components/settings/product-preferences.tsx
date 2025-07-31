@@ -34,6 +34,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { deleteProductCategory } from '@/app/settings/preferences/product-preference/actions';
 import { useToast } from '@/hooks/use-toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 
 export type Subcategory = {
@@ -44,12 +45,15 @@ export type Subcategory = {
 export type ProductCategory = {
   name: string;
   abbreviation: string;
+  productType: string;
   subcategories: Subcategory[];
 };
 
 interface ProductPreferencesProps {
   data: ProductCategory[];
 }
+
+const productTypes = ["Finished Good", "Raw Material", "Service"];
 
 export function ProductPreferences({ data }: ProductPreferencesProps) {
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
@@ -116,75 +120,87 @@ export function ProductPreferences({ data }: ProductPreferencesProps) {
     }
   ];
 
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
+  const tables = productTypes.reduce((acc, type) => {
+    acc[type] = useReactTable({
+      data: data.filter(d => d.productType === type),
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+    });
+    return acc;
+  }, {} as Record<string, ReturnType<typeof useReactTable<ProductCategory>>>);
   
   return (
     <>
       <Card>
           <CardHeader className="p-2">
               <CardTitle>Categories</CardTitle>
-              <CardDescription>Manage your product categories and subcategories.</CardDescription>
+              <CardDescription>Manage your product categories and subcategories by product type.</CardDescription>
           </CardHeader>
           <CardContent className="p-2 pt-0">
-              <div className="w-full">
-              <div className="flex items-center justify-end py-2">
-                  <AddCategoryDialog />
-              </div>
-              <div className="rounded-md border">
-                  <Table>
-                  <TableHeader>
-                      {table.getHeaderGroups().map((headerGroup) => (
-                      <TableRow key={headerGroup.id}>
-                          {headerGroup.headers.map((header) => {
-                          return (
-                              <TableHead key={header.id} className="p-2">
-                              {header.isPlaceholder
-                                  ? null
-                                  : flexRender(
-                                      header.column.columnDef.header,
-                                      header.getContext()
-                                  )}
-                              </TableHead>
-                          );
-                          })}
-                      </TableRow>
-                      ))}
-                  </TableHeader>
-                  <TableBody>
-                      {table.getRowModel().rows?.length ? (
-                      table.getRowModel().rows.map((row) => (
-                          <TableRow
-                          key={row.id}
-                          data-state={row.getIsSelected() && 'selected'}
-                          >
-                          {row.getVisibleCells().map((cell) => (
-                              <TableCell key={cell.id} className="p-2">
-                              {flexRender(
-                                  cell.column.columnDef.cell,
-                                  cell.getContext()
-                              )}
-                              </TableCell>
-                          ))}
-                          </TableRow>
-                      ))
-                      ) : (
-                      <TableRow>
-                          <TableCell
-                          colSpan={columns.length}
-                          className="h-24 text-center"
-                          >
-                          No categories found.
-                          </TableCell>
-                      </TableRow>
-                      )}
-                  </TableBody>
-                  </Table>
-              </div>
-              </div>
+            <Tabs defaultValue={productTypes[0]}>
+                <div className="flex justify-between items-center py-2">
+                    <TabsList>
+                        {productTypes.map((type) => (
+                             <TabsTrigger key={type} value={type}>{type}</TabsTrigger>
+                        ))}
+                    </TabsList>
+                    <AddCategoryDialog />
+                </div>
+                {productTypes.map(type => (
+                    <TabsContent key={type} value={type}>
+                        <div className="rounded-md border">
+                            <Table>
+                            <TableHeader>
+                                {tables[type].getHeaderGroups().map((headerGroup) => (
+                                <TableRow key={headerGroup.id}>
+                                    {headerGroup.headers.map((header) => {
+                                    return (
+                                        <TableHead key={header.id} className="p-2">
+                                        {header.isPlaceholder
+                                            ? null
+                                            : flexRender(
+                                                header.column.columnDef.header,
+                                                header.getContext()
+                                            )}
+                                        </TableHead>
+                                    );
+                                    })}
+                                </TableRow>
+                                ))}
+                            </TableHeader>
+                            <TableBody>
+                                {tables[type].getRowModel().rows?.length ? (
+                                tables[type].getRowModel().rows.map((row) => (
+                                    <TableRow
+                                    key={row.id}
+                                    data-state={row.getIsSelected() && 'selected'}
+                                    >
+                                    {row.getVisibleCells().map((cell) => (
+                                        <TableCell key={cell.id} className="p-2">
+                                        {flexRender(
+                                            cell.column.columnDef.cell,
+                                            cell.getContext()
+                                        )}
+                                        </TableCell>
+                                    ))}
+                                    </TableRow>
+                                ))
+                                ) : (
+                                <TableRow>
+                                    <TableCell
+                                    colSpan={columns.length}
+                                    className="h-24 text-center"
+                                    >
+                                    No categories found for this type.
+                                    </TableCell>
+                                </TableRow>
+                                )}
+                            </TableBody>
+                            </Table>
+                        </div>
+                    </TabsContent>
+                ))}
+            </Tabs>
           </CardContent>
       </Card>
       {selectedCategory && (
@@ -215,3 +231,4 @@ export function ProductPreferences({ data }: ProductPreferencesProps) {
     </>
   );
 }
+    
