@@ -5,11 +5,11 @@ import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Briefcase } from 'lucide-react';
+import { Briefcase, ShoppingCart } from 'lucide-react';
 import { useModules } from '@/context/modules-context';
 
 export default function ModulesPage() {
-  const { isProjectManagementEnabled, setIsProjectManagementEnabled } = useModules();
+  const { isProjectManagementEnabled, setIsProjectManagementEnabled, isPurchaseModuleEnabled, setIsPurchaseModuleEnabled } = useModules();
 
   return (
     <main className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -40,6 +40,32 @@ export default function ModulesPage() {
                 checked={isProjectManagementEnabled}
                 onCheckedChange={setIsProjectManagementEnabled}
                 aria-label="Toggle Project Management Module"
+              />
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="hover:shadow-lg transition-shadow duration-300">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+            <div className="space-y-1.5">
+              <CardTitle className="text-xl flex items-center">
+                <ShoppingCart className="mr-3 h-6 w-6 text-primary" />
+                Purchase
+              </CardTitle>
+              <CardDescription>
+                Manage vendors, products, and purchase orders.
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between rounded-lg border p-3">
+              <Label htmlFor="purchase-switch" className="font-medium">
+                {isPurchaseModuleEnabled ? 'Module Active' : 'Module Inactive'}
+              </Label>
+              <Switch
+                id="purchase-switch"
+                checked={isPurchaseModuleEnabled}
+                onCheckedChange={setIsPurchaseModuleEnabled}
+                aria-label="Toggle Purchase Module"
               />
             </div>
           </CardContent>

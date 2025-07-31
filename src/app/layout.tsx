@@ -18,16 +18,21 @@ import {
   SidebarMenuButton,
   SidebarInset,
   SidebarTrigger,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
 } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
-import { Box, Calendar, LayoutDashboard, LogOut, Briefcase } from 'lucide-react';
+import { Box, Calendar, LayoutDashboard, LogOut, Briefcase, ShoppingCart, Home, Package, Users, FileText, Landmark, Truck } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { ModulesProvider, useModules } from '@/context/modules-context';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { ChevronDown } from 'lucide-react';
 
 
 function DashboardSidebarItems() {
   const pathname = usePathname();
-  const { isProjectManagementEnabled } = useModules();
+  const { isProjectManagementEnabled, isPurchaseModuleEnabled } = useModules();
+  const [isPurchaseOpen, setIsPurchaseOpen] = React.useState(true);
 
   return (
     <SidebarMenu>
@@ -57,13 +62,62 @@ function DashboardSidebarItems() {
       </SidebarMenuItem>
       {isProjectManagementEnabled && (
          <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={pathname === '/project-management'}>
+            <SidebarMenuButton asChild isActive={pathname.startsWith('/project-management')}>
               <Link href="/project-management">
                 <Briefcase />
                 Project Management
               </Link>
             </SidebarMenuButton>
          </SidebarMenuItem>
+      )}
+      {isPurchaseModuleEnabled && (
+        <SidebarMenuItem>
+          <Collapsible open={isPurchaseOpen} onOpenChange={setIsPurchaseOpen}>
+            <CollapsibleTrigger asChild>
+                <SidebarMenuButton className="w-full justify-between">
+                    <div className="flex items-center gap-2">
+                        <ShoppingCart />
+                        Purchase
+                    </div>
+                    <ChevronDown className={`h-4 w-4 transition-transform ${isPurchaseOpen ? 'rotate-180' : ''}`} />
+                </SidebarMenuButton>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <SidebarMenuSub>
+                <SidebarMenuItem>
+                  <SidebarMenuSubButton asChild isActive={pathname === '/purchase/dashboard'}>
+                    <Link href="/purchase/dashboard"><Home />Dashboard</Link>
+                  </SidebarMenuSubButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuSubButton asChild isActive={pathname === '/purchase/products'}>
+                    <Link href="/purchase/products"><Package />Products</Link>
+                  </SidebarMenuSubButton>
+                </SidebarMenuItem>
+                 <SidebarMenuItem>
+                  <SidebarMenuSubButton asChild isActive={pathname === '/purchase/vendors'}>
+                    <Link href="/purchase/vendors"><Users />Vendors</Link>
+                  </SidebarMenuSubButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuSubButton asChild isActive={pathname === '/purchase/orders'}>
+                    <Link href="/purchase/orders"><Truck />Purchase of products</Link>
+                  </SidebarMenuSubButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuSubButton asChild isActive={pathname === '/purchase/bills'}>
+                    <Link href="/purchase/bills"><FileText />Bills</Link>
+                  </SidebarMenuSubButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuSubButton asChild isActive={pathname === '/purchase/payment'}>
+                    <Link href="/purchase/payment"><Landmark />Payment</Link>
+                  </SidebarMenuSubButton>
+                </SidebarMenuItem>
+              </SidebarMenuSub>
+            </CollapsibleContent>
+          </Collapsible>
+        </SidebarMenuItem>
       )}
     </SidebarMenu>
   );

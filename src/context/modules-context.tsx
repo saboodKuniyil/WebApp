@@ -6,15 +6,18 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 interface ModulesContextType {
   isProjectManagementEnabled: boolean;
   setIsProjectManagementEnabled: (value: boolean) => void;
+  isPurchaseModuleEnabled: boolean;
+  setIsPurchaseModuleEnabled: (value: boolean) => void;
 }
 
 const ModulesContext = createContext<ModulesContextType | undefined>(undefined);
 
 export const ModulesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isProjectManagementEnabled, setIsProjectManagementEnabled] = useState(true);
+  const [isPurchaseModuleEnabled, setIsPurchaseModuleEnabled] = useState(true);
 
   return (
-    <ModulesContext.Provider value={{ isProjectManagementEnabled, setIsProjectManagementEnabled }}>
+    <ModulesContext.Provider value={{ isProjectManagementEnabled, setIsProjectManagementEnabled, isPurchaseModuleEnabled, setIsPurchaseModuleEnabled }}>
       {children}
     </ModulesContext.Provider>
   );
