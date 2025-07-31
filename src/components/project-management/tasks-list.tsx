@@ -19,6 +19,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -82,7 +83,7 @@ const formatDate = (dateString: string | undefined) => {
     if (!dateString) return 'N/A';
     // Append 'T00:00:00Z' to treat date strings as UTC, preventing timezone shifts.
     const date = new Date(dateString.includes('T') ? dateString : `${dateString}T00:00:00Z`);
-    return date.toLocaleDateString('en-US', { timeZone: 'UTC' });
+    return new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'numeric', day: 'numeric', timeZone: 'UTC' }).format(date);
 };
 
 export const columns: ColumnDef<Task>[] = [
@@ -116,7 +117,11 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: 'title',
     header: 'Title',
-    cell: ({ row }) => <div className="font-medium max-w-xs truncate">{row.getValue('title')}</div>,
+    cell: ({ row }) => (
+        <Link href={`/project-management/tasks/${row.original.id}`} className="font-medium hover:underline max-w-xs truncate block">
+            {row.getValue('title')}
+        </Link>
+    ),
   },
   {
     accessorKey: 'description',
@@ -187,10 +192,10 @@ export const columns: ColumnDef<Task>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(task.id)}
-            >
-              View Task
+            <DropdownMenuItem>
+                <Link href={`/project-management/tasks/${task.id}`} className="w-full">
+                    View Task
+                </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>Edit Task</DropdownMenuItem>

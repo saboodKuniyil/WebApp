@@ -68,6 +68,10 @@ export const db = {
     const data = await readDb();
     return data.tasks || [];
   },
+   getTaskById: async (id: string): Promise<Task | undefined> => {
+    const data = await readDb();
+    return (data.tasks || []).find(t => t.id === id);
+  },
   getTasksByProjectId: async (projectId: string): Promise<Task[]> => {
     const data = await readDb();
     return (data.tasks || []).filter(t => t.projectId === projectId);

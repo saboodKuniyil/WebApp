@@ -200,10 +200,8 @@ const getColumns = (tasks: Task[]): ColumnDef<Project>[] => [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(project.id)}
-            >
-              View Project
+            <DropdownMenuItem asChild>
+                <Link href={`/project-management/projects/${project.id}`}>View Project</Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>Edit Project</DropdownMenuItem>
@@ -231,7 +229,11 @@ const SubTasksList = ({ tasks }: { tasks: Task[] }) => {
         <TableBody>
           {tasks.map((task) => (
             <TableRow key={task.id}>
-              <TableCell className="font-medium max-w-xs truncate">{task.title}</TableCell>
+              <TableCell className="font-medium max-w-xs truncate">
+                <Link href={`/project-management/tasks/${task.id}`} className="hover:underline">
+                    {task.title}
+                </Link>
+              </TableCell>
               <TableCell><Badge variant="outline" className={`capitalize border-0 ${taskStatusColors[task.status]}`}>{task.status}</Badge></TableCell>
               <TableCell><div className={`capitalize font-medium ${taskPriorityColors[task.priority]}`}>{task.priority}</div></TableCell>
               <TableCell>

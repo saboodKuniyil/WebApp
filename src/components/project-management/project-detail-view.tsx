@@ -13,6 +13,7 @@ import { Pencil, Trash2 } from "lucide-react"
 import { EditProjectDialog } from "./edit-project-dialog"
 import { DeleteProjectDialog } from "./delete-project-dialog"
 import React from "react"
+import Link from 'next/link';
 
 interface ProjectDetailViewProps {
     project: Project
@@ -126,7 +127,11 @@ export function ProjectDetailView({ project, tasks }: ProjectDetailViewProps) {
                             {tasks.map((task) => (
                                 <TableRow key={task.id}>
                                     <TableCell className="p-2">{task.id}</TableCell>
-                                    <TableCell className="font-medium max-w-xs truncate p-2">{task.title}</TableCell>
+                                    <TableCell className="font-medium max-w-xs truncate p-2">
+                                        <Link href={`/project-management/tasks/${task.id}`} className="hover:underline">
+                                            {task.title}
+                                        </Link>
+                                    </TableCell>
                                     <TableCell className="p-2"><Badge variant="outline" className={`capitalize border-0 ${taskStatusColors[task.status]}`}>{task.status}</Badge></TableCell>
                                     <TableCell className="p-2"><div className={`capitalize font-medium ${taskPriorityColors[task.priority]}`}>{task.priority}</div></TableCell>
                                     <TableCell className="p-2">
