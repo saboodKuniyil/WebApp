@@ -183,3 +183,34 @@ export async function deleteTask(taskId: string): Promise<{ message: string }> {
     }
     redirect('/project-management/tasks');
 }
+
+
+export async function updateTaskStatus(taskId: string, newStatus: string): Promise<{ message: string; }> {
+    const tasks = await getTasks();
+    const task = tasks.find(t => t.id === taskId);
+
+    if (!task) {
+        return { message: 'Task not found.' };
+    }
+
+    const completionPercentage = await getCompletionPercentageForStatus(task.projectId, newStatus);
+    if(completionPercentage === undefined) {
+         return { message: 'Could not determine completion percentage for the new status.' };
+    }
+
+    try {
+        await updateDbTask({
+            id: taskId,
+            status: newStatus,
+            completionPercentage: completionPercentage,
+        });
+
+        revalidatePath('/project-management/tasks');
+        revalidatePath(`/project-management/tasks/${taskId}`);
+        revalidatePath(`/project-management/projects/${task.projectId}`);
+        return { message: 'Task status updated successfully.' };
+    } catch (error) {
+        console.error('Database Error:', error);
+        return { message: 'Failed to update task status.' };
+    }
+}

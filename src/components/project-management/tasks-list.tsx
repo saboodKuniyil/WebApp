@@ -49,6 +49,8 @@ import type { Project } from './projects-list';
 import type { TaskBlueprint } from './task-blueprints-list';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Progress } from '../ui/progress';
+import { updateTaskStatus } from '@/app/project-management/tasks/actions';
+import { useToast } from '@/hooks/use-toast';
 
 export type Task = {
   id: string;
@@ -90,7 +92,11 @@ const formatDate = (dateString: string | undefined) => {
     return new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'numeric', day: 'numeric', timeZone: 'UTC' }).format(date);
 };
 
-export const columns: ColumnDef<Task>[] = [
+const getColumns = (
+    projects: Project[], 
+    taskBlueprints: TaskBlueprint[],
+    onStatusChange: (taskId: string, newStatus: string) => void
+): ColumnDef<Task>[] => [
   {
     id: 'select',
     header: ({ table }) => (
@@ -135,7 +141,30 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: 'status',
     header: 'Status',
-    cell: ({ row }) => <Badge variant="outline" className={`capitalize border-0 ${statusColors[row.getValue('status') as Task['status']]}`}>{row.getValue('status')}</Badge>,
+    cell: ({ row }) => {
+        const task = row.original;
+        const project = projects.find(p => p.id === task.projectId);
+        const blueprint = taskBlueprints.find(b => b.id === project?.taskBlueprintId);
+        const availableStatuses = blueprint?.statuses ?? [];
+
+        return (
+             <Select
+                value={task.status}
+                onValueChange={(newStatus) => onStatusChange(task.id, newStatus)}
+            >
+                <SelectTrigger className={`w-36 h-8 capitalize border-0 shadow-none focus:ring-0 text-left justify-start font-medium px-2 ${statusColors[task.status]}`}>
+                    <SelectValue>
+                        <Badge variant="outline" className={`capitalize border-0 bg-transparent`}>{task.status}</Badge>
+                    </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                    {availableStatuses.map(status => (
+                        <SelectItem key={status.name} value={status.name.toLowerCase().replace(/\s/g, '-')}>{status.name}</SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+        );
+    },
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id))
     },
@@ -238,6 +267,29 @@ export function TasksList({ data, projects, taskBlueprints }: TasksListProps) {
     });
   const [rowSelection, setRowSelection] = React.useState({});
   const [mounted, setMounted] = React.useState(false);
+  const [isPending, startTransition] = React.useTransition();
+  const { toast } = useToast();
+
+
+  const handleStatusChange = React.useCallback((taskId: string, newStatus: string) => {
+        startTransition(async () => {
+            const result = await updateTaskStatus(taskId, newStatus);
+            if(result.message.includes('success')) {
+                 toast({
+                    title: 'Success',
+                    description: result.message,
+                });
+            } else {
+                 toast({
+                    variant: 'destructive',
+                    title: 'Error',
+                    description: result.message,
+                });
+            }
+        })
+  }, [toast]);
+  
+  const columns = React.useMemo(() => getColumns(projects, taskBlueprints, handleStatusChange), [projects, taskBlueprints, handleStatusChange]);
 
   React.useEffect(() => {
     setMounted(true);
