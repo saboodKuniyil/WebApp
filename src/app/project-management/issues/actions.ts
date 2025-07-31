@@ -47,14 +47,21 @@ export async function createIssue(
   prevState: IssueFormState,
   formData: FormData
 ): Promise<IssueFormState> {
-  const validatedFields = issueSchema.safeParse({
-    id: formData.get('id'),
-    title: formData.get('title'),
-    type: formData.get('type') || undefined,
-    status: formData.get('status') || undefined,
-    priority: formData.get('priority') || undefined,
-    taskId: formData.get('taskId'),
-  });
+    const rawData = {
+        id: formData.get('id'),
+        title: formData.get('title'),
+        type: formData.get('type') || undefined,
+        status: formData.get('status') || undefined,
+        priority: formData.get('priority') || undefined,
+        taskId: formData.get('taskId'),
+    };
+    
+    // Ensure empty strings from select are treated as undefined for optional validation
+    if (rawData.type === '') rawData.type = undefined;
+    if (rawData.status === '') rawData.status = undefined;
+    if (rawData.priority === '') rawData.priority = undefined;
+
+    const validatedFields = issueSchema.safeParse(rawData);
 
   if (!validatedFields.success) {
     return {
@@ -87,6 +94,7 @@ export async function createIssue(
 
     revalidatePath('/project-management/issues');
     revalidatePath(`/project-management/tasks/${taskId}`); // Revalidate related task page
+    revalidatePath(`/project-management/projects`); // Revalidate project page for sub-tasks
     return { message: 'Issue created successfully.' };
   } catch (error) {
     console.error('Database Error:', error);
