@@ -8,6 +8,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import type { Project } from "./projects-list"
 import type { Task } from "./tasks-list"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
+import { Button } from "../ui/button"
+import { Pencil, Trash2 } from "lucide-react"
+import { EditProjectDialog } from "./edit-project-dialog"
+import { DeleteProjectDialog } from "./delete-project-dialog"
+import React from "react"
 
 interface ProjectDetailViewProps {
     project: Project
@@ -44,6 +49,9 @@ export function ProjectDetailView({ project, tasks }: ProjectDetailViewProps) {
     const totalTasks = tasks.length;
     const completedTasks = tasks.filter(t => t.status === 'done').length;
     const overallProgress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+    const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
+
 
     return (
         <div className="space-y-6">
@@ -54,7 +62,17 @@ export function ProjectDetailView({ project, tasks }: ProjectDetailViewProps) {
                             <CardTitle className="text-3xl font-bold font-headline">{project.title}</CardTitle>
                             <CardDescription>{project.id}</CardDescription>
                         </div>
-                        <Badge variant="outline" className={`capitalize text-lg border-0 ${statusColors[project.status]}`}>{project.status}</Badge>
+                        <div className="flex items-center gap-2">
+                             <Button variant="outline" size="icon" onClick={() => setIsEditDialogOpen(true)}>
+                                <Pencil className="h-4 w-4" />
+                                <span className="sr-only">Edit Project</span>
+                            </Button>
+                            <Button variant="destructive" size="icon" onClick={() => setIsDeleteDialogOpen(true)}>
+                                <Trash2 className="h-4 w-4" />
+                                <span className="sr-only">Delete Project</span>
+                            </Button>
+                            <Badge variant="outline" className={`capitalize text-lg border-0 ${statusColors[project.status]}`}>{project.status}</Badge>
+                        </div>
                     </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -132,6 +150,8 @@ export function ProjectDetailView({ project, tasks }: ProjectDetailViewProps) {
                     </Table>
                 </CardContent>
             </Card>
+            <EditProjectDialog project={project} isOpen={isEditDialogOpen} setIsOpen={setIsEditDialogOpen} />
+            <DeleteProjectDialog project={project} isOpen={isDeleteDialogOpen} setIsOpen={setIsDeleteDialogOpen} />
         </div>
     )
 }

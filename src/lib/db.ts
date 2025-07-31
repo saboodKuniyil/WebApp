@@ -16,7 +16,7 @@ async function readDb(): Promise<DbData> {
     const data = await fs.readFile(dbPath, 'utf-8');
     return JSON.parse(data) as DbData;
   } catch (error) {
-    if (error.code === 'ENOENT') {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
       // If the file doesn't exist, return a default structure
       return { projects: [], tasks: [] };
     }
@@ -41,6 +41,28 @@ export const db = {
     const data = await readDb();
     data.projects.push(newProject);
     await writeDb(data);
+  },
+  updateProject: async (updatedProject: Project): Promise<void> => {
+    const data = await readDb();
+    const projectIndex = data.projects.findIndex(p => p.id === updatedProject.id);
+    if (projectIndex !== -1) {
+      data.projects[projectIndex] = updatedProject;
+      await writeDb(data);
+    } else {
+      throw new Error(`Project with id ${updatedProject.id} not found.`);
+    }
+  },
+  deleteProject: async (projectId: string): Promise<void> => {
+    const data = await readDb();
+    const projectIndex = data.projects.findIndex(p => p.id === projectId);
+    if (projectIndex !== -1) {
+      data.projects.splice(projectIndex, 1);
+      // Optional: also delete tasks associated with this project
+      data.tasks = data.tasks.filter(t => t.projectId !== projectId);
+      await writeDb(data);
+    } else {
+      throw new Error(`Project with id ${projectId} not found.`);
+    }
   },
   getTasks: async (): Promise<Task[]> => {
     const data = await readDb();

@@ -3,6 +3,8 @@
 import { z } from 'zod';
 import { db } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
+import type { Project } from '@/components/project-management/projects-list';
 
 const projectSchema = z.object({
   id: z.string(),
@@ -99,4 +101,59 @@ export async function createProject(
     console.error('Database Error:', error);
     return { message: 'Failed to create project.' };
   }
+}
+
+export async function updateProject(
+    prevState: ProjectFormState,
+    formData: FormData
+): Promise<ProjectFormState> {
+    const validatedFields = projectSchema.safeParse({
+        id: formData.get('id'),
+        title: formData.get('title'),
+        description: formData.get('description'),
+        manager: formData.get('manager'),
+        customer: formData.get('customer'),
+        startDate: formData.get('startDate'),
+        endDate: formData.get('endDate'),
+        status: formData.get('status'),
+    });
+
+    if (!validatedFields.success) {
+        return {
+            message: 'Failed to update project.',
+            errors: validatedFields.error.flatten().fieldErrors,
+        };
+    }
+
+    const { id, ...projectData } = validatedFields.data;
+
+    try {
+        await db.updateProject({
+            id,
+            ...projectData
+        });
+
+        revalidatePath(`/project-management/projects/${id}`);
+        revalidatePath('/project-management/projects');
+        return { message: 'Project updated successfully.' };
+    } catch (error) {
+        console.error('Database Error:', error);
+        return { message: 'Failed to update project.' };
+    }
+}
+
+export async function deleteProject(projectId: string): Promise<{ message: string }> {
+    try {
+        await db.deleteProject(projectId);
+        revalidatePath('/project-management/projects');
+        // This redirect will be caught by the try-catch block
+        // but it will still work as expected.
+        redirect('/project-management/projects');
+    } catch (error: any) {
+        if (error.message === 'NEXT_REDIRECT') {
+            throw error;
+        }
+        console.error('Database Error:', error);
+        return { message: 'Failed to delete project.' };
+    }
 }
