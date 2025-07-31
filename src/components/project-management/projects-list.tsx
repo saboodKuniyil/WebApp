@@ -50,6 +50,7 @@ export type Project = {
   description?: string;
   status: 'in-progress' | 'completed' | 'on-hold' | 'canceled';
   manager: string;
+  customer: string;
   startDate: string;
   endDate: string;
 };
@@ -118,6 +119,11 @@ export const columns: ColumnDef<Project>[] = [
     accessorKey: 'manager',
     header: 'Project Manager',
     cell: ({ row }) => <div>{row.getValue('manager')}</div>,
+  },
+  {
+    accessorKey: 'customer',
+    header: 'Customer',
+    cell: ({ row }) => <div>{row.getValue('customer')}</div>,
   },
   {
     accessorKey: 'startDate',

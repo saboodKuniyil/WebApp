@@ -35,6 +35,15 @@ import { Textarea } from '../ui/textarea';
 
 const initialState = { message: '', errors: {} };
 
+// Mock customers - in a real app, this would come from an API
+const customers = [
+    { id: 'CUST-001', name: 'Innovate Inc.' },
+    { id: 'CUST-002', name: 'Quantum Solutions' },
+    { id: 'CUST-003', name: 'Synergy Corp' },
+    { id: 'CUST-004', name: 'Apex Logistics' },
+];
+
+
 function SubmitButton() {
     // Cannot use useFormStatus here as it's not a direct child of the form
     // We can handle pending state manually if needed
@@ -46,22 +55,9 @@ export function AddProjectDialog() {
   const [isOpen, setIsOpen] = React.useState(false);
   const [startDate, setStartDate] = React.useState<Date>();
   const [endDate, setEndDate] = React.useState<Date>();
-  const [projectId, setProjectId] = React.useState('');
 
   const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
-
-  const generateProjectId = () => {
-      const randomPart = Math.floor(Math.random() * 1000) + 9001;
-      return `PR_${randomPart}`;
-  }
-
-  React.useEffect(() => {
-    if (isOpen) {
-        setProjectId(generateProjectId());
-    }
-  }, [isOpen]);
-
 
   React.useEffect(() => {
     if (state.message) {
@@ -96,17 +92,10 @@ export function AddProjectDialog() {
         <DialogHeader>
           <DialogTitle>Add New Project</DialogTitle>
           <DialogDescription>
-            Fill in the details below to create a new project.
+            Fill in the details below to create a new project. A unique Project ID will be generated automatically.
           </DialogDescription>
         </DialogHeader>
         <form ref={formRef} action={dispatch} className="grid gap-4 py-4">
-           <input type="hidden" name="id" value={projectId} />
-           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="id-display" className="text-right">
-              Project ID
-            </Label>
-            <Input id="id-display" name="id-display" className="col-span-3" value={projectId} readOnly />
-          </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="title" className="text-right">
               Title
@@ -132,6 +121,24 @@ export function AddProjectDialog() {
             <Input id="manager" name="manager" className="col-span-3" />
              {state.errors?.manager && (
               <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.manager[0]}</p>
+            )}
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="customer" className="text-right">
+                Customer
+            </Label>
+            <Select name="customer">
+              <SelectTrigger className="col-span-3">
+                <SelectValue placeholder="Select a customer" />
+              </SelectTrigger>
+              <SelectContent>
+                {customers.map((customer) => (
+                    <SelectItem key={customer.id} value={customer.name}>{customer.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {state.errors?.customer && (
+                <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.customer[0]}</p>
             )}
           </div>
           <div className="grid grid-cols-4 items-center gap-4">

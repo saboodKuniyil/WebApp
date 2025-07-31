@@ -8,7 +8,7 @@ async function getProjects(): Promise<Project[]> {
   noStore();
   try {
     // Attempt to connect to the database and fetch projects
-    const [rows] = await db.query("SELECT id, title, description, status, manager, DATE_FORMAT(startDate, '%Y-%m-%d') as startDate, DATE_FORMAT(endDate, '%Y-%m-%d') as endDate FROM projects");
+    const [rows] = await db.query("SELECT id, title, description, status, manager, customer, DATE_FORMAT(startDate, '%Y-%m-%d') as startDate, DATE_FORMAT(endDate, '%Y-%m-%d') as endDate FROM projects");
     // The library returns a strange type, so we need to cast it
     return rows as Project[];
   } catch (error) {
