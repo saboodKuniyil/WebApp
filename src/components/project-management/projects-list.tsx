@@ -41,8 +41,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { PlusCircle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { AddProjectDialog } from './add-project-dialog';
 
 export type Project = {
   id: string;
@@ -173,6 +173,9 @@ export function ProjectsList({ data }: ProjectsListProps) {
       columnVisibility,
       rowSelection,
     },
+    meta: {
+      // You can add any custom meta data here if needed
+    }
   });
 
   return (
@@ -193,10 +196,7 @@ export function ProjectsList({ data }: ProjectsListProps) {
                 className="max-w-sm"
                 />
                 <div className="flex space-x-2">
-                <Button>
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Add Project
-                </Button>
+                <AddProjectDialog />
                 <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="outline" className="ml-auto">

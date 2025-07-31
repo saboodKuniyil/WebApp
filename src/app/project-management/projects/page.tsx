@@ -1,11 +1,13 @@
 
 import { ProjectsList } from "@/components/project-management/projects-list";
 import db from '@/lib/db';
-import { Project } from "@/components/project-management/projects-list";
+import type { Project } from "@/components/project-management/projects-list";
+import { unstable_noStore as noStore } from 'next/cache';
 
 async function getProjects(): Promise<Project[]> {
+  noStore();
   try {
-    const [rows] = await db.query('SELECT * FROM projects');
+    const [rows] = await db.query('SELECT id, title, status, manager, DATE_FORMAT(deadline, \'%Y-%m-%d\') as deadline FROM projects');
     // The library returns a strange type, so we need to cast it
     return rows as Project[];
   } catch (error) {
