@@ -54,6 +54,7 @@ const data: Task[] = [
     label: 'documentation',
     priority: 'medium',
     assignee: 'Alice',
+    projectId: 'PROJ-1',
   },
   {
     id: 'TASK-7878',
@@ -62,6 +63,7 @@ const data: Task[] = [
     label: 'feature',
     priority: 'medium',
     assignee: 'Bob',
+    projectId: 'PROJ-1',
   },
   {
     id: 'TASK-7839',
@@ -70,6 +72,7 @@ const data: Task[] = [
     label: 'bug',
     priority: 'high',
     assignee: 'Charlie',
+    projectId: 'PROJ-2',
   },
   {
     id: 'TASK-5562',
@@ -78,6 +81,7 @@ const data: Task[] = [
     label: 'bug',
     priority: 'low',
     assignee: 'David',
+    projectId: 'PROJ-3',
   },
   {
     id: 'TASK-8686',
@@ -86,6 +90,7 @@ const data: Task[] = [
     label: 'feature',
     priority: 'medium',
     assignee: 'Eve',
+    projectId: 'PROJ-1',
   },
 ];
 
@@ -97,6 +102,7 @@ export type Task = {
   label: 'bug' | 'feature' | 'documentation';
   priority: 'low' | 'medium' | 'high';
   assignee: string;
+  projectId: string;
 };
 
 
@@ -152,10 +158,15 @@ export const columns: ColumnDef<Task>[] = [
     header: 'Status',
     cell: ({ row }) => <Badge variant="outline" className={`capitalize border-0 ${statusColors[row.getValue('status') as Task['status']]}`}>{row.getValue('status')}</Badge>,
   },
-    {
+  {
     accessorKey: 'priority',
     header: 'Priority',
     cell: ({ row }) => <div className={`capitalize font-medium ${priorityColors[row.getValue('priority') as Task['priority']]}`}>{row.getValue('priority')}</div>,
+  },
+  {
+    accessorKey: 'projectId',
+    header: 'Project ID',
+    cell: ({ row }) => <div>{row.getValue('projectId')}</div>,
   },
   {
     accessorKey: 'assignee',

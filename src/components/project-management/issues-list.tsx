@@ -52,6 +52,7 @@ const data: Issue[] = [
     type: 'bug',
     priority: 'high',
     created: '2024-07-20',
+    taskId: 'TASK-7839',
   },
   {
     id: 'ISSUE-281',
@@ -60,6 +61,7 @@ const data: Issue[] = [
     type: 'feature-request',
     priority: 'medium',
     created: '2024-07-18',
+    taskId: 'TASK-8686',
   },
   {
     id: 'ISSUE-279',
@@ -68,6 +70,7 @@ const data: Issue[] = [
     type: 'bug',
     priority: 'high',
     created: '2024-07-15',
+    taskId: 'TASK-5562',
   },
   {
     id: 'ISSUE-278',
@@ -76,6 +79,7 @@ const data: Issue[] = [
     type: 'documentation',
     priority: 'low',
     created: '2024-07-21',
+    taskId: 'TASK-8782',
   },
 ];
 
@@ -86,6 +90,7 @@ export type Issue = {
   type: 'bug' | 'feature-request' | 'documentation';
   priority: 'low' | 'medium' | 'high';
   created: string;
+  taskId: string;
 };
 
 const statusColors = {
@@ -148,6 +153,11 @@ export const columns: ColumnDef<Issue>[] = [
     accessorKey: 'priority',
     header: 'Priority',
     cell: ({ row }) => <div className={`capitalize font-medium ${priorityColors[row.getValue('priority') as Issue['priority']]}`}>{row.getValue('priority')}</div>,
+  },
+  {
+    accessorKey: 'taskId',
+    header: 'Task ID',
+    cell: ({ row }) => <div>{row.getValue('taskId')}</div>,
   },
     {
     accessorKey: 'created',
