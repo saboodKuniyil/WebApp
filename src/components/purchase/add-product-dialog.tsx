@@ -3,6 +3,7 @@
 
 import * as React from 'react';
 import { useActionState } from 'react';
+import Draggable from 'react-draggable';
 import {
   Dialog,
   DialogContent,
@@ -54,6 +55,7 @@ export function AddProductDialog({ categories }: AddProductDialogProps) {
   const [selectedTypeName, setSelectedTypeName] = React.useState('');
   const [selectedCategoryName, setSelectedCategoryName] = React.useState('');
   const [subcategories, setSubcategories] = React.useState<Subcategory[]>([]);
+  const nodeRef = React.useRef(null);
 
   const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
@@ -108,111 +110,113 @@ export function AddProductDialog({ categories }: AddProductDialogProps) {
           Add Product
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Add New Product</DialogTitle>
-          <DialogDescription>
-            Fill in the details below to create a new product.
-          </DialogDescription>
-        </DialogHeader>
-        <form ref={formRef} action={dispatch} className="grid gap-4 py-4">
-           <div className="space-y-2">
-            <Label>Type</Label>
-            <RadioGroup name="type" onValueChange={setSelectedTypeName} className="flex gap-2 flex-wrap">
-              {productTypes.map((type) => (
-                <Label key={type.name} htmlFor={`type-${type.abbreviation}`} className={cn("flex items-center space-x-2 rounded-md border p-2 cursor-pointer", selectedTypeName === type.name && "border-primary")}>
-                   <RadioGroupItem value={type.name} id={`type-${type.abbreviation}`} className="sr-only"/>
-                   <span>{type.name}</span>
-                </Label>
-              ))}
-            </RadioGroup>
-             {state.errors?.type && (
-              <p className="text-red-500 text-xs">{state.errors.type[0]}</p>
-            )}
-          </div>
-          {selectedTypeName && (
-             <div className="space-y-2">
-                <Label>Category</Label>
-                <RadioGroup name="category" onValueChange={setSelectedCategoryName} className="flex gap-2 flex-wrap">
-                {categories.map((category) => (
-                    <Label key={category.name} htmlFor={`cat-${category.abbreviation}`} className={cn("flex items-center space-x-2 rounded-md border p-2 cursor-pointer", selectedCategoryName === category.name && "border-primary")}>
-                        <RadioGroupItem value={category.name} id={`cat-${category.abbreviation}`} className="sr-only"/>
-                        <span>{category.name}</span>
+       <Draggable nodeRef={nodeRef} handle=".dialog-header">
+        <DialogContent ref={nodeRef} className="sm:max-w-[500px]">
+            <DialogHeader className="dialog-header cursor-move">
+            <DialogTitle>Add New Product</DialogTitle>
+            <DialogDescription>
+                Fill in the details below to create a new product.
+            </DialogDescription>
+            </DialogHeader>
+            <form ref={formRef} action={dispatch} className="grid gap-4 py-4">
+            <div className="space-y-2">
+                <Label>Type</Label>
+                <RadioGroup name="type" onValueChange={setSelectedTypeName} className="flex gap-2 flex-wrap">
+                {productTypes.map((type) => (
+                    <Label key={type.name} htmlFor={`type-${type.abbreviation}`} className={cn("flex items-center space-x-2 rounded-md border p-2 cursor-pointer", selectedTypeName === type.name && "border-primary")}>
+                    <RadioGroupItem value={type.name} id={`type-${type.abbreviation}`} className="sr-only"/>
+                    <span>{type.name}</span>
                     </Label>
                 ))}
                 </RadioGroup>
-                {state.errors?.category && (
-                <p className="text-red-500 text-xs">{state.errors.category[0]}</p>
+                {state.errors?.type && (
+                <p className="text-red-500 text-xs">{state.errors.type[0]}</p>
                 )}
             </div>
-          )}
-
-           {selectedCategoryName && (
-             <div className="space-y-2">
-                <Label htmlFor="subcategory">Subcategory</Label>
-                <Select name="subcategory" disabled={!selectedCategoryName}>
-                    <SelectTrigger>
-                        <SelectValue placeholder={selectedCategoryName ? "Select a subcategory" : "Select a category first"} />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {subcategories.map((subcategory) => (
-                            <SelectItem key={subcategory.name} value={subcategory.name}>
-                                {subcategory.name}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-                {state.errors?.subcategory && (
-                    <p className="text-red-500 text-xs">{state.errors.subcategory[0]}</p>
-                )}
-            </div>
-           )}
-           <div className="space-y-2">
-            <Label htmlFor="id">Product ID</Label>
-            <Input id="id" name="id" value={nextId} readOnly className="font-mono" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="name">Product Name</Label>
-            <Input id="name" name="name" />
-            {state.errors?.name && (
-              <p className="text-red-500 text-xs">{state.errors.name[0]}</p>
+            {selectedTypeName && (
+                <div className="space-y-2">
+                    <Label>Category</Label>
+                    <RadioGroup name="category" onValueChange={setSelectedCategoryName} className="flex gap-2 flex-wrap">
+                    {categories.map((category) => (
+                        <Label key={category.name} htmlFor={`cat-${category.abbreviation}`} className={cn("flex items-center space-x-2 rounded-md border p-2 cursor-pointer", selectedCategoryName === category.name && "border-primary")}>
+                            <RadioGroupItem value={category.name} id={`cat-${category.abbreviation}`} className="sr-only"/>
+                            <span>{category.name}</span>
+                        </Label>
+                    ))}
+                    </RadioGroup>
+                    {state.errors?.category && (
+                    <p className="text-red-500 text-xs">{state.errors.category[0]}</p>
+                    )}
+                </div>
             )}
-          </div>
-           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea id="description" name="description" />
-          </div>
-           <div className="grid grid-cols-2 gap-4">
+
+            {selectedCategoryName && (
                 <div className="space-y-2">
-                    <Label htmlFor="purchasePrice">Purchase Price</Label>
-                    <Input id="purchasePrice" name="purchasePrice" type="number" step="0.01" />
-                    {state.errors?.purchasePrice && (
-                        <p className="text-red-500 text-xs">{state.errors.purchasePrice[0]}</p>
+                    <Label htmlFor="subcategory">Subcategory</Label>
+                    <Select name="subcategory" disabled={!selectedCategoryName}>
+                        <SelectTrigger>
+                            <SelectValue placeholder={selectedCategoryName ? "Select a subcategory" : "Select a category first"} />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {subcategories.map((subcategory) => (
+                                <SelectItem key={subcategory.name} value={subcategory.name}>
+                                    {subcategory.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    {state.errors?.subcategory && (
+                        <p className="text-red-500 text-xs">{state.errors.subcategory[0]}</p>
                     )}
                 </div>
-                <div className="space-y-2">
-                    <Label htmlFor="salesPrice">Sales Price</Label>
-                    <Input id="salesPrice" name="salesPrice" type="number" step="0.01" />
-                    {state.errors?.salesPrice && (
-                        <p className="text-red-500 text-xs">{state.errors.salesPrice[0]}</p>
-                    )}
-                </div>
+            )}
+            <div className="space-y-2">
+                <Label htmlFor="id">Product ID</Label>
+                <Input id="id" name="id" value={nextId} readOnly className="font-mono" />
             </div>
             <div className="space-y-2">
-                <Label htmlFor="stock">Stock</Label>
-                <Input id="stock" name="stock" type="number" step="1" />
-                {state.errors?.stock && (
-                <p className="text-red-500 text-xs">{state.errors.stock[0]}</p>
+                <Label htmlFor="name">Product Name</Label>
+                <Input id="name" name="name" />
+                {state.errors?.name && (
+                <p className="text-red-500 text-xs">{state.errors.name[0]}</p>
                 )}
             </div>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
-            </DialogClose>
-            <SubmitButton />
-          </DialogFooter>
-        </form>
-      </DialogContent>
+            <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea id="description" name="description" />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="purchasePrice">Purchase Price</Label>
+                        <Input id="purchasePrice" name="purchasePrice" type="number" step="0.01" />
+                        {state.errors?.purchasePrice && (
+                            <p className="text-red-500 text-xs">{state.errors.purchasePrice[0]}</p>
+                        )}
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="salesPrice">Sales Price</Label>
+                        <Input id="salesPrice" name="salesPrice" type="number" step="0.01" />
+                        {state.errors?.salesPrice && (
+                            <p className="text-red-500 text-xs">{state.errors.salesPrice[0]}</p>
+                        )}
+                    </div>
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="stock">Stock</Label>
+                    <Input id="stock" name="stock" type="number" step="1" />
+                    {state.errors?.stock && (
+                    <p className="text-red-500 text-xs">{state.errors.stock[0]}</p>
+                    )}
+                </div>
+            <DialogFooter>
+                <DialogClose asChild>
+                <Button variant="outline">Cancel</Button>
+                </DialogClose>
+                <SubmitButton />
+            </DialogFooter>
+            </form>
+        </DialogContent>
+       </Draggable>
     </Dialog>
   );
 }
