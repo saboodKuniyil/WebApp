@@ -26,7 +26,6 @@ import {
 import { PlusCircle } from 'lucide-react';
 import { createTask, getNextTaskId } from '@/app/project-management/tasks/actions';
 import { useToast } from '@/hooks/use-toast';
-import { Textarea } from '../ui/textarea';
 import type { Project } from './projects-list';
 
 
@@ -179,7 +178,7 @@ export function AddTaskDialog({ projects }: AddTaskDialogProps) {
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="low">Low</SelectItem>
-                    <SelectItem value="medium">Medium</-SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
                     <SelectItem value="high">High</SelectItem>
                 </SelectContent>
                 </Select>
