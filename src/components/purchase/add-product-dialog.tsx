@@ -182,7 +182,7 @@ export function AddProductDialog({ allProducts }: AddProductDialogProps) {
           Add Product
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
           <DialogTitle>Add New Product</DialogTitle>
           <DialogDescription>
