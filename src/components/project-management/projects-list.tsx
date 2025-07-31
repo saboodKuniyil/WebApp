@@ -2,6 +2,7 @@
 'use client';
 
 import * as React from 'react';
+import Link from 'next/link';
 import {
   CaretSortIcon,
   ChevronDownIcon,
@@ -86,7 +87,7 @@ const taskPriorityColors: Record<Task['priority'], string> = {
 const formatDate = (dateString: string) => {
     // Append 'T00:00:00Z' to treat date strings as UTC, preventing timezone shifts.
     const date = new Date(dateString.includes('T') ? dateString : `${dateString}T00:00:00Z`);
-    return date.toLocaleDateString('en-US', { timeZone: 'UTC' });
+    return new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'numeric', day: 'numeric', timeZone: 'UTC' }).format(date);
 };
 
 const getColumns = (tasks: Task[]): ColumnDef<Project>[] => [
@@ -147,7 +148,11 @@ const getColumns = (tasks: Task[]): ColumnDef<Project>[] => [
         </Button>
       );
     },
-    cell: ({ row }) => <div className="font-medium">{row.getValue('title')}</div>,
+    cell: ({ row }) => (
+        <Link href={`/project-management/projects/${row.original.id}`} className="font-medium hover:underline">
+            {row.getValue('title')}
+        </Link>
+    ),
   },
    {
     accessorKey: 'description',

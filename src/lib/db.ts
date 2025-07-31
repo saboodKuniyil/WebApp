@@ -1,3 +1,4 @@
+
 import fs from 'fs/promises';
 import path from 'path';
 import type { Project } from '@/components/project-management/projects-list';
@@ -32,6 +33,10 @@ export const db = {
     const data = await readDb();
     return data.projects || [];
   },
+  getProjectById: async (id: string): Promise<Project | undefined> => {
+    const data = await readDb();
+    return data.projects.find(p => p.id === id);
+  },
   createProject: async (newProject: Project): Promise<void> => {
     const data = await readDb();
     data.projects.push(newProject);
@@ -40,6 +45,10 @@ export const db = {
   getTasks: async (): Promise<Task[]> => {
     const data = await readDb();
     return data.tasks || [];
+  },
+  getTasksByProjectId: async (projectId: string): Promise<Task[]> => {
+    const data = await readDb();
+    return (data.tasks || []).filter(t => t.projectId === projectId);
   },
   createTask: async (newTask: Task): Promise<void> => {
     const data = await readDb();
