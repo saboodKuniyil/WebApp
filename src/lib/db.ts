@@ -10,8 +10,13 @@ import type { TaskBlueprint } from '@/components/project-management/task-bluepri
 import type { Product } from '@/components/purchase/products-list';
 import type { ProductCategory } from '@/components/settings/product-preferences';
 import type { Unit } from '@/components/settings/units-management';
+import type { Currency } from '@/components/settings/currency-management';
 
 const dbPath = path.join(process.cwd(), 'src', 'lib', 'db.json');
+
+type AppSettings = {
+    currency: string;
+};
 
 type DbData = {
   projects: Project[];
@@ -21,6 +26,8 @@ type DbData = {
   products: Product[];
   productCategories: ProductCategory[];
   units: Unit[];
+  currencies: Currency[];
+  appSettings: AppSettings;
 };
 
 async function readDb(): Promise<DbData> {
@@ -30,7 +37,17 @@ async function readDb(): Promise<DbData> {
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
       // If the file doesn't exist, return a default structure
-      return { projects: [], tasks: [], issues: [], taskBlueprints: [], products: [], productCategories: [], units: [] };
+      return { 
+          projects: [], 
+          tasks: [], 
+          issues: [], 
+          taskBlueprints: [], 
+          products: [], 
+          productCategories: [], 
+          units: [],
+          currencies: [],
+          appSettings: { currency: 'USD' }
+      };
     }
     throw error;
   }
@@ -259,4 +276,50 @@ export async function deleteUnit(unitName: string): Promise<void> {
         throw new Error(`Unit with name ${unitName} not found.`);
     }
 }
-    
+
+export async function getCurrencies(): Promise<Currency[]> {
+    const data = await readDb();
+    return data.currencies || [];
+}
+
+export async function createCurrency(newCurrency: Currency): Promise<void> {
+    const data = await readDb();
+    if (!data.currencies) {
+        data.currencies = [];
+    }
+    data.currencies.push(newCurrency);
+    await writeDb(data);
+}
+
+export async function updateCurrency(originalCode: string, updatedCurrency: Currency): Promise<void> {
+    const data = await readDb();
+    const currencyIndex = data.currencies.findIndex(c => c.code === originalCode);
+    if (currencyIndex !== -1) {
+        data.currencies[currencyIndex] = updatedCurrency;
+        await writeDb(data);
+    } else {
+        throw new Error(`Currency with code ${originalCode} not found.`);
+    }
+}
+
+export async function deleteCurrency(currencyCode: string): Promise<void> {
+    const data = await readDb();
+    const currencyIndex = data.currencies.findIndex(c => c.code === currencyCode);
+    if (currencyIndex !== -1) {
+        data.currencies.splice(currencyIndex, 1);
+        await writeDb(data);
+    } else {
+        throw new Error(`Currency with code ${currencyCode} not found.`);
+    }
+}
+
+export async function getAppSettings(): Promise<AppSettings> {
+    const data = await readDb();
+    return data.appSettings || { currency: 'USD' };
+}
+
+export async function updateAppSettings(newSettings: Partial<AppSettings>): Promise<void> {
+    const data = await readDb();
+    data.appSettings = { ...data.appSettings, ...newSettings };
+    await writeDb(data);
+}

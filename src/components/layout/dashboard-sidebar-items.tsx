@@ -10,7 +10,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
 } from '@/components/ui/sidebar';
-import { Box, Calendar, LayoutDashboard, Briefcase, ShoppingCart, Home, Package, Users, FileText, Landmark, Truck, CheckSquare, AlertTriangle, ClipboardList, Settings, ChevronsRight } from 'lucide-react';
+import { Box, Calendar, LayoutDashboard, Briefcase, ShoppingCart, Home, Package, Users, FileText, Landmark, Truck, CheckSquare, AlertTriangle, ClipboardList, Settings, ChevronsRight, CircleDollarSign } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useModules } from '@/context/modules-context';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -172,6 +172,11 @@ export function DashboardSidebarItems() {
                                         <SidebarMenuItem>
                                             <SidebarMenuSubButton asChild isActive={pathname === '/settings/preferences/product-preference'}>
                                                 <Link href="/settings/preferences/product-preference"><Package />Product Preference</Link>
+                                            </SidebarMenuSubButton>
+                                        </SidebarMenuItem>
+                                        <SidebarMenuItem>
+                                            <SidebarMenuSubButton asChild isActive={pathname === '/settings/preferences/currency'}>
+                                                <Link href="/settings/preferences/currency"><CircleDollarSign />Currency</Link>
                                             </SidebarMenuSubButton>
                                         </SidebarMenuItem>
                                     </SidebarMenuSub>

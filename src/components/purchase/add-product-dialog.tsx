@@ -36,7 +36,7 @@ import { getProductCategories, getUnits, getProducts } from '@/lib/db';
 import { Skeleton } from '../ui/skeleton';
 import type { Product, BillOfMaterialItem } from './products-list';
 import { Card } from '../ui/card';
-import { Separator } from '../ui/separator';
+import { useModules } from '@/context/modules-context';
 
 const initialState = { message: '', errors: {} };
 
@@ -50,18 +50,7 @@ function SubmitButton() {
     return <Button type="submit">Create Product</Button>;
 }
 
-interface AddProductDialogProps {
-  allProducts: Product[];
-}
-
-const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-    }).format(amount);
-}
-
-export function AddProductDialog({ allProducts }: AddProductDialogProps) {
+export function AddProductDialog() {
   const [state, dispatch] = useActionState(createProduct, initialState);
   const [isOpen, setIsOpen] = React.useState(false);
   const [nextId, setNextId] = React.useState('');
@@ -72,7 +61,9 @@ export function AddProductDialog({ allProducts }: AddProductDialogProps) {
   
   const [categories, setCategories] = React.useState<ProductCategory[]>([]);
   const [units, setUnits] = React.useState<Unit[]>([]);
+  const [allProducts, setAllProducts] = React.useState<Product[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
+  const { currency } = useModules();
 
   // BOM state
   const [bom, setBom] = React.useState<BillOfMaterialItem[]>([]);
@@ -85,16 +76,31 @@ export function AddProductDialog({ allProducts }: AddProductDialogProps) {
   const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
 
+  const formatCurrency = React.useCallback((amount: number) => {
+    if (!currency) {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+        }).format(amount);
+    }
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: currency.code,
+    }).format(amount);
+  }, [currency]);
+
   React.useEffect(() => {
     async function fetchData() {
         if (isOpen) {
             setIsLoading(true);
-            const [fetchedCategories, fetchedUnits] = await Promise.all([
+            const [fetchedCategories, fetchedUnits, fetchedProducts] = await Promise.all([
                 getProductCategories(),
-                getUnits()
+                getUnits(),
+                getProducts()
             ]);
             setCategories(fetchedCategories);
             setUnits(fetchedUnits);
+            setAllProducts(fetchedProducts);
             setIsLoading(false);
         }
     }

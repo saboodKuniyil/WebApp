@@ -43,6 +43,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { AddProductDialog } from './add-product-dialog';
+import { useModules } from '@/context/modules-context';
 
 export type BillOfMaterialItem = {
     productId: string;
@@ -63,14 +64,9 @@ export type Product = {
   billOfMaterials?: BillOfMaterialItem[];
 };
 
-const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-    }).format(amount);
-}
-
-export const columns: ColumnDef<Product>[] = [
+const getColumns = (
+    formatCurrency: (amount: number) => string
+): ColumnDef<Product>[] => [
   {
     id: 'select',
     header: ({ table }) => (
@@ -193,6 +189,23 @@ export function ProductsList({ data }: ProductsListProps) {
     });
   const [rowSelection, setRowSelection] = React.useState({});
   const [isMounted, setIsMounted] = React.useState(false);
+  const { currency } = useModules();
+
+  const formatCurrency = React.useCallback((amount: number) => {
+    if (!currency) {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+        }).format(amount);
+    }
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: currency.code,
+    }).format(amount);
+  }, [currency]);
+  
+  const columns = React.useMemo(() => getColumns(formatCurrency), [formatCurrency]);
+
 
   React.useEffect(() => {
     setIsMounted(true);
@@ -235,7 +248,7 @@ export function ProductsList({ data }: ProductsListProps) {
                 className="max-w-sm h-8"
                 />
                 <div className="flex space-x-2">
-                {isMounted && <AddProductDialog allProducts={data} />}
+                {isMounted && <AddProductDialog />}
                 <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="outline" className="ml-auto h-8">

@@ -450,5 +450,30 @@
       "name": "Liter",
       "abbreviation": "L"
     }
+  ],
+  "appSettings": {
+    "currency": "USD"
+  },
+  "currencies": [
+    {
+      "name": "United States Dollar",
+      "code": "USD",
+      "symbol": "$"
+    },
+    {
+      "name": "Euro",
+      "code": "EUR",
+      "symbol": "€"
+    },
+    {
+      "name": "Japanese Yen",
+      "code": "JPY",
+      "symbol": "¥"
+    },
+    {
+      "name": "British Pound",
+      "code": "GBP",
+      "symbol": "£"
+    }
   ]
 }
