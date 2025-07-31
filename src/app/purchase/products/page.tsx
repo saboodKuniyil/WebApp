@@ -3,6 +3,7 @@ import { ProductsList } from "@/components/purchase/products-list";
 import { getProducts as fetchProducts } from '@/lib/db';
 import type { Product } from "@/components/purchase/products-list";
 import { unstable_noStore as noStore } from 'next/cache';
+import { AddProductDialog } from "@/components/purchase/add-product-dialog";
 
 async function getProducts(): Promise<Product[]> {
   noStore();
@@ -23,7 +24,7 @@ export default async function ProductsPage() {
       <div className="flex items-center justify-between space-y-2">
         <h1 className="text-3xl font-bold tracking-tight font-headline">Products</h1>
       </div>
-      <ProductsList data={products} />
+      <ProductsList data={products} addProductDialog={<AddProductDialog />} />
     </main>
   );
 }
