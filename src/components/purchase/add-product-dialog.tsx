@@ -135,20 +135,24 @@ export function AddProductDialog({ categories, units }: AddProductDialogProps) {
                   )}
               </div>
               {selectedTypeName && (
-                  <div className="space-y-2">
-                      <Label>Category</Label>
-                      <RadioGroup name="category" onValueChange={setSelectedCategoryName} className="flex gap-2 flex-wrap">
+                <div className="space-y-2">
+                  <Label htmlFor="category">Category</Label>
+                  <Select name="category" onValueChange={setSelectedCategoryName} value={selectedCategoryName}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
                       {categories.map((category) => (
-                          <Label key={category.name} htmlFor={`cat-${category.abbreviation}`} className={cn("flex items-center space-x-2 rounded-md border p-2 cursor-pointer", selectedCategoryName === category.name && "border-primary")}>
-                              <RadioGroupItem value={category.name} id={`cat-${category.abbreviation}`} className="sr-only"/>
-                              <span>{category.name}</span>
-                          </Label>
+                        <SelectItem key={category.name} value={category.name}>
+                          {category.name}
+                        </SelectItem>
                       ))}
-                      </RadioGroup>
-                      {state.errors?.category && (
-                      <p className="text-red-500 text-xs">{state.errors.category[0]}</p>
-                      )}
-                  </div>
+                    </SelectContent>
+                  </Select>
+                  {state.errors?.category && (
+                    <p className="text-red-500 text-xs">{state.errors.category[0]}</p>
+                  )}
+                </div>
               )}
 
               {selectedCategoryName && (
