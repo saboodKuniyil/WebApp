@@ -8,9 +8,9 @@ import { revalidatePath } from 'next/cache';
 const issueSchema = z.object({
   id: z.string(),
   title: z.string().min(1, 'Title is required'),
-  type: z.enum(['bug', 'feature-request', 'documentation']),
-  status: z.enum(['open', 'in-progress', 'closed']),
-  priority: z.enum(['low', 'medium', 'high']),
+  type: z.enum(['bug', 'feature-request', 'documentation']).optional(),
+  status: z.enum(['open', 'in-progress', 'closed']).optional(),
+  priority: z.enum(['low', 'medium', 'high']).optional(),
   taskId: z.string().min(1, 'Task is required'),
 });
 
@@ -50,9 +50,9 @@ export async function createIssue(
   const validatedFields = issueSchema.safeParse({
     id: formData.get('id'),
     title: formData.get('title'),
-    type: formData.get('type'),
-    status: formData.get('status'),
-    priority: formData.get('priority'),
+    type: formData.get('type') || undefined,
+    status: formData.get('status') || undefined,
+    priority: formData.get('priority') || undefined,
     taskId: formData.get('taskId'),
   });
 
@@ -68,9 +68,9 @@ export async function createIssue(
   const newIssue = {
     id,
     title,
-    type,
-    status,
-    priority,
+    type: type ?? 'bug',
+    status: status ?? 'open',
+    priority: priority ?? 'low',
     taskId,
     created: new Date().toISOString().split('T')[0], // Set creation date
   };
