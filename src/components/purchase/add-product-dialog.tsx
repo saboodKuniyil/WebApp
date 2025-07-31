@@ -312,7 +312,7 @@ export function AddProductDialog() {
                             </div>
                             <div className="space-y-2">
                                 {bom.length > 0 && (
-                                    <div className="grid grid-cols-[1fr_auto_auto_auto_auto] items-center gap-x-4 px-2 text-xs text-muted-foreground font-medium">
+                                    <div className="grid grid-cols-[1fr_80px_80px_80px_40px] items-center gap-x-4 px-2 text-xs text-muted-foreground font-medium">
                                         <span>Material</span>
                                         <span className="text-right">Qty</span>
                                         <span className="text-right">Rate</span>
@@ -325,7 +325,7 @@ export function AddProductDialog() {
                                     if (!product) return null;
                                     const totalItemCost = product.purchasePrice * item.quantity;
                                     return (
-                                        <div key={item.productId} className="grid grid-cols-[1fr_auto_auto_auto_auto] items-center gap-x-4 p-2 border rounded-md text-sm">
+                                        <div key={item.productId} className="grid grid-cols-[1fr_80px_80px_80px_40px] items-center gap-x-4 p-2 border rounded-md text-sm">
                                             <span className="truncate" title={product.name}>{product.name}</span>
                                             <span className="text-right">{item.quantity} {product?.unit}</span>
                                             <span className="text-right">{formatCurrency(product.purchasePrice)}</span>
