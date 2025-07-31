@@ -476,9 +476,34 @@
       "symbol": "£"
     },
     {
-      "name": "United Arab Emirates",
+      "name": "UAE Dirham",
       "code": "AED",
       "symbol": "AED"
+    },
+    {
+      "name": "Saudi Riyal",
+      "code": "SAR",
+      "symbol": "SAR"
+    },
+    {
+      "name": "Qatari Riyal",
+      "code": "QAR",
+      "symbol": "QAR"
+    },
+    {
+      "name": "Bahraini Dinar",
+      "code": "BHD",
+      "symbol": "BHD"
+    },
+    {
+      "name": "Kuwaiti Dinar",
+      "code": "KWD",
+      "symbol": "KWD"
+    },
+    {
+      "name": "Omani Rial",
+      "code": "OMR",
+      "symbol": "OMR"
     }
   ]
 }
