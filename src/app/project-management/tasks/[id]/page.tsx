@@ -15,9 +15,9 @@ async function getTask(id: string): Promise<Task | undefined> {
   return await db.getTaskById(id);
 }
 
-async function getProject(id: string): Promise<Project | undefined> {
-  noStore();
-  return await db.getProjectById(id);
+async function getProjects(): Promise<Project[]> {
+    noStore();
+    return await db.getProjects();
 }
 
 async function getIssues(taskId: string): Promise<Issue[]> {
@@ -32,7 +32,8 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
     notFound();
   }
   
-  const project = await getProject(task.projectId);
+  const projects = await getProjects();
+  const project = projects.find(p => p.id === task.projectId);
   const issues = await getIssues(task.id);
 
   return (
@@ -45,7 +46,7 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
             </Link>
         </Button>
       </div>
-      <TaskDetailView task={task} project={project} issues={issues} />
+      <TaskDetailView task={task} project={project} issues={issues} projects={projects} />
     </main>
   );
 }

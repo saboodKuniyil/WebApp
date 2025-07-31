@@ -13,11 +13,14 @@ import { Button } from "../ui/button"
 import { Pencil, Trash2, Briefcase, AlertTriangle } from "lucide-react"
 import React from "react"
 import Link from "next/link"
+import { EditTaskDialog } from "./edit-task-dialog"
+import { DeleteTaskDialog } from "./delete-task-dialog"
 
 interface TaskDetailViewProps {
     task: Task
     project?: Project
     issues: Issue[]
+    projects: Project[]
 }
 
 const statusColors: Record<Task['status'], string> = {
@@ -52,7 +55,9 @@ const formatDate = (dateString: string | undefined) => {
     return new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' }).format(date);
 };
 
-export function TaskDetailView({ task, project, issues }: TaskDetailViewProps) {
+export function TaskDetailView({ task, project, issues, projects }: TaskDetailViewProps) {
+    const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
 
     return (
         <div className="space-y-6">
@@ -64,11 +69,11 @@ export function TaskDetailView({ task, project, issues }: TaskDetailViewProps) {
                             <CardDescription>{task.id}</CardDescription>
                         </div>
                         <div className="flex items-center gap-2">
-                             <Button variant="outline" size="icon" onClick={() => {}}>
+                             <Button variant="outline" size="icon" onClick={() => setIsEditDialogOpen(true)}>
                                 <Pencil className="h-4 w-4" />
                                 <span className="sr-only">Edit Task</span>
                             </Button>
-                            <Button variant="destructive" size="icon" onClick={() => {}}>
+                            <Button variant="destructive" size="icon" onClick={() => setIsDeleteDialogOpen(true)}>
                                 <Trash2 className="h-4 w-4" />
                                 <span className="sr-only">Delete Task</span>
                             </Button>
@@ -164,6 +169,8 @@ export function TaskDetailView({ task, project, issues }: TaskDetailViewProps) {
                     </Table>
                 </CardContent>
             </Card>
+            <EditTaskDialog task={task} projects={projects} isOpen={isEditDialogOpen} setIsOpen={setIsEditDialogOpen} />
+            <DeleteTaskDialog task={task} isOpen={isDeleteDialogOpen} setIsOpen={setIsDeleteDialogOpen} />
         </div>
     )
 }

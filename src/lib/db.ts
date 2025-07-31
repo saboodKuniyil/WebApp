@@ -96,6 +96,18 @@ export const db = {
       throw new Error(`Task with id ${updatedTask.id} not found.`);
     }
   },
+  deleteTask: async (taskId: string): Promise<void> => {
+    const data = await readDb();
+    const taskIndex = data.tasks.findIndex(t => t.id === taskId);
+    if (taskIndex !== -1) {
+      data.tasks.splice(taskIndex, 1);
+      // Optional: also delete issues associated with this task
+      data.issues = data.issues.filter(i => i.taskId !== taskId);
+      await writeDb(data);
+    } else {
+      throw new Error(`Task with id ${taskId} not found.`);
+    }
+  },
   getIssues: async (): Promise<Issue[]> => {
     const data = await readDb();
     return data.issues || [];
