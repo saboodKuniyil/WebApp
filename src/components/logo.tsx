@@ -5,7 +5,7 @@ export function Logo(props: React.SVGProps<SVGSVGElement>) {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 200 50"
-      aria-label="Pro_MgtS logo"
+      aria-label="D_PRO_MGT logo"
       {...props}
     >
       <defs>
@@ -24,7 +24,7 @@ export function Logo(props: React.SVGProps<SVGSVGElement>) {
         fontWeight="bold"
         fill="url(#grad1)"
       >
-        Pro_MgtS
+        D_PRO_MGT
       </text>
     </svg>
   );
