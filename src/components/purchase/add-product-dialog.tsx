@@ -32,6 +32,8 @@ import type { Unit } from '../settings/units-management';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '../ui/scroll-area';
+import { getProductCategories, getUnits } from '@/lib/db';
+import { Skeleton } from '../ui/skeleton';
 
 const initialState = { message: '', errors: {} };
 
@@ -45,12 +47,7 @@ function SubmitButton() {
     return <Button type="submit">Create Product</Button>;
 }
 
-interface AddProductDialogProps {
-  categories: ProductCategory[];
-  units: Unit[];
-}
-
-export function AddProductDialog({ categories, units }: AddProductDialogProps) {
+export function AddProductDialog() {
   const [state, dispatch] = useActionState(createProduct, initialState);
   const [isOpen, setIsOpen] = React.useState(false);
   const [nextId, setNextId] = React.useState('');
@@ -58,9 +55,29 @@ export function AddProductDialog({ categories, units }: AddProductDialogProps) {
   const [selectedCategoryName, setSelectedCategoryName] = React.useState('');
   const [availableCategories, setAvailableCategories] = React.useState<ProductCategory[]>([]);
   const [subcategories, setSubcategories] = React.useState<Subcategory[]>([]);
+  
+  const [categories, setCategories] = React.useState<ProductCategory[]>([]);
+  const [units, setUnits] = React.useState<Unit[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
 
   const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
+
+  React.useEffect(() => {
+    async function fetchData() {
+        if (isOpen) {
+            setIsLoading(true);
+            const [fetchedCategories, fetchedUnits] = await Promise.all([
+                getProductCategories(),
+                getUnits()
+            ]);
+            setCategories(fetchedCategories);
+            setUnits(fetchedUnits);
+            setIsLoading(false);
+        }
+    }
+    fetchData();
+  }, [isOpen]);
 
   React.useEffect(() => {
     if (state.message) {
@@ -133,119 +150,134 @@ export function AddProductDialog({ categories, units }: AddProductDialogProps) {
           </DialogHeader>
           <form ref={formRef} action={dispatch}>
             <ScrollArea className="h-[70vh] pr-4">
-              <div className="grid gap-4 py-4">
-              <div className="space-y-2">
-                  <Label>Type</Label>
-                  <RadioGroup name="type" onValueChange={setSelectedTypeName} className="flex gap-2 flex-wrap">
-                  {productTypes.map((type) => (
-                      <Label key={type.name} htmlFor={`type-${type.abbreviation}`} className={cn("flex items-center space-x-2 rounded-md border p-2 cursor-pointer", selectedTypeName === type.name && "border-primary")}>
-                      <RadioGroupItem value={type.name} id={`type-${type.abbreviation}`} className="sr-only"/>
-                      <span>{type.name}</span>
-                      </Label>
-                  ))}
-                  </RadioGroup>
-                  {state.errors?.type && (
-                  <p className="text-red-500 text-xs">{state.errors.type[0]}</p>
-                  )}
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="category">Category</Label>
-                <Select name="category" onValueChange={setSelectedCategoryName} value={selectedCategoryName} disabled={!selectedTypeName}>
-                  <SelectTrigger>
-                    <SelectValue placeholder={selectedTypeName ? "Select a category" : "Select a type first"} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableCategories.map((category) => (
-                      <SelectItem key={category.name} value={category.name}>
-                        {category.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {state.errors?.category && (
-                  <p className="text-red-500 text-xs">{state.errors.category[0]}</p>
-                )}
-              </div>
-              
-              <div className="space-y-2">
-                  <Label htmlFor="subcategory">Subcategory</Label>
-                  <Select name="subcategory" disabled={!selectedCategoryName}>
-                      <SelectTrigger>
-                          <SelectValue placeholder={selectedCategoryName ? "Select a subcategory" : "Select a category first"} />
-                      </SelectTrigger>
-                      <SelectContent>
-                          {subcategories.map((subcategory) => (
-                              <SelectItem key={subcategory.name} value={subcategory.name}>
-                                  {subcategory.name}
-                              </SelectItem>
-                          ))}
-                      </SelectContent>
-                  </Select>
-                  {state.errors?.subcategory && (
-                      <p className="text-red-500 text-xs">{state.errors.subcategory[0]}</p>
-                  )}
-              </div>
-
-              <div className="space-y-2">
-                  <Label htmlFor="id">Product ID</Label>
-                  <Input id="id" name="id" value={nextId} readOnly className="font-mono" />
-              </div>
-              <div className="space-y-2">
-                  <Label htmlFor="name">Product Name</Label>
-                  <Input id="name" name="name" />
-                  {state.errors?.name && (
-                  <p className="text-red-500 text-xs">{state.errors.name[0]}</p>
-                  )}
-              </div>
-              <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea id="description" name="description" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                          <Label htmlFor="purchasePrice">Purchase Price</Label>
-                          <Input id="purchasePrice" name="purchasePrice" type="number" step="0.01" />
-                          {state.errors?.purchasePrice && (
-                              <p className="text-red-500 text-xs">{state.errors.purchasePrice[0]}</p>
-                          )}
-                      </div>
-                      <div className="space-y-2">
-                          <Label htmlFor="salesPrice">Sales Price</Label>
-                          <Input id="salesPrice" name="salesPrice" type="number" step="0.01" />
-                          {state.errors?.salesPrice && (
-                              <p className="text-red-500 text-xs">{state.errors.salesPrice[0]}</p>
-                          )}
+              {isLoading ? (
+                  <div className="space-y-4 py-4">
+                      <Skeleton className="h-10 w-full" />
+                      <Skeleton className="h-10 w-full" />
+                      <Skeleton className="h-10 w-full" />
+                      <Skeleton className="h-8 w-1/2" />
+                      <Skeleton className="h-10 w-full" />
+                      <Skeleton className="h-20 w-full" />
+                      <div className="grid grid-cols-2 gap-4">
+                        <Skeleton className="h-10 w-full" />
+                        <Skeleton className="h-10 w-full" />
                       </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+              ) : (
+                <div className="grid gap-4 py-4">
                     <div className="space-y-2">
-                        <Label htmlFor="stock">Stock</Label>
-                        <Input id="stock" name="stock" type="number" step="1" />
-                        {state.errors?.stock && (
-                        <p className="text-red-500 text-xs">{state.errors.stock[0]}</p>
+                        <Label>Type</Label>
+                        <RadioGroup name="type" onValueChange={setSelectedTypeName} className="flex gap-2 flex-wrap">
+                        {productTypes.map((type) => (
+                            <Label key={type.name} htmlFor={`type-${type.abbreviation}`} className={cn("flex items-center space-x-2 rounded-md border p-2 cursor-pointer", selectedTypeName === type.name && "border-primary")}>
+                            <RadioGroupItem value={type.name} id={`type-${type.abbreviation}`} className="sr-only"/>
+                            <span>{type.name}</span>
+                            </Label>
+                        ))}
+                        </RadioGroup>
+                        {state.errors?.type && (
+                        <p className="text-red-500 text-xs">{state.errors.type[0]}</p>
                         )}
                     </div>
+                    
                     <div className="space-y-2">
-                        <Label htmlFor="unit">Unit</Label>
-                         <Select name="unit">
+                        <Label htmlFor="category">Category</Label>
+                        <Select name="category" onValueChange={setSelectedCategoryName} value={selectedCategoryName} disabled={!selectedTypeName}>
+                        <SelectTrigger>
+                            <SelectValue placeholder={selectedTypeName ? "Select a category" : "Select a type first"} />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {availableCategories.map((category) => (
+                            <SelectItem key={category.name} value={category.name}>
+                                {category.name}
+                            </SelectItem>
+                            ))}
+                        </SelectContent>
+                        </Select>
+                        {state.errors?.category && (
+                        <p className="text-red-500 text-xs">{state.errors.category[0]}</p>
+                        )}
+                    </div>
+                    
+                    <div className="space-y-2">
+                        <Label htmlFor="subcategory">Subcategory</Label>
+                        <Select name="subcategory" disabled={!selectedCategoryName}>
                             <SelectTrigger>
-                                <SelectValue placeholder="Select a unit" />
+                                <SelectValue placeholder={selectedCategoryName ? "Select a subcategory" : "Select a category first"} />
                             </SelectTrigger>
                             <SelectContent>
-                                {units.map((unit) => (
-                                    <SelectItem key={unit.name} value={unit.name}>
-                                        {unit.name} ({unit.abbreviation})
+                                {subcategories.map((subcategory) => (
+                                    <SelectItem key={subcategory.name} value={subcategory.name}>
+                                        {subcategory.name}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
-                        {state.errors?.unit && (
-                            <p className="text-red-500 text-xs">{state.errors.unit[0]}</p>
+                        {state.errors?.subcategory && (
+                            <p className="text-red-500 text-xs">{state.errors.subcategory[0]}</p>
                         )}
                     </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="id">Product ID</Label>
+                        <Input id="id" name="id" value={nextId} readOnly className="font-mono" />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="name">Product Name</Label>
+                        <Input id="name" name="name" />
+                        {state.errors?.name && (
+                        <p className="text-red-500 text-xs">{state.errors.name[0]}</p>
+                        )}
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="description">Description</Label>
+                        <Textarea id="description" name="description" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="purchasePrice">Purchase Price</Label>
+                                <Input id="purchasePrice" name="purchasePrice" type="number" step="0.01" />
+                                {state.errors?.purchasePrice && (
+                                    <p className="text-red-500 text-xs">{state.errors.purchasePrice[0]}</p>
+                                )}
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="salesPrice">Sales Price</Label>
+                                <Input id="salesPrice" name="salesPrice" type="number" step="0.01" />
+                                {state.errors?.salesPrice && (
+                                    <p className="text-red-500 text-xs">{state.errors.salesPrice[0]}</p>
+                                )}
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="stock">Stock</Label>
+                            <Input id="stock" name="stock" type="number" step="1" />
+                            {state.errors?.stock && (
+                            <p className="text-red-500 text-xs">{state.errors.stock[0]}</p>
+                            )}
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="unit">Unit</Label>
+                            <Select name="unit">
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select a unit" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {units.map((unit) => (
+                                        <SelectItem key={unit.name} value={unit.name}>
+                                            {unit.name} ({unit.abbreviation})
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {state.errors?.unit && (
+                                <p className="text-red-500 text-xs">{state.errors.unit[0]}</p>
+                            )}
+                        </div>
+                    </div>
                 </div>
-              </div>
+              )}
             </ScrollArea>
             <DialogFooter>
                 <DialogClose asChild>
@@ -258,4 +290,3 @@ export function AddProductDialog({ categories, units }: AddProductDialogProps) {
     </Dialog>
   );
 }
-    

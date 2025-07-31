@@ -42,6 +42,7 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { AddProductDialog } from './add-product-dialog';
 
 export type Product = {
   id: string;
@@ -173,10 +174,9 @@ export const columns: ColumnDef<Product>[] = [
 
 interface ProductsListProps {
   data: Product[];
-  addProductDialog: React.ReactNode;
 }
 
-export function ProductsList({ data, addProductDialog }: ProductsListProps) {
+export function ProductsList({ data }: ProductsListProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -229,7 +229,7 @@ export function ProductsList({ data, addProductDialog }: ProductsListProps) {
                 className="max-w-sm h-8"
                 />
                 <div className="flex space-x-2">
-                {isMounted && addProductDialog}
+                {isMounted && <AddProductDialog />}
                 <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="outline" className="ml-auto h-8">
