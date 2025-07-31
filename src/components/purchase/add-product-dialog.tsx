@@ -58,7 +58,6 @@ export function AddProductDialog({ categories }: AddProductDialogProps) {
   const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
 
-
   React.useEffect(() => {
     if (state.message) {
       if (state.errors && Object.keys(state.errors).length > 0) {
