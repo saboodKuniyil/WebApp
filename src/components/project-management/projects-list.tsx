@@ -47,9 +47,11 @@ import { AddProjectDialog } from './add-project-dialog';
 export type Project = {
   id: string;
   title: string;
+  description?: string;
   status: 'in-progress' | 'completed' | 'on-hold' | 'canceled';
   manager: string;
-  deadline: string;
+  startDate: string;
+  endDate: string;
 };
 
 const statusColors: Record<Project['status'], string> = {
@@ -83,6 +85,11 @@ export const columns: ColumnDef<Project>[] = [
     enableHiding: false,
   },
   {
+    accessorKey: 'id',
+    header: 'ID',
+    cell: ({ row }) => <div>{row.getValue('id')}</div>,
+  },
+  {
     accessorKey: 'title',
     header: ({ column }) => {
       return (
@@ -97,6 +104,11 @@ export const columns: ColumnDef<Project>[] = [
     },
     cell: ({ row }) => <div className="font-medium">{row.getValue('title')}</div>,
   },
+   {
+    accessorKey: 'description',
+    header: 'Description',
+    cell: ({ row }) => <div className="max-w-xs truncate">{row.getValue('description') ?? 'N/A'}</div>,
+  },
   {
     accessorKey: 'status',
     header: 'Status',
@@ -108,9 +120,14 @@ export const columns: ColumnDef<Project>[] = [
     cell: ({ row }) => <div>{row.getValue('manager')}</div>,
   },
   {
-    accessorKey: 'deadline',
-    header: 'Deadline',
-    cell: ({ row }) => <div>{new Date(row.getValue('deadline')).toLocaleDateString()}</div>,
+    accessorKey: 'startDate',
+    header: 'Start Date',
+    cell: ({ row }) => <div>{new Date(row.getValue('startDate')).toLocaleDateString()}</div>,
+  },
+  {
+    accessorKey: 'endDate',
+    header: 'End Date',
+    cell: ({ row }) => <div>{new Date(row.getValue('endDate')).toLocaleDateString()}</div>,
   },
   {
     id: 'actions',
@@ -153,7 +170,9 @@ export function ProjectsList({ data }: ProjectsListProps) {
     []
   );
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+    React.useState<VisibilityState>({
+        description: false,
+    });
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({

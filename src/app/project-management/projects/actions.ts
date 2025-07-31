@@ -7,9 +7,13 @@ import { revalidatePath } from 'next/cache';
 
 const projectSchema = z.object({
   title: z.string().min(1, 'Title is required'),
+  description: z.string().optional(),
   manager: z.string().min(1, 'Manager is required'),
-  deadline: z.string().refine((val) => !isNaN(Date.parse(val)), {
-    message: "Invalid date format",
+  startDate: z.string().refine((val) => !isNaN(Date.parse(val)), {
+    message: "Invalid start date format",
+  }),
+  endDate: z.string().refine((val) => !isNaN(Date.parse(val)), {
+    message: "Invalid end date format",
   }),
   status: z.enum(['in-progress', 'completed', 'on-hold', 'canceled']),
 });
@@ -18,8 +22,10 @@ export type ProjectFormState = {
   message: string;
   errors?: {
     title?: string[];
+    description?: string[];
     manager?: string[];
-    deadline?: string[];
+    startDate?: string[];
+    endDate?: string[];
     status?: string[];
   };
 };
@@ -30,8 +36,10 @@ export async function createProject(
 ): Promise<ProjectFormState> {
   const validatedFields = projectSchema.safeParse({
     title: formData.get('title'),
+    description: formData.get('description'),
     manager: formData.get('manager'),
-    deadline: formData.get('deadline'),
+    startDate: formData.get('startDate'),
+    endDate: formData.get('endDate'),
     status: formData.get('status'),
   });
 
@@ -42,15 +50,16 @@ export async function createProject(
     };
   }
 
-  const { title, manager, deadline, status } = validatedFields.data;
+  const { title, description, manager, startDate, endDate, status } = validatedFields.data;
 
   try {
-    // Generate a unique ID, for example:
-    const id = `PROJ-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+    // In a real app, you'd want a more robust way to generate sequential IDs,
+    // like a database sequence or a dedicated service.
+    const id = `PR_${Math.floor(Math.random() * 1000) + 9001}`;
 
     await db.query(
-      'INSERT INTO projects (id, title, manager, deadline, status) VALUES (?, ?, ?, ?, ?)',
-      [id, title, manager, new Date(deadline), status]
+      'INSERT INTO projects (id, title, description, manager, startDate, endDate, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [id, title, description, manager, new Date(startDate), new Date(endDate), status]
     );
 
     revalidatePath('/project-management/projects');

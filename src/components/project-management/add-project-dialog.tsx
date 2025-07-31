@@ -30,6 +30,8 @@ import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { createProject } from '@/app/project-management/projects/actions';
 import { useToast } from '@/hooks/use-toast';
+import { Textarea } from '../ui/textarea';
+
 
 const initialState = { message: '', errors: {} };
 
@@ -42,14 +44,16 @@ function SubmitButton() {
 export function AddProjectDialog() {
   const [state, dispatch] = useFormState(createProject, initialState);
   const [isOpen, setIsOpen] = React.useState(false);
-  const [deadline, setDeadline] = React.useState<Date>();
+  const [startDate, setStartDate] = React.useState<Date>();
+  const [endDate, setEndDate] = React.useState<Date>();
+
   const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
 
 
   React.useEffect(() => {
     if (state.message) {
-      if (state.errors) {
+      if (state.errors && Object.keys(state.errors).length > 0) {
         toast({
           variant: 'destructive',
           title: 'Error',
@@ -62,7 +66,8 @@ export function AddProjectDialog() {
         });
         setIsOpen(false);
         formRef.current?.reset();
-        setDeadline(undefined);
+        setStartDate(undefined);
+        setEndDate(undefined);
       }
     }
   }, [state, toast]);
@@ -75,7 +80,7 @@ export function AddProjectDialog() {
           Add Project
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Add New Project</DialogTitle>
           <DialogDescription>
@@ -92,6 +97,15 @@ export function AddProjectDialog() {
               <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.title[0]}</p>
             )}
           </div>
+           <div className="grid grid-cols-4 items-start gap-4">
+            <Label htmlFor="description" className="text-right pt-2">
+              Description
+            </Label>
+            <Textarea id="description" name="description" className="col-span-3" />
+            {state.errors?.description && (
+              <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.description[0]}</p>
+            )}
+          </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="manager" className="text-right">
               Manager
@@ -102,8 +116,8 @@ export function AddProjectDialog() {
             )}
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="deadline" className="text-right">
-              Deadline
+            <Label className="text-right">
+              Start Date
             </Label>
             <Popover>
               <PopoverTrigger asChild>
@@ -111,25 +125,56 @@ export function AddProjectDialog() {
                   variant={'outline'}
                   className={cn(
                     'col-span-3 justify-start text-left font-normal',
-                    !deadline && 'text-muted-foreground'
+                    !startDate && 'text-muted-foreground'
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {deadline ? format(deadline, 'PPP') : <span>Pick a date</span>}
+                  {startDate ? format(startDate, 'PPP') : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
                 <Calendar
                   mode="single"
-                  selected={deadline}
-                  onSelect={setDeadline}
+                  selected={startDate}
+                  onSelect={setStartDate}
                   initialFocus
                 />
               </PopoverContent>
             </Popover>
-            <input type="hidden" name="deadline" value={deadline?.toISOString() ?? ''} />
-             {state.errors?.deadline && (
-              <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.deadline[0]}</p>
+            <input type="hidden" name="startDate" value={startDate?.toISOString() ?? ''} />
+             {state.errors?.startDate && (
+              <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.startDate[0]}</p>
+            )}
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label className="text-right">
+              End Date
+            </Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={'outline'}
+                  className={cn(
+                    'col-span-3 justify-start text-left font-normal',
+                    !endDate && 'text-muted-foreground'
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {endDate ? format(endDate, 'PPP') : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={endDate}
+                  onSelect={setEndDate}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+            <input type="hidden" name="endDate" value={endDate?.toISOString() ?? ''} />
+             {state.errors?.endDate && (
+              <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.endDate[0]}</p>
             )}
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
