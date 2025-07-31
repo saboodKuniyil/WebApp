@@ -44,6 +44,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { AddProductDialog } from './add-product-dialog';
 import { useModules } from '@/context/modules-context';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 export type BillOfMaterialItem = {
     productId: string;
@@ -69,6 +70,9 @@ export type Product = {
   billOfMaterials?: BillOfMaterialItem[];
   billOfServices?: BillOfServiceItem[];
 };
+
+const productTypes = ["Raw Material", "Service", "Finished Good"];
+
 
 const getColumns = (
     formatCurrency: (amount: number) => string
@@ -124,6 +128,9 @@ const getColumns = (
     accessorKey: 'type',
     header: 'Type',
     cell: ({ row }) => <Badge variant="default">{row.getValue('type')}</Badge>,
+    filterFn: (row, id, value) => {
+        return value.includes(row.getValue(id));
+    }
   },
   {
     accessorKey: 'category',
@@ -245,14 +252,34 @@ export function ProductsList({ data }: ProductsListProps) {
         <CardContent className="p-2 pt-0">
             <div className="w-full">
             <div className="flex items-center justify-between py-2">
-                <Input
-                placeholder="Filter products..."
-                value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-                onChange={(event) =>
-                    table.getColumn('name')?.setFilterValue(event.target.value)
-                }
-                className="max-w-sm h-8"
-                />
+                <div className="flex items-center gap-2">
+                    <Input
+                    placeholder="Filter products..."
+                    value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+                    onChange={(event) =>
+                        table.getColumn('name')?.setFilterValue(event.target.value)
+                    }
+                    className="max-w-sm h-8"
+                    />
+                    {isMounted && <Select
+                        value={(table.getColumn('type')?.getFilterValue() as string) ?? ''}
+                        onValueChange={(value) =>
+                            table.getColumn('type')?.setFilterValue(value === 'all' ? '' : value)
+                        }
+                    >
+                        <SelectTrigger className="w-[180px] h-8">
+                            <SelectValue placeholder="Filter by type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Types</SelectItem>
+                            {productTypes.map((type) => (
+                                <SelectItem key={type} value={type}>
+                                    {type}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>}
+                </div>
                 <div className="flex space-x-2">
                 {isMounted && <AddProductDialog />}
                 <DropdownMenu>
