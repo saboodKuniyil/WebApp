@@ -317,7 +317,7 @@ export function ProductsList({ data }: ProductsListProps) {
                     <TableRow key={headerGroup.id}>
                         {headerGroup.headers.map((header) => {
                         return (
-                            <TableHead key={header.id} className="p-2">
+                            <TableHead key={header.id} className="p-1 h-9">
                             {header.isPlaceholder
                                 ? null
                                 : flexRender(
@@ -338,7 +338,7 @@ export function ProductsList({ data }: ProductsListProps) {
                         data-state={row.getIsSelected() && 'selected'}
                         >
                         {row.getVisibleCells().map((cell) => (
-                            <TableCell key={cell.id} className="p-2">
+                            <TableCell key={cell.id} className="p-1">
                             {flexRender(
                                 cell.column.columnDef.cell,
                                 cell.getContext()
