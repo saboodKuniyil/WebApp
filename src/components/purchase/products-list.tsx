@@ -45,6 +45,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { AddProductDialog } from './add-product-dialog';
 import { useModules } from '@/context/modules-context';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import Image from 'next/image';
+import { Package } from 'lucide-react';
 
 export type BillOfMaterialItem = {
     productId: string;
@@ -69,6 +71,7 @@ export type Product = {
   unit: string;
   billOfMaterials?: BillOfMaterialItem[];
   billOfServices?: BillOfServiceItem[];
+  imageUrl?: string;
 };
 
 const productTypes = ["Raw Material", "Service", "Finished Good"];
@@ -98,6 +101,22 @@ const getColumns = (
     ),
     enableSorting: false,
     enableHiding: false,
+  },
+  {
+    id: 'image',
+    header: 'Image',
+    cell: ({ row }) => {
+        const imageUrl = row.original.imageUrl;
+        const productName = row.original.name;
+        return imageUrl ? (
+            <Image src={imageUrl} alt={productName} width={40} height={40} className="rounded-md object-cover w-10 h-10" data-ai-hint="product image" />
+        ) : (
+            <div className="h-10 w-10 bg-muted rounded-md flex items-center justify-center">
+                <Package className="h-5 w-5 text-muted-foreground" />
+            </div>
+        )
+    },
+    enableSorting: false,
   },
   {
     accessorKey: 'id',

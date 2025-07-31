@@ -368,6 +368,10 @@ export function AddProductDialog() {
                         <Label htmlFor="description">Description</Label>
                         <Textarea id="description" name="description" />
                     </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="imageUrl">Image URL</Label>
+                        <Input id="imageUrl" name="imageUrl" placeholder="https://example.com/image.png" />
+                    </div>
 
                     {selectedTypeName === 'Finished Good' && (
                         <>

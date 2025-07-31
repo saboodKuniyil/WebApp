@@ -19,6 +19,7 @@ const productSchema = z.object({
   id: z.string(),
   name: z.string().min(1, 'Name is required'),
   description: z.string().optional(),
+  imageUrl: z.string().url().optional().or(z.literal('')),
   type: z.string().min(1, 'Type is required'),
   category: z.string().min(1, 'Category is required'),
   subcategory: z.string().min(1, 'Subcategory is required'),
@@ -36,6 +37,7 @@ export type ProductFormState = {
     id?: string[];
     name?: string[];
     description?: string[];
+    imageUrl?: string[];
     type?: string[];
     category?: string[];
     subcategory?: string[];
@@ -78,6 +80,7 @@ export async function createProduct(
     id: formData.get('id'),
     name: formData.get('name'),
     description: formData.get('description'),
+    imageUrl: formData.get('imageUrl'),
     type: formData.get('type'),
     category: formData.get('category'),
     subcategory: formData.get('subcategory'),
@@ -96,7 +99,7 @@ export async function createProduct(
     };
   }
 
-  const { id, name, description, type, category, subcategory, salesPrice, stock, unit, billOfMaterials, billOfServices } = validatedFields.data;
+  const { id, name, description, imageUrl, type, category, subcategory, salesPrice, stock, unit, billOfMaterials, billOfServices } = validatedFields.data;
   let { purchasePrice } = validatedFields.data;
 
   try {
@@ -111,6 +114,7 @@ export async function createProduct(
         id,
         name,
         description,
+        imageUrl,
         type,
         category,
         subcategory,
