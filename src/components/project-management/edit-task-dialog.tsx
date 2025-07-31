@@ -60,6 +60,7 @@ export function EditTaskDialog({ task, projects, taskBlueprints, isOpen, setIsOp
   );
   const [selectedProjectId, setSelectedProjectId] = React.useState<string>(task.projectId);
   const nodeRef = React.useRef(null);
+  const [mounted, setMounted] = React.useState(false);
   
   const selectedProject = projects.find(p => p.id === selectedProjectId);
   const selectedBlueprint = taskBlueprints.find(b => b.id === selectedProject?.taskBlueprintId);
@@ -67,6 +68,10 @@ export function EditTaskDialog({ task, projects, taskBlueprints, isOpen, setIsOp
 
   const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   React.useEffect(() => {
     if (state.message) {
@@ -92,6 +97,9 @@ export function EditTaskDialog({ task, projects, taskBlueprints, isOpen, setIsOp
     setSelectedProjectId(task.projectId);
   }, [task]);
 
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

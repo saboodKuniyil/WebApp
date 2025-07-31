@@ -30,6 +30,11 @@ export function DeleteTaskDialog({ task, isOpen, setIsOpen }: DeleteTaskDialogPr
   const { toast } = useToast();
   const router = useRouter();
   const nodeRef = React.useRef(null);
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleDelete = () => {
     startTransition(async () => {
@@ -51,6 +56,10 @@ export function DeleteTaskDialog({ task, isOpen, setIsOpen }: DeleteTaskDialogPr
       setIsOpen(false);
     });
   };
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>

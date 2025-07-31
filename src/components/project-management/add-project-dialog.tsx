@@ -63,9 +63,14 @@ export function AddProjectDialog({ taskBlueprints }: AddProjectDialogProps) {
   const [endDate, setEndDate] = React.useState<Date>();
   const [nextId, setNextId] = React.useState('');
   const nodeRef = React.useRef(null);
+  const [mounted, setMounted] = React.useState(false);
 
   const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   React.useEffect(() => {
     if (state.message) {
@@ -93,6 +98,10 @@ export function AddProjectDialog({ taskBlueprints }: AddProjectDialogProps) {
       getNextProjectId().then(setNextId);
     }
   }, [isOpen]);
+  
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

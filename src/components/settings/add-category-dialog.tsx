@@ -35,9 +35,14 @@ export function AddCategoryDialog() {
   const [newSubcategoryName, setNewSubcategoryName] = React.useState('');
   const [newSubcategoryAbbr, setNewSubcategoryAbbr] = React.useState('');
   const nodeRef = React.useRef(null);
+  const [mounted, setMounted] = React.useState(false);
 
   const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   React.useEffect(() => {
     if (state.message) {
@@ -71,6 +76,9 @@ export function AddCategoryDialog() {
     setSubcategories(subcategories.filter(s => s.name !== sub));
   };
 
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -157,5 +165,3 @@ export function AddCategoryDialog() {
     </Dialog>
   );
 }
-
-    

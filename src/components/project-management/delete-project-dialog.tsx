@@ -28,6 +28,11 @@ export function DeleteProjectDialog({ project, isOpen, setIsOpen }: DeleteProjec
   const [isPending, startTransition] = React.useTransition();
   const { toast } = useToast();
   const nodeRef = React.useRef(null);
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleDelete = () => {
     startTransition(async () => {
@@ -48,6 +53,10 @@ export function DeleteProjectDialog({ project, isOpen, setIsOpen }: DeleteProjec
       setIsOpen(false);
     });
   };
+  
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>

@@ -56,9 +56,14 @@ export function AddProductDialog({ categories }: AddProductDialogProps) {
   const [selectedCategoryName, setSelectedCategoryName] = React.useState('');
   const [subcategories, setSubcategories] = React.useState<Subcategory[]>([]);
   const nodeRef = React.useRef(null);
+  const [mounted, setMounted] = React.useState(false);
 
   const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   React.useEffect(() => {
     if (state.message) {
@@ -101,6 +106,9 @@ export function AddProductDialog({ categories }: AddProductDialogProps) {
       }
   }, [selectedTypeName, selectedCategoryName, categories]);
 
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

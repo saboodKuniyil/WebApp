@@ -47,9 +47,14 @@ export function AddIssueDialog({ tasks, defaultTaskId, trigger }: AddIssueDialog
   const [isOpen, setIsOpen] = React.useState(false);
   const [nextId, setNextId] = React.useState('');
   const nodeRef = React.useRef(null);
+  const [mounted, setMounted] = React.useState(false);
 
   const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   React.useEffect(() => {
     if (state.message) {
@@ -75,6 +80,10 @@ export function AddIssueDialog({ tasks, defaultTaskId, trigger }: AddIssueDialog
       getNextIssueId().then(setNextId);
     }
   }, [isOpen]);
+  
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

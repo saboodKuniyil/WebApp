@@ -38,12 +38,17 @@ export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategory
   const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
   const nodeRef = React.useRef(null);
+  const [mounted, setMounted] = React.useState(false);
 
   const [name, setName] = React.useState(category.name);
   const [abbreviation, setAbbreviation] = React.useState(category.abbreviation);
   const [subcategories, setSubcategories] = React.useState<Subcategory[]>(category.subcategories);
   const [newSubcategoryName, setNewSubcategoryName] = React.useState('');
   const [newSubcategoryAbbr, setNewSubcategoryAbbr] = React.useState('');
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   React.useEffect(() => {
     setName(category.name);
@@ -74,6 +79,10 @@ export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategory
     setSubcategories(subcategories.filter(s => s.name !== sub));
   };
   
+  if (!mounted) {
+    return null;
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <Draggable nodeRef={nodeRef} handle=".dialog-header">

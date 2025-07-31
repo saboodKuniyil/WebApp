@@ -58,6 +58,7 @@ export function AddTaskDialog({ projects, taskBlueprints, defaultProjectId, trig
   const [endDate, setEndDate] = React.useState<Date>();
   const [selectedProjectId, setSelectedProjectId] = React.useState<string>(defaultProjectId || '');
   const nodeRef = React.useRef(null);
+  const [mounted, setMounted] = React.useState(false);
 
   const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
@@ -65,6 +66,10 @@ export function AddTaskDialog({ projects, taskBlueprints, defaultProjectId, trig
   const selectedProject = projects.find(p => p.id === selectedProjectId);
   const selectedBlueprint = taskBlueprints.find(b => b.id === selectedProject?.taskBlueprintId);
   const availableStatuses = selectedBlueprint?.statuses ?? [];
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   React.useEffect(() => {
     if (state.message) {
@@ -99,6 +104,10 @@ export function AddTaskDialog({ projects, taskBlueprints, defaultProjectId, trig
         setSelectedProjectId(defaultProjectId)
     }
   }, [defaultProjectId]);
+  
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

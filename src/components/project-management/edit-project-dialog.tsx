@@ -64,9 +64,14 @@ export function EditProjectDialog({ project, taskBlueprints, isOpen, setIsOpen }
     project.endDate ? new Date(project.endDate) : undefined
   );
   const nodeRef = React.useRef(null);
+  const [mounted, setMounted] = React.useState(false);
 
   const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   React.useEffect(() => {
     if (state.message) {
@@ -92,6 +97,9 @@ export function EditProjectDialog({ project, taskBlueprints, isOpen, setIsOpen }
     setEndDate(project.endDate ? new Date(project.endDate) : undefined);
   }, [project]);
 
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

@@ -40,9 +40,14 @@ export function AddTaskBlueprintDialog() {
   ]);
   const [newStatusName, setNewStatusName] = React.useState('');
   const nodeRef = React.useRef(null);
+  const [mounted, setMounted] = React.useState(false);
 
   const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   React.useEffect(() => {
     if (state.message) {
@@ -90,6 +95,10 @@ export function AddTaskBlueprintDialog() {
     (newStatuses[index] as any)[field] = value;
     setStatuses(newStatuses);
   };
+  
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

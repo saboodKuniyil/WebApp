@@ -58,6 +58,11 @@ export function ProductPreferences({ data }: ProductPreferencesProps) {
   const [selectedCategory, setSelectedCategory] = React.useState<ProductCategory | null>(null);
   const { toast } = useToast();
   const nodeRef = React.useRef(null);
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleEdit = (category: ProductCategory) => {
     setSelectedCategory(category);
@@ -123,6 +128,25 @@ export function ProductPreferences({ data }: ProductPreferencesProps) {
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+  
+  if (!mounted) {
+    return (
+        <Card>
+            <CardHeader className="p-2">
+                <CardTitle>Categories</CardTitle>
+                <CardDescription>Manage your product categories and subcategories.</CardDescription>
+            </CardHeader>
+            <CardContent className="p-2 pt-0">
+                <div className="w-full">
+                    <div className="flex items-center justify-end py-2">
+                         <AddCategoryDialog />
+                    </div>
+                    <div className="rounded-md border h-48 animate-pulse bg-muted"></div>
+                </div>
+            </CardContent>
+        </Card>
+    )
+  }
 
   return (
     <>
@@ -219,5 +243,3 @@ export function ProductPreferences({ data }: ProductPreferencesProps) {
     </>
   );
 }
-
-    
