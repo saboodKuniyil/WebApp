@@ -7,11 +7,17 @@ import * as React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
   SidebarProvider,
   Sidebar,
-  SidebarHeader,
   SidebarContent,
-  SidebarFooter,
   SidebarInset,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
@@ -39,34 +45,44 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <Sidebar>
-        <SidebarHeader>
-          <div className="p-2">
-            <Logo className="h-10 w-auto" />
-          </div>
-        </SidebarHeader>
         <SidebarContent>
           <DashboardSidebarItems />
         </SidebarContent>
-        <SidebarFooter>
-          <div className="flex items-center gap-3 p-2">
-            <Avatar>
-              <AvatarImage src="https://placehold.co/100x100.png" alt="@user" />
-              <AvatarFallback>U</AvatarFallback>
-            </Avatar>
-            <div className="flex-1 overflow-hidden">
-              <p className="truncate text-sm font-semibold">User Name</p>
-              <p className="truncate text-xs text-muted-foreground">user@example.com</p>
-            </div>
-            {/* The form + logout action were removed, this button is now for display */}
-            <Button variant="ghost" size="icon" aria-label="Log out">
-              <LogOut className="h-5 w-5" />
-            </Button>
-          </div>
-        </SidebarFooter>
       </Sidebar>
       <SidebarInset>
         <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm md:h-16 md:px-6">
-            <SidebarTrigger className="md:hidden" />
+            <div className="flex w-full items-center justify-between">
+                <div className="flex items-center gap-4">
+                    <SidebarTrigger className="md:hidden" />
+                    <Logo className="h-10 w-auto hidden md:block" />
+                </div>
+                
+                <div className="flex items-center gap-4">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                                <Avatar>
+                                <AvatarImage src="https://placehold.co/100x100.png" alt="@user" />
+                                <AvatarFallback>U</AvatarFallback>
+                                </Avatar>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-56" align="end" forceMount>
+                            <DropdownMenuLabel className="font-normal">
+                                <div className="flex flex-col space-y-1">
+                                    <p className="text-sm font-medium leading-none">User Name</p>
+                                    <p className="text-xs leading-none text-muted-foreground">user@example.com</p>
+                                </div>
+                            </DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem>
+                                <LogOut className="mr-2 h-4 w-4" />
+                                <span>Log out</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+            </div>
         </header>
         {children}
       </SidebarInset>
