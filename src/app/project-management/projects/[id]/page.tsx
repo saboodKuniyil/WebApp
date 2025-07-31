@@ -2,6 +2,7 @@
 import { db } from '@/lib/db';
 import type { Project } from "@/components/project-management/projects-list";
 import type { Task } from "@/components/project-management/tasks-list";
+import type { TaskBlueprint } from '@/components/project-management/task-blueprints-list';
 import { unstable_noStore as noStore } from 'next/cache';
 import { notFound } from 'next/navigation';
 import { ProjectDetailView } from '@/components/project-management/project-detail-view';
@@ -19,6 +20,11 @@ async function getProjectTasks(projectId: string): Promise<Task[]> {
   return await db.getTasksByProjectId(projectId);
 }
 
+async function getTaskBlueprints(): Promise<TaskBlueprint[]> {
+  noStore();
+  return await db.getTaskBlueprints();
+}
+
 export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
   const project = await getProject(params.id);
   
@@ -27,6 +33,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
   }
 
   const tasks = await getProjectTasks(project.id);
+  const taskBlueprints = await getTaskBlueprints();
 
   return (
     <main className="flex-1 space-y-4 p-2 md:p-4 pt-4">
@@ -38,7 +45,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
             </Link>
         </Button>
       </div>
-      <ProjectDetailView project={project} tasks={tasks} />
+      <ProjectDetailView project={project} tasks={tasks} taskBlueprints={taskBlueprints} />
     </main>
   );
 }

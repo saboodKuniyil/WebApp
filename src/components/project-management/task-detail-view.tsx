@@ -16,7 +16,6 @@ import Link from "next/link"
 import { EditTaskDialog } from "./edit-task-dialog"
 import { DeleteTaskDialog } from "./delete-task-dialog"
 import { AddIssueDialog } from "./add-issue-dialog"
-import { db } from "@/lib/db"
 import { TaskBlueprint } from "./task-blueprints-list"
 
 interface TaskDetailViewProps {
@@ -24,6 +23,7 @@ interface TaskDetailViewProps {
     project?: Project
     issues: Issue[]
     projects: Project[]
+    taskBlueprints: TaskBlueprint[]
 }
 
 const statusColors: Record<Task['status'], string> = {
@@ -58,14 +58,9 @@ const formatDate = (dateString: string | undefined) => {
     return new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' }).format(date);
 };
 
-export function TaskDetailView({ task, project, issues, projects }: TaskDetailViewProps) {
+export function TaskDetailView({ task, project, issues, projects, taskBlueprints }: TaskDetailViewProps) {
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
-    const [taskBlueprints, setTaskBlueprints] = React.useState<TaskBlueprint[]>([]);
-
-    React.useEffect(() => {
-        db.getTaskBlueprints().then(setTaskBlueprints);
-    }, []);
 
     return (
         <div className="space-y-6">

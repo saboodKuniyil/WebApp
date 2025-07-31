@@ -14,12 +14,12 @@ import { EditProjectDialog } from "./edit-project-dialog"
 import { DeleteProjectDialog } from "./delete-project-dialog"
 import React from "react"
 import Link from 'next/link';
-import { db } from "@/lib/db"
 import { TaskBlueprint } from "./task-blueprints-list"
 
 interface ProjectDetailViewProps {
     project: Project
     tasks: Task[]
+    taskBlueprints: TaskBlueprint[]
 }
 
 const statusColors: Record<Project['status'], string> = {
@@ -48,18 +48,12 @@ const formatDate = (dateString: string) => {
     return new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' }).format(date);
 };
 
-export function ProjectDetailView({ project, tasks }: ProjectDetailViewProps) {
+export function ProjectDetailView({ project, tasks, taskBlueprints }: ProjectDetailViewProps) {
     const totalTasks = tasks.length;
     const totalCompletion = tasks.reduce((sum, task) => sum + (task.completionPercentage ?? 0), 0);
     const overallProgress = totalTasks > 0 ? totalCompletion / totalTasks : 0;
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
-    const [taskBlueprints, setTaskBlueprints] = React.useState<TaskBlueprint[]>([]);
-
-    React.useEffect(() => {
-        db.getTaskBlueprints().then(setTaskBlueprints);
-    }, []);
-
 
     return (
         <div className="space-y-6">

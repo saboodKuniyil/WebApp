@@ -1,4 +1,6 @@
 
+'use server';
+
 import fs from 'fs/promises';
 import path from 'path';
 import type { Project } from '@/components/project-management/projects-list';
