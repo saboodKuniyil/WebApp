@@ -9,12 +9,13 @@ import type { Project } from "./projects-list"
 import type { Task } from "./tasks-list"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { Button } from "../ui/button"
-import { Pencil, Trash2 } from "lucide-react"
+import { Pencil, Trash2, PlusCircle } from "lucide-react"
 import { EditProjectDialog } from "./edit-project-dialog"
 import { DeleteProjectDialog } from "./delete-project-dialog"
 import React from "react"
 import Link from 'next/link';
 import { TaskBlueprint } from "./task-blueprints-list"
+import { AddTaskDialog } from "./add-task-dialog"
 
 interface ProjectDetailViewProps {
     project: Project
@@ -108,9 +109,22 @@ export function ProjectDetailView({ project, tasks, taskBlueprints }: ProjectDet
             </Card>
 
             <Card>
-                <CardHeader className="p-4">
-                    <CardTitle>Tasks</CardTitle>
-                    <CardDescription>A list of tasks associated with this project.</CardDescription>
+                <CardHeader className="p-4 flex flex-row items-center justify-between">
+                    <div>
+                        <CardTitle>Tasks</CardTitle>
+                        <CardDescription>A list of tasks associated with this project.</CardDescription>
+                    </div>
+                    <AddTaskDialog 
+                        projects={[project]} 
+                        taskBlueprints={taskBlueprints} 
+                        defaultProjectId={project.id}
+                        trigger={
+                            <Button size="sm">
+                                <PlusCircle className="mr-2 h-4 w-4" />
+                                Add Task
+                            </Button>
+                        }
+                    />
                 </CardHeader>
                 <CardContent className="p-4 pt-0">
                     <Table>

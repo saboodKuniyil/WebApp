@@ -45,16 +45,18 @@ function SubmitButton() {
 interface AddTaskDialogProps {
     projects: Project[];
     taskBlueprints: TaskBlueprint[];
+    defaultProjectId?: string;
+    trigger?: React.ReactNode;
 }
 
-export function AddTaskDialog({ projects, taskBlueprints }: AddTaskDialogProps) {
+export function AddTaskDialog({ projects, taskBlueprints, defaultProjectId, trigger }: AddTaskDialogProps) {
   const [state, dispatch] = useActionState(createTask, initialState);
   const [isOpen, setIsOpen] = React.useState(false);
   const [nextId, setNextId] = React.useState('');
   const [startDate, setStartDate] = React.useState<Date>();
   const [endDate, setEndDate] = React.useState<Date>();
   const [completionPercentage, setCompletionPercentage] = React.useState([0]);
-  const [selectedProjectId, setSelectedProjectId] = React.useState<string>('');
+  const [selectedProjectId, setSelectedProjectId] = React.useState<string>(defaultProjectId || '');
 
   const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
@@ -81,10 +83,10 @@ export function AddTaskDialog({ projects, taskBlueprints }: AddTaskDialogProps) 
         setStartDate(undefined);
         setEndDate(undefined);
         setCompletionPercentage([0]);
-        setSelectedProjectId('');
+        setSelectedProjectId(defaultProjectId || '');
       }
     }
-  }, [state, toast]);
+  }, [state, toast, defaultProjectId]);
 
   React.useEffect(() => {
     if (isOpen) {
@@ -92,13 +94,21 @@ export function AddTaskDialog({ projects, taskBlueprints }: AddTaskDialogProps) 
     }
   }, [isOpen]);
 
+  React.useEffect(() => {
+    if(defaultProjectId) {
+        setSelectedProjectId(defaultProjectId)
+    }
+  }, [defaultProjectId]);
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Add Task
-        </Button>
+        {trigger ? trigger : (
+            <Button>
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Add Task
+            </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
@@ -133,7 +143,7 @@ export function AddTaskDialog({ projects, taskBlueprints }: AddTaskDialogProps) 
             <Label htmlFor="projectId" className="text-right">
                 Project
             </Label>
-            <Select name="projectId" onValueChange={setSelectedProjectId}>
+            <Select name="projectId" value={selectedProjectId} onValueChange={setSelectedProjectId} disabled={!!defaultProjectId}>
               <SelectTrigger className="col-span-3">
                 <SelectValue placeholder="Select a project" />
               </SelectTrigger>
@@ -143,6 +153,7 @@ export function AddTaskDialog({ projects, taskBlueprints }: AddTaskDialogProps) 
                 ))}
               </SelectContent>
             </Select>
+            {defaultProjectId && <input type="hidden" name="projectId" value={defaultProjectId} />}
             {state.errors?.projectId && (
                 <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.projectId[0]}</p>
             )}
