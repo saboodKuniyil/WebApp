@@ -51,6 +51,15 @@ function SubmitButton() {
     return <Button type="submit">Create Product</Button>;
 }
 
+const formatFileSize = (bytes: number | null) => {
+    if (bytes === null) return '';
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
 export function AddProductDialog() {
   const [state, dispatch] = useActionState(createProduct, initialState);
   const [isOpen, setIsOpen] = React.useState(false);
@@ -61,7 +70,7 @@ export function AddProductDialog() {
   const [subcategories, setSubcategories] = React.useState<Subcategory[]>([]);
   
   const [categories, setCategories] = React.useState<ProductCategory[]>([]);
-  const [units, setUnits] = React.useState<Unit[]>([]);
+  const [units, setUnits] areact.useState<Unit[]>([]);
   const [allProducts, setAllProducts] = React.useState<Product[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const { currency } = useModules();
@@ -69,6 +78,7 @@ export function AddProductDialog() {
   // Image state
   const [imagePreview, setImagePreview] = React.useState<string | null>(null);
   const [imageData, setImageData] = React.useState<string | null>(null);
+  const [imageSize, setImageSize] = React.useState<number | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // BOM state
@@ -140,6 +150,7 @@ export function AddProductDialog() {
     setMarginPercent(0);
     setImagePreview(null);
     setImageData(null);
+    setImageSize(null);
   }, []);
 
   React.useEffect(() => {
@@ -272,6 +283,7 @@ export function AddProductDialog() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setImageSize(file.size);
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result as string;
@@ -402,6 +414,11 @@ export function AddProductDialog() {
                             accept="image/*"
                             onChange={handleImageChange}
                           />
+                          {imageSize !== null && (
+                              <div className="text-xs text-muted-foreground text-center">
+                                  Size: {formatFileSize(imageSize)}
+                              </div>
+                          )}
                           {state.errors?.imageUrl && (
                             <p className="text-red-500 text-xs">{state.errors.imageUrl[0]}</p>
                           )}
@@ -609,3 +626,5 @@ export function AddProductDialog() {
     </Dialog>
   );
 }
+
+    
