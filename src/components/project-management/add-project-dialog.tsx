@@ -46,9 +46,21 @@ export function AddProjectDialog() {
   const [isOpen, setIsOpen] = React.useState(false);
   const [startDate, setStartDate] = React.useState<Date>();
   const [endDate, setEndDate] = React.useState<Date>();
+  const [projectId, setProjectId] = React.useState('');
 
   const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
+
+  const generateProjectId = () => {
+      const randomPart = Math.floor(Math.random() * 1000) + 9001;
+      return `PR_${randomPart}`;
+  }
+
+  React.useEffect(() => {
+    if (isOpen) {
+        setProjectId(generateProjectId());
+    }
+  }, [isOpen]);
 
 
   React.useEffect(() => {
@@ -88,6 +100,13 @@ export function AddProjectDialog() {
           </DialogDescription>
         </DialogHeader>
         <form ref={formRef} action={dispatch} className="grid gap-4 py-4">
+           <input type="hidden" name="id" value={projectId} />
+           <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="id-display" className="text-right">
+              Project ID
+            </Label>
+            <Input id="id-display" name="id-display" className="col-span-3" value={projectId} readOnly />
+          </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="title" className="text-right">
               Title
