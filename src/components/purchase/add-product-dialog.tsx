@@ -60,6 +60,10 @@ const formatFileSize = (bytes: number | null) => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
+const MAX_IMAGE_WIDTH = 800;
+const MAX_IMAGE_HEIGHT = 800;
+const IMAGE_QUALITY = 0.7; // For JPEG compression
+
 export function AddProductDialog() {
   const [state, dispatch] = useActionState(createProduct, initialState);
   const [isOpen, setIsOpen] = React.useState(false);
@@ -283,12 +287,43 @@ export function AddProductDialog() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImageSize(file.size);
       const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        setImagePreview(base64String);
-        setImageData(base64String);
+      reader.onload = (event) => {
+        const img = document.createElement('img');
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let { width, height } = img;
+
+          if (width > height) {
+            if (width > MAX_IMAGE_WIDTH) {
+              height = Math.round(height * (MAX_IMAGE_WIDTH / width));
+              width = MAX_IMAGE_WIDTH;
+            }
+          } else {
+            if (height > MAX_IMAGE_HEIGHT) {
+              width = Math.round(width * (MAX_IMAGE_HEIGHT / height));
+              height = MAX_IMAGE_HEIGHT;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+          
+          const compressedDataUrl = canvas.toDataURL(file.type, IMAGE_QUALITY);
+          
+          setImagePreview(compressedDataUrl);
+          setImageData(compressedDataUrl);
+
+          // Get blob from data URL to calculate new size
+          fetch(compressedDataUrl)
+            .then(res => res.blob())
+            .then(blob => {
+              setImageSize(blob.size);
+            });
+        };
+        img.src = event.target?.result as string;
       };
       reader.readAsDataURL(file);
     }
