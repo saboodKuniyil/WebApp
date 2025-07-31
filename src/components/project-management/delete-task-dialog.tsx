@@ -17,7 +17,6 @@ import type { Task } from './tasks-list';
 import { deleteTask } from '@/app/project-management/tasks/actions';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import Draggable from 'react-draggable';
 
 interface DeleteTaskDialogProps {
   task: Task;
@@ -29,12 +28,6 @@ export function DeleteTaskDialog({ task, isOpen, setIsOpen }: DeleteTaskDialogPr
   const [isPending, startTransition] = React.useTransition();
   const { toast } = useToast();
   const router = useRouter();
-  const nodeRef = React.useRef(null);
-  const [mounted, setMounted] = React.useState(false);
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleDelete = () => {
     startTransition(async () => {
@@ -57,35 +50,29 @@ export function DeleteTaskDialog({ task, isOpen, setIsOpen }: DeleteTaskDialogPr
     });
   };
 
-  if (!mounted) {
-    return null;
-  }
-
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-      <Draggable nodeRef={nodeRef} handle=".alert-dialog-header">
-        <AlertDialogContent ref={nodeRef}>
-          <AlertDialogHeader className="alert-dialog-header cursor-move">
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the task
-              <span className="font-bold"> "{task.title}"</span>.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              asChild
-              disabled={isPending}
-              onClick={handleDelete}
-            >
-              <Button variant="destructive">
-                  {isPending ? 'Deleting...' : 'Delete Task'}
-              </Button>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </Draggable>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. This will permanently delete the task
+            <span className="font-bold"> "{task.title}"</span>.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            asChild
+            disabled={isPending}
+            onClick={handleDelete}
+          >
+            <Button variant="destructive">
+                {isPending ? 'Deleting...' : 'Delete Task'}
+            </Button>
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
     </AlertDialog>
   );
 }

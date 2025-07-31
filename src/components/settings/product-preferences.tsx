@@ -34,7 +34,6 @@ import {
 } from '@/components/ui/alert-dialog';
 import { deleteProductCategory } from '@/app/settings/preferences/product-preference/actions';
 import { useToast } from '@/hooks/use-toast';
-import Draggable from 'react-draggable';
 
 
 export type Subcategory = {
@@ -57,12 +56,6 @@ export function ProductPreferences({ data }: ProductPreferencesProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
   const [selectedCategory, setSelectedCategory] = React.useState<ProductCategory | null>(null);
   const { toast } = useToast();
-  const nodeRef = React.useRef(null);
-  const [mounted, setMounted] = React.useState(false);
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleEdit = (category: ProductCategory) => {
     setSelectedCategory(category);
@@ -129,25 +122,6 @@ export function ProductPreferences({ data }: ProductPreferencesProps) {
     getCoreRowModel: getCoreRowModel(),
   });
   
-  if (!mounted) {
-    return (
-        <Card>
-            <CardHeader className="p-2">
-                <CardTitle>Categories</CardTitle>
-                <CardDescription>Manage your product categories and subcategories.</CardDescription>
-            </CardHeader>
-            <CardContent className="p-2 pt-0">
-                <div className="w-full">
-                    <div className="flex items-center justify-end py-2">
-                         <AddCategoryDialog />
-                    </div>
-                    <div className="rounded-md border h-48 animate-pulse bg-muted"></div>
-                </div>
-            </CardContent>
-        </Card>
-    )
-  }
-
   return (
     <>
       <Card>
@@ -221,24 +195,22 @@ export function ProductPreferences({ data }: ProductPreferencesProps) {
           />
       )}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <Draggable nodeRef={nodeRef} handle=".alert-dialog-header">
-          <AlertDialogContent ref={nodeRef}>
-              <AlertDialogHeader className="alert-dialog-header cursor-move">
-              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-              <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete the 
-                  <span className="font-bold"> "{selectedCategory?.name}"</span> category.
-                  Products using this category will need to be updated manually.
-              </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={confirmDelete} className="bg-destructive hover:bg-destructive/90">
-                  Delete
-              </AlertDialogAction>
-              </AlertDialogFooter>
-          </AlertDialogContent>
-        </Draggable>
+        <AlertDialogContent>
+            <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete the 
+                <span className="font-bold"> "{selectedCategory?.name}"</span> category.
+                Products using this category will need to be updated manually.
+            </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive hover:bg-destructive/90">
+                Delete
+            </AlertDialogAction>
+            </AlertDialogFooter>
+        </AlertDialogContent>
       </AlertDialog>
     </>
   );
