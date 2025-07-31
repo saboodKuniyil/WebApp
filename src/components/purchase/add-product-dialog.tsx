@@ -312,19 +312,6 @@ export function AddProductDialog({ allProducts }: AddProductDialogProps) {
                                     )
                                 })}
                             </div>
-                             {bom.length > 0 && (
-                                <>
-                                    <Separator />
-                                    <div className="flex justify-between items-center text-sm font-medium">
-                                        <span>Total Items:</span>
-                                        <span>{bom.length}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center text-sm font-medium">
-                                        <span>Total Cost:</span>
-                                        <span>${calculatedCost.toFixed(2)}</span>
-                                    </div>
-                                </>
-                            )}
                             {state.errors?.billOfMaterials && (
                                 <p className="text-red-500 text-xs">{state.errors.billOfMaterials[0]}</p>
                             )}
@@ -397,5 +384,3 @@ export function AddProductDialog({ allProducts }: AddProductDialogProps) {
     </Dialog>
   );
 }
-
-    
