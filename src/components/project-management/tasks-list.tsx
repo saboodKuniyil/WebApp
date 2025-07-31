@@ -47,8 +47,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { AddTaskDialog } from './add-task-dialog';
 import type { Project } from './projects-list';
 import type { TaskBlueprint } from './task-blueprints-list';
-import { EditableCompletionCell } from './editable-completion-cell';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Progress } from '../ui/progress';
 
 export type Task = {
   id: string;
@@ -158,7 +158,17 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: 'completionPercentage',
     header: 'Completion',
-    cell: ({ row }) => <EditableCompletionCell task={row.original} />,
+    cell: ({ row }) => {
+        const percentage = row.getValue('completionPercentage') as number ?? 0;
+        return (
+            <div className="flex items-center gap-2">
+                <Progress value={percentage} className="h-2 w-24" />
+                <span className="text-sm text-muted-foreground w-10 text-right">
+                    {percentage}%
+                </span>
+            </div>
+        )
+    },
   },
   {
     accessorKey: 'projectId',

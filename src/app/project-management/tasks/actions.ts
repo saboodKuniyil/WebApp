@@ -183,18 +183,3 @@ export async function deleteTask(taskId: string): Promise<{ message: string }> {
     }
     redirect('/project-management/tasks');
 }
-
-
-export async function updateTaskCompletion(taskId: string, completionPercentage: number) {
-  try {
-    // This function might become obsolete or change logic, as completion is now tied to status.
-    // For now, let's allow direct updates but know it can be overwritten by a status change.
-    await updateDbTask({ id: taskId, completionPercentage });
-    revalidatePath('/project-management/tasks');
-    revalidatePath(`/project-management/projects`); // Revalidate projects to update progress
-    return { success: true };
-  } catch (error) {
-    console.error('Database Error:', error);
-    return { success: false, message: 'Failed to update task completion.' };
-  }
-}
