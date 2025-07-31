@@ -45,6 +45,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { AddIssueDialog } from './add-issue-dialog';
 import type { Task } from './tasks-list';
 import Link from 'next/link';
+import { PlusCircle } from 'lucide-react';
 
 export type Issue = {
   id: string;
@@ -220,7 +221,15 @@ export function IssuesList({ data, tasks }: IssuesListProps) {
                 className="max-w-sm h-8"
                 />
                 <div className="flex space-x-2">
-                <AddIssueDialog tasks={tasks} />
+                <AddIssueDialog 
+                    tasks={tasks} 
+                    trigger={
+                        <Button>
+                            <PlusCircle className="mr-2 h-4 w-4" />
+                            Add Issue
+                        </Button>
+                    }
+                />
                 <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="outline" className="ml-auto h-8">

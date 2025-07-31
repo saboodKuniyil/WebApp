@@ -37,9 +37,11 @@ function SubmitButton() {
 
 interface AddIssueDialogProps {
     tasks: Task[];
+    defaultTaskId?: string;
+    trigger?: React.ReactNode;
 }
 
-export function AddIssueDialog({ tasks }: AddIssueDialogProps) {
+export function AddIssueDialog({ tasks, defaultTaskId, trigger }: AddIssueDialogProps) {
   const [state, dispatch] = useActionState(createIssue, initialState);
   const [isOpen, setIsOpen] = React.useState(false);
   const [nextId, setNextId] = React.useState('');
@@ -75,10 +77,12 @@ export function AddIssueDialog({ tasks }: AddIssueDialogProps) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Add Issue
-        </Button>
+        {trigger ? trigger : (
+            <Button>
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Add Issue
+            </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
@@ -107,7 +111,7 @@ export function AddIssueDialog({ tasks }: AddIssueDialogProps) {
             <Label htmlFor="taskId" className="text-right">
                 Related Task
             </Label>
-            <Select name="taskId">
+            <Select name="taskId" defaultValue={defaultTaskId} disabled={!!defaultTaskId}>
               <SelectTrigger className="col-span-3">
                 <SelectValue placeholder="Select a task" />
               </SelectTrigger>
@@ -186,4 +190,3 @@ export function AddIssueDialog({ tasks }: AddIssueDialogProps) {
     </Dialog>
   );
 }
-

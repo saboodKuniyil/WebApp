@@ -10,11 +10,12 @@ import type { Task } from "./tasks-list"
 import type { Issue } from "./issues-list"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { Button } from "../ui/button"
-import { Pencil, Trash2, Briefcase, AlertTriangle } from "lucide-react"
+import { Pencil, Trash2, Briefcase, AlertTriangle, PlusCircle } from "lucide-react"
 import React from "react"
 import Link from "next/link"
 import { EditTaskDialog } from "./edit-task-dialog"
 import { DeleteTaskDialog } from "./delete-task-dialog"
+import { AddIssueDialog } from "./add-issue-dialog"
 
 interface TaskDetailViewProps {
     task: Task
@@ -134,8 +135,22 @@ export function TaskDetailView({ task, project, issues, projects }: TaskDetailVi
 
             <Card>
                 <CardHeader className="p-4">
-                    <CardTitle className="flex items-center"><AlertTriangle className="mr-2 h-5 w-5" />Related Issues</CardTitle>
-                    <CardDescription>A list of issues associated with this task.</CardDescription>
+                    <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                            <CardTitle className="flex items-center"><AlertTriangle className="mr-2 h-5 w-5" />Related Issues</CardTitle>
+                            <CardDescription>A list of issues associated with this task.</CardDescription>
+                        </div>
+                        <AddIssueDialog 
+                            tasks={[task]} 
+                            defaultTaskId={task.id}
+                            trigger={
+                                <Button size="sm">
+                                    <PlusCircle className="mr-2 h-4 w-4" />
+                                    Add Issue
+                                </Button>
+                            }
+                        />
+                    </div>
                 </CardHeader>
                 <CardContent className="p-4 pt-0">
                     <Table>
