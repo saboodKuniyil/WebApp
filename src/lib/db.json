@@ -56,7 +56,7 @@
       "projectId": "PR_9001",
       "startDate": "2024-08-01",
       "endDate": "2024-08-15",
-      "completionPercentage": 0
+      "completionPercentage": 39
     },
     {
       "id": "TASK-7839",
@@ -69,7 +69,7 @@
       "projectId": "PR_9002",
       "startDate": "2024-07-25",
       "endDate": "2024-08-10",
-      "completionPercentage": 10
+      "completionPercentage": 43
     },
     {
       "id": "TASK-5562",

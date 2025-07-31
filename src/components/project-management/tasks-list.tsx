@@ -46,6 +46,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { AddTaskDialog } from './add-task-dialog';
 import type { Project } from './projects-list';
 import { EditableCompletionCell } from './editable-completion-cell';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 export type Task = {
   id: string;
@@ -118,6 +119,9 @@ export const columns: ColumnDef<Task>[] = [
     accessorKey: 'status',
     header: 'Status',
     cell: ({ row }) => <Badge variant="outline" className={`capitalize border-0 ${statusColors[row.getValue('status') as Task['status']]}`}>{row.getValue('status')}</Badge>,
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id))
+    },
   },
   {
     accessorKey: 'priority',
@@ -141,8 +145,12 @@ export const columns: ColumnDef<Task>[] = [
   },
   {
     accessorKey: 'projectId',
-    header: 'Project ID',
-    cell: ({ row }) => <div>{row.getValue('projectId')}</div>,
+    header: 'Project',
+    cell: ({ row, table }) => {
+        const projects = (table.options.meta as { projects: Project[] })?.projects ?? [];
+        const project = projects.find(p => p.id === row.getValue('projectId'));
+        return <div>{project?.title ?? row.getValue('projectId')}</div>;
+    },
   },
   {
     accessorKey: 'assignee',
@@ -219,6 +227,9 @@ export function TasksList({ data, projects }: TasksListProps) {
       columnVisibility,
       rowSelection,
     },
+    meta: {
+      projects,
+    }
   });
 
   return (
@@ -231,13 +242,33 @@ export function TasksList({ data, projects }: TasksListProps) {
             <div className="w-full">
             <div className="flex items-center justify-between py-4">
                 <Input
-                placeholder="Filter tasks..."
+                placeholder="Filter tasks by title..."
                 value={(table.getColumn('title')?.getFilterValue() as string) ?? ''}
                 onChange={(event) =>
                     table.getColumn('title')?.setFilterValue(event.target.value)
                 }
                 className="max-w-sm"
                 />
+                 <div className="flex items-center gap-2">
+                    <Select
+                        value={(table.getColumn('projectId')?.getFilterValue() as string) ?? ''}
+                        onValueChange={(value) =>
+                            table.getColumn('projectId')?.setFilterValue(value === 'all' ? '' : value)
+                        }
+                    >
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Filter by project" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Projects</SelectItem>
+                            {projects.map((project) => (
+                                <SelectItem key={project.id} value={project.id}>
+                                    {project.title}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
                 <div className="flex space-x-2">
                 <AddTaskDialog projects={projects} />
                 <DropdownMenu>
