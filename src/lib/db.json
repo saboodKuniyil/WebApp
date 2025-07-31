@@ -321,7 +321,9 @@
       "purchasePrice": 244.99,
       "salesPrice": 349.99,
       "stock": 120,
-      "unit": "Piece"
+      "unit": "Piece",
+      "billOfMaterials": [],
+      "billOfServices": []
     },
     {
       "id": "FG_ELC_7002",
@@ -334,7 +336,20 @@
       "salesPrice": 129.99,
       "stock": 200,
       "unit": "Piece",
-      "billOfMaterials": []
+      "billOfMaterials": [],
+      "billOfServices": []
+    },
+    {
+      "id": "SRV_CNS_7001",
+      "name": "Financial Consultation",
+      "description": "One hour of financial consultation service.",
+      "type": "Service",
+      "category": "Consulting",
+      "subcategory": "Financial",
+      "purchasePrice": 150,
+      "salesPrice": 250,
+      "stock": 9999,
+      "unit": "Hour"
     }
   ],
   "productCategories": [
@@ -450,6 +465,10 @@
     {
       "name": "Liter",
       "abbreviation": "L"
+    },
+    {
+      "name": "Hour",
+      "abbreviation": "hr"
     }
   ],
   "appSettings": {

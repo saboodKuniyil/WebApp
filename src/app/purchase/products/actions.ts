@@ -10,6 +10,11 @@ const billOfMaterialItemSchema = z.object({
   quantity: z.coerce.number().min(0.001, "Quantity must be positive"),
 });
 
+const billOfServiceItemSchema = z.object({
+  productId: z.string(),
+  quantity: z.coerce.number().min(0.001, "Quantity must be positive"),
+});
+
 const productSchema = z.object({
   id: z.string(),
   name: z.string().min(1, 'Name is required'),
@@ -22,6 +27,7 @@ const productSchema = z.object({
   stock: z.coerce.number().int().min(0, 'Stock must be a positive integer'),
   unit: z.string().min(1, 'Unit is required'),
   billOfMaterials: z.string().transform(val => JSON.parse(val)).pipe(z.array(billOfMaterialItemSchema)).optional(),
+  billOfServices: z.string().transform(val => JSON.parse(val)).pipe(z.array(billOfServiceItemSchema)).optional(),
 });
 
 export type ProductFormState = {
@@ -38,6 +44,7 @@ export type ProductFormState = {
     stock?: string[];
     unit?: string[];
     billOfMaterials?: string[];
+    billOfServices?: string[];
   };
 };
 
@@ -78,7 +85,8 @@ export async function createProduct(
     salesPrice: formData.get('salesPrice'),
     stock: formData.get('stock'),
     unit: formData.get('unit'),
-    billOfMaterials: formData.get('billOfMaterials')
+    billOfMaterials: formData.get('billOfMaterials'),
+    billOfServices: formData.get('billOfServices')
   });
 
   if (!validatedFields.success) {
@@ -88,7 +96,7 @@ export async function createProduct(
     };
   }
 
-  const { id, name, description, type, category, subcategory, salesPrice, stock, unit, billOfMaterials } = validatedFields.data;
+  const { id, name, description, type, category, subcategory, salesPrice, stock, unit, billOfMaterials, billOfServices } = validatedFields.data;
   let { purchasePrice } = validatedFields.data;
 
   try {
@@ -112,18 +120,27 @@ export async function createProduct(
      };
      
      if(type === 'Finished Good') {
-        if(!billOfMaterials || billOfMaterials.length === 0) {
-            return { message: 'Failed to create product.', errors: { billOfMaterials: ['A finished good must have at least one raw material.']}};
+        if((!billOfMaterials || billOfMaterials.length === 0) && (!billOfServices || billOfServices.length === 0)) {
+            return { message: 'Failed to create product.', errors: { billOfMaterials: ['A finished good must have at least one raw material or service.']}};
         }
         
-        const rawMaterials = products.filter(p => p.type === 'Raw Material');
-        const calculatedCost = billOfMaterials.reduce((acc, item) => {
-            const product = rawMaterials.find(p => p.id === item.productId);
+        const rawMaterialsAndServices = products.filter(p => p.type === 'Raw Material' || p.type === 'Service');
+        
+        const bomCost = (billOfMaterials || []).reduce((acc, item) => {
+            const product = rawMaterialsAndServices.find(p => p.id === item.productId);
             return acc + (product ? product.purchasePrice * item.quantity : 0);
         }, 0);
 
+        const bosCost = (billOfServices || []).reduce((acc, item) => {
+            const product = rawMaterialsAndServices.find(p => p.id === item.productId);
+            return acc + (product ? product.purchasePrice * item.quantity : 0);
+        }, 0);
+
+        const calculatedCost = bomCost + bosCost;
+
         newProduct.purchasePrice = parseFloat(calculatedCost.toFixed(2));
         newProduct.billOfMaterials = billOfMaterials;
+        newProduct.billOfServices = billOfServices;
 
      } else {
         newProduct.purchasePrice = purchasePrice;
@@ -138,5 +155,3 @@ export async function createProduct(
     return { message: 'Failed to create product.' };
   }
 }
-
-    

@@ -34,7 +34,7 @@ import { cn } from '@/lib/utils';
 import { ScrollArea } from '../ui/scroll-area';
 import { getProductCategories, getUnits, getProducts } from '@/lib/db';
 import { Skeleton } from '../ui/skeleton';
-import type { Product, BillOfMaterialItem } from './products-list';
+import type { Product, BillOfMaterialItem, BillOfServiceItem } from './products-list';
 import { Card } from '../ui/card';
 import { useModules } from '@/context/modules-context';
 
@@ -69,9 +69,16 @@ export function AddProductDialog() {
   const [bom, setBom] = React.useState<BillOfMaterialItem[]>([]);
   const [selectedBomProduct, setSelectedBomProduct] = React.useState('');
   const [selectedBomQuantity, setSelectedBomQuantity] = React.useState(1);
+  
+  // BOS state
+  const [bos, setBos] = React.useState<BillOfServiceItem[]>([]);
+  const [selectedBosProduct, setSelectedBosProduct] = React.useState('');
+  const [selectedBosQuantity, setSelectedBosQuantity] = React.useState(1);
+
   const [calculatedCost, setCalculatedCost] = React.useState(0);
 
   const rawMaterials = React.useMemo(() => allProducts.filter(p => p.type === 'Raw Material'), [allProducts]);
+  const services = React.useMemo(() => allProducts.filter(p => p.type === 'Service'), [allProducts]);
   
   const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
@@ -116,6 +123,7 @@ export function AddProductDialog() {
     setSubcategories([]);
     setNextId('');
     setBom([]);
+    setBos([]);
     setCalculatedCost(0);
   }, []);
 
@@ -168,14 +176,18 @@ export function AddProductDialog() {
       }
   }, [selectedTypeName, selectedCategoryName, availableCategories]);
 
-  // BOM Calculation Effect
+  // Cost Calculation Effect
   React.useEffect(() => {
-    const cost = bom.reduce((acc, item) => {
+    const bomCost = bom.reduce((acc, item) => {
         const product = rawMaterials.find(p => p.id === item.productId);
         return acc + (product ? product.purchasePrice * item.quantity : 0);
     }, 0);
-    setCalculatedCost(cost);
-  }, [bom, rawMaterials]);
+    const bosCost = bos.reduce((acc, item) => {
+        const service = services.find(s => s.id === item.productId);
+        return acc + (service ? service.purchasePrice * item.quantity : 0);
+    }, 0);
+    setCalculatedCost(bomCost + bosCost);
+  }, [bom, bos, rawMaterials, services]);
 
   const handleAddBomItem = () => {
     if (selectedBomProduct && selectedBomQuantity > 0 && !bom.find(item => item.productId === selectedBomProduct)) {
@@ -187,6 +199,18 @@ export function AddProductDialog() {
 
   const handleRemoveBomItem = (productId: string) => {
     setBom(bom.filter(item => item.productId !== productId));
+  };
+  
+  const handleAddBosItem = () => {
+    if (selectedBosProduct && selectedBosQuantity > 0 && !bos.find(item => item.productId === selectedBosProduct)) {
+      setBos([...bos, { productId: selectedBosProduct, quantity: selectedBosQuantity }]);
+      setSelectedBosProduct('');
+      setSelectedBosQuantity(1);
+    }
+  };
+
+  const handleRemoveBosItem = (productId: string) => {
+    setBos(bos.filter(item => item.productId !== productId));
   };
 
   return (
@@ -206,6 +230,7 @@ export function AddProductDialog() {
           </DialogHeader>
           <form ref={formRef} action={dispatch}>
             <input type="hidden" name="billOfMaterials" value={JSON.stringify(bom)} />
+            <input type="hidden" name="billOfServices" value={JSON.stringify(bos)} />
             <ScrollArea className="h-[70vh] pr-4">
               {isLoading ? (
                   <div className="space-y-4 py-4">
@@ -294,53 +319,103 @@ export function AddProductDialog() {
                     </div>
 
                     {selectedTypeName === 'Finished Good' && (
-                        <Card className="p-4 space-y-4">
-                            <Label>Bill of Materials</Label>
-                             <div className="flex gap-2">
-                                <Select onValueChange={setSelectedBomProduct} value={selectedBomProduct}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select a raw material" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {rawMaterials.map(product => (
-                                            <SelectItem key={product.id} value={product.id}>{product.name}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <Input type="number" value={selectedBomQuantity} onChange={e => setSelectedBomQuantity(Number(e.target.value))} className="w-24" min="1" />
-                                <Button type="button" size="icon" onClick={handleAddBomItem}><Plus className="h-4 w-4" /></Button>
-                            </div>
-                            <div className="space-y-2">
-                                {bom.length > 0 && (
-                                    <div className="grid grid-cols-[1fr_80px_80px_80px_40px] items-center gap-x-4 px-2 text-xs text-muted-foreground font-medium">
-                                        <span>Material</span>
-                                        <span className="text-right">Qty</span>
-                                        <span className="text-right">Rate</span>
-                                        <span className="text-right">Total</span>
-                                        <span></span>
-                                    </div>
-                                )}
-                                {bom.map(item => {
-                                    const product = rawMaterials.find(p => p.id === item.productId);
-                                    if (!product) return null;
-                                    const totalItemCost = product.purchasePrice * item.quantity;
-                                    return (
-                                        <div key={item.productId} className="grid grid-cols-[1fr_80px_80px_80px_40px] items-center gap-x-4 p-2 border rounded-md text-sm">
-                                            <span className="truncate" title={product.name}>{product.name}</span>
-                                            <span className="text-right">{item.quantity} {product?.unit}</span>
-                                            <span className="text-right">{formatCurrency(product.purchasePrice)}</span>
-                                            <span className="text-right font-semibold">{formatCurrency(totalItemCost)}</span>
-                                            <Button type="button" variant="ghost" size="icon" className="h-6 w-6 justify-self-end" onClick={() => handleRemoveBomItem(item.productId)}>
-                                                <Trash2 className="h-4 w-4 text-destructive" />
-                                            </Button>
+                        <>
+                            <Card className="p-4 space-y-4">
+                                <Label>Bill of Materials</Label>
+                                <div className="flex gap-2">
+                                    <Select onValueChange={setSelectedBomProduct} value={selectedBomProduct}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select a raw material" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {rawMaterials.map(product => (
+                                                <SelectItem key={product.id} value={product.id}>{product.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <Input type="number" value={selectedBomQuantity} onChange={e => setSelectedBomQuantity(Number(e.target.value))} className="w-24" min="1" />
+                                    <Button type="button" size="icon" onClick={handleAddBomItem}><Plus className="h-4 w-4" /></Button>
+                                </div>
+                                <div className="space-y-2">
+                                    {bom.length > 0 && (
+                                        <div className="grid grid-cols-[1fr_80px_80px_80px_40px] items-center gap-x-4 px-2 text-xs text-muted-foreground font-medium">
+                                            <span>Material</span>
+                                            <span className="text-right">Qty</span>
+                                            <span className="text-right">Rate</span>
+                                            <span className="text-right">Total</span>
+                                            <span></span>
                                         </div>
-                                    )
-                                })}
-                            </div>
-                            {state.errors?.billOfMaterials && (
-                                <p className="text-red-500 text-xs">{state.errors.billOfMaterials[0]}</p>
-                            )}
-                        </Card>
+                                    )}
+                                    {bom.map(item => {
+                                        const product = rawMaterials.find(p => p.id === item.productId);
+                                        if (!product) return null;
+                                        const totalItemCost = product.purchasePrice * item.quantity;
+                                        return (
+                                            <div key={item.productId} className="grid grid-cols-[1fr_80px_80px_80px_40px] items-center gap-x-4 p-2 border rounded-md text-sm">
+                                                <span className="truncate" title={product.name}>{product.name}</span>
+                                                <span className="text-right">{item.quantity} {product?.unit}</span>
+                                                <span className="text-right">{formatCurrency(product.purchasePrice)}</span>
+                                                <span className="text-right font-semibold">{formatCurrency(totalItemCost)}</span>
+                                                <Button type="button" variant="ghost" size="icon" className="h-6 w-6 justify-self-end" onClick={() => handleRemoveBomItem(item.productId)}>
+                                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                                </Button>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                                {state.errors?.billOfMaterials && (
+                                    <p className="text-red-500 text-xs">{state.errors.billOfMaterials[0]}</p>
+                                )}
+                            </Card>
+                            
+                            <Card className="p-4 space-y-4">
+                                <Label>Bill of Services</Label>
+                                <div className="flex gap-2">
+                                    <Select onValueChange={setSelectedBosProduct} value={selectedBosProduct}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select a service" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {services.map(service => (
+                                                <SelectItem key={service.id} value={service.id}>{service.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <Input type="number" value={selectedBosQuantity} onChange={e => setSelectedBosQuantity(Number(e.target.value))} className="w-24" min="1" />
+                                    <Button type="button" size="icon" onClick={handleAddBosItem}><Plus className="h-4 w-4" /></Button>
+                                </div>
+                                <div className="space-y-2">
+                                    {bos.length > 0 && (
+                                        <div className="grid grid-cols-[1fr_80px_80px_80px_40px] items-center gap-x-4 px-2 text-xs text-muted-foreground font-medium">
+                                            <span>Service</span>
+                                            <span className="text-right">Qty</span>
+                                            <span className="text-right">Rate</span>
+                                            <span className="text-right">Total</span>
+                                            <span></span>
+                                        </div>
+                                    )}
+                                    {bos.map(item => {
+                                        const service = services.find(s => s.id === item.productId);
+                                        if (!service) return null;
+                                        const totalItemCost = service.purchasePrice * item.quantity;
+                                        return (
+                                            <div key={item.productId} className="grid grid-cols-[1fr_80px_80px_80px_40px] items-center gap-x-4 p-2 border rounded-md text-sm">
+                                                <span className="truncate" title={service.name}>{service.name}</span>
+                                                <span className="text-right">{item.quantity} {service?.unit}</span>
+                                                <span className="text-right">{formatCurrency(service.purchasePrice)}</span>
+                                                <span className="text-right font-semibold">{formatCurrency(totalItemCost)}</span>
+                                                <Button type="button" variant="ghost" size="icon" className="h-6 w-6 justify-self-end" onClick={() => handleRemoveBosItem(item.productId)}>
+                                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                                </Button>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                                {state.errors?.billOfServices && (
+                                    <p className="text-red-500 text-xs">{state.errors.billOfServices[0]}</p>
+                                )}
+                            </Card>
+                        </>
                     )}
 
                     <div className="grid grid-cols-2 gap-4">

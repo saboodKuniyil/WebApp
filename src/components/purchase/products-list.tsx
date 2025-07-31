@@ -50,6 +50,11 @@ export type BillOfMaterialItem = {
     quantity: number;
 };
 
+export type BillOfServiceItem = {
+    productId: string;
+    quantity: number;
+};
+
 export type Product = {
   id: string;
   name: string;
@@ -62,6 +67,7 @@ export type Product = {
   stock: number;
   unit: string;
   billOfMaterials?: BillOfMaterialItem[];
+  billOfServices?: BillOfServiceItem[];
 };
 
 const getColumns = (
