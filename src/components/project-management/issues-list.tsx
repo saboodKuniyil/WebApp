@@ -75,7 +75,7 @@ const priorityColors = {
     'high': 'text-red-600',
 }
 
-export const columns: ColumnDef<Issue>[] = [
+export const getColumns = (): ColumnDef<Issue>[] => [
   {
     id: 'select',
     header: ({ table }) => (
@@ -187,6 +187,8 @@ export function IssuesList({ data, tasks }: IssuesListProps) {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  
+  const columns = React.useMemo(() => getColumns(), []);
 
   const table = useReactTable({
     data,
