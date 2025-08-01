@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Briefcase, ShoppingCart, Heart, Wallet, Users, DollarSign } from 'lucide-react';
 import { useModules } from '@/context/modules-context';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function ModulesPage() {
   const { 
@@ -22,7 +23,31 @@ export default function ModulesPage() {
     setIsUserManagementEnabled,
     isSalesModuleEnabled,
     setIsSalesModuleEnabled,
+    isInitialLoad,
   } = useModules();
+  
+  if (isInitialLoad) {
+    return (
+        <main className="flex-1 space-y-4 p-2 md:p-4 pt-4">
+            <div className="flex items-center justify-between space-y-2">
+                <Skeleton className="h-9 w-48" />
+            </div>
+             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {[...Array(6)].map((_, i) => (
+                    <Card key={i}>
+                        <CardHeader>
+                            <Skeleton className="h-6 w-3/4" />
+                            <Skeleton className="h-4 w-full mt-2" />
+                        </CardHeader>
+                        <CardContent>
+                             <Skeleton className="h-10 w-full" />
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+        </main>
+    )
+  }
 
   return (
     <main className="flex-1 space-y-4 p-2 md:p-4 pt-4">

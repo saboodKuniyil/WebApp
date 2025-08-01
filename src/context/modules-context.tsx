@@ -27,12 +27,12 @@ interface ModulesContextType {
   companyProfile: CompanyProfile | null;
   setCompanyProfile: (profile: CompanyProfile | null) => void;
   isLoading: boolean;
+  isInitialLoad: boolean;
 }
 
 const ModulesContext = createContext<ModulesContextType | undefined>(undefined);
 
 export const ModulesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  // Initialize with default 'off' state to avoid hydration issues
   const [isProjectManagementEnabled, setIsProjectManagementEnabled] = useState(false);
   const [isPurchaseModuleEnabled, setIsPurchaseModuleEnabled] = useState(false);
   const [isCrmEnabled, setIsCrmEnabled] = useState(false);
@@ -45,10 +45,10 @@ export const ModulesProvider: React.FC<{ children: ReactNode }> = ({ children })
   const [appSettings, setAppSettings] = useState<AppSettings | null>(null);
   const [companyProfile, setCompanyProfile] = useState<CompanyProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   useEffect(() => {
     async function fetchInitialData() {
-      setIsLoading(true);
       const [settings, currencies, profile] = await Promise.all([
         getAppSettings(),
         getCurrencies(),
@@ -61,9 +61,8 @@ export const ModulesProvider: React.FC<{ children: ReactNode }> = ({ children })
       setAppSettings(settings);
       setCompanyProfile(profile);
 
-      // Set module states from fetched settings after initial render
       // These would ideally come from a database/settings file
-      setIsProjectManagementEnabled(true); // Assuming these are on by default for now
+      setIsProjectManagementEnabled(true);
       setIsPurchaseModuleEnabled(true);
       setIsCrmEnabled(true);
       setIsPayrollEnabled(true);
@@ -71,6 +70,7 @@ export const ModulesProvider: React.FC<{ children: ReactNode }> = ({ children })
       setIsSalesModuleEnabled(true);
       
       setIsLoading(false);
+      setIsInitialLoad(false);
     }
     fetchInitialData();
   }, []);
@@ -96,7 +96,8 @@ export const ModulesProvider: React.FC<{ children: ReactNode }> = ({ children })
         setAppSettings,
         companyProfile,
         setCompanyProfile,
-        isLoading
+        isLoading,
+        isInitialLoad
     }}>
       {children}
     </ModulesContext.Provider>
