@@ -20,7 +20,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   DropdownMenu,
@@ -44,6 +44,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { AddEstimationDialog } from './add-estimation-dialog';
 import type { Product } from '../purchase/products-list';
 import { useModules } from '@/context/modules-context';
+import { cn } from '@/lib/utils';
 
 
 export type EstimationItem = {
@@ -139,11 +140,9 @@ const getColumns = (
 
       return (
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <DotsHorizontalIcon className="h-4 w-4" />
-            </Button>
+          <DropdownMenuTrigger className={cn(buttonVariants({ variant: "ghost" }), "h-8 w-8 p-0")}>
+            <span className="sr-only">Open menu</span>
+            <DotsHorizontalIcon className="h-4 w-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
@@ -295,3 +294,5 @@ export function EstimationsList({ data, products }: EstimationsListProps) {
     </Card>
   );
 }
+
+    
