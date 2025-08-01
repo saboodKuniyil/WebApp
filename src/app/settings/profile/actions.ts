@@ -33,7 +33,7 @@ export async function saveProfileSettings(
   prevState: ProfileFormState,
   formData: FormData
 ): Promise<ProfileFormState> {
-  const validatedFields = profileSchema.safeParse({
+  const rawData = {
     companyName: formData.get('companyName'),
     trnNumber: formData.get('trnNumber'),
     logoUrl: formData.get('logoUrl'),
@@ -41,7 +41,9 @@ export async function saveProfileSettings(
     bankName: formData.get('bankName'),
     accountNumber: formData.get('accountNumber'),
     iban: formData.get('iban'),
-  });
+  };
+
+  const validatedFields = profileSchema.safeParse(rawData);
 
   if (!validatedFields.success) {
     return {
@@ -51,8 +53,10 @@ export async function saveProfileSettings(
   }
 
   try {
-    await updateCompanyProfile(validatedFields.data as CompanyProfile);
+    await updateCompanyProfile(validatedFields.data);
     revalidatePath('/settings/profile');
+    // Also revalidate the layout to update the logo/name in the header
+    revalidatePath('/layout');
     return { message: 'Profile updated successfully.' };
   } catch (error) {
     console.error('Database Error:', error);

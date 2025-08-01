@@ -460,16 +460,10 @@ export async function getCompanyProfile(): Promise<CompanyProfile> {
   };
 }
 
-export async function updateCompanyProfile(newProfile: CompanyProfile): Promise<{ message: string; }> {
-  try {
+export async function updateCompanyProfile(newProfileData: Partial<CompanyProfile>): Promise<void> {
     const data = await readDb();
-    data.companyProfile = newProfile;
+    data.companyProfile = { ...data.companyProfile, ...newProfileData };
     await writeDb(data);
-    return { message: 'Company profile updated successfully.' };
-  } catch (error) {
-    console.error('Database error:', error);
-    return { message: 'Failed to update company profile.' };
-  }
 }
 
 // User Management functions
