@@ -8,19 +8,15 @@ import { redirect } from 'next/navigation';
 import type { Project } from '@/components/project-management/projects-list';
 
 const projectSchema = z.object({
-  id: z.string(),
+  id: z.string().min(1, 'ID is required'),
   title: z.string().min(1, 'Title is required'),
   description: z.string().optional(),
-  manager: z.string().min(1, 'Manager is required'),
-  customer: z.string().min(1, 'Customer is required'),
-  startDate: z.string().refine((val) => !isNaN(Date.parse(val)), {
-    message: "Invalid start date format",
-  }),
-  endDate: z.string().refine((val) => !isNaN(Date.parse(val)), {
-    message: "Invalid end date format",
-  }),
-  status: z.enum(['in-progress', 'completed', 'on-hold', 'canceled']),
-  taskBlueprintId: z.string().min(1, 'Task Blueprint is required'),
+  manager: z.string().optional(),
+  customer: z.string().optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  status: z.enum(['in-progress', 'completed', 'on-hold', 'canceled']).optional(),
+  taskBlueprintId: z.string().optional(),
 });
 
 export type ProjectFormState = {
@@ -91,13 +87,13 @@ export async function createProject(
     await createDbProject({
         id,
         title,
-        description,
-        manager,
-        customer,
-        startDate,
-        endDate,
-        status,
-        taskBlueprintId
+        description: description ?? '',
+        manager: manager ?? 'Unassigned',
+        customer: customer ?? 'N/A',
+        startDate: startDate || new Date().toISOString(),
+        endDate: endDate || new Date().toISOString(),
+        status: status ?? 'in-progress',
+        taskBlueprintId: taskBlueprintId ?? 'bp-1' // Default blueprint
     });
 
     revalidatePath('/project-management/projects');
@@ -108,11 +104,28 @@ export async function createProject(
   }
 }
 
+const updateProjectSchema = z.object({
+  id: z.string(),
+  title: z.string().min(1, 'Title is required'),
+  description: z.string().optional(),
+  manager: z.string().min(1, 'Manager is required'),
+  customer: z.string().min(1, 'Customer is required'),
+  startDate: z.string().refine((val) => !isNaN(Date.parse(val)), {
+    message: "Invalid start date format",
+  }),
+  endDate: z.string().refine((val) => !isNaN(Date.parse(val)), {
+    message: "Invalid end date format",
+  }),
+  status: z.enum(['in-progress', 'completed', 'on-hold', 'canceled']),
+  taskBlueprintId: z.string().min(1, 'Task Blueprint is required'),
+});
+
+
 export async function updateProject(
     prevState: ProjectFormState,
     formData: FormData
 ): Promise<ProjectFormState> {
-    const validatedFields = projectSchema.safeParse({
+    const validatedFields = updateProjectSchema.safeParse({
         id: formData.get('id'),
         title: formData.get('title'),
         description: formData.get('description'),
