@@ -24,9 +24,10 @@ import {
 } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
 import { LogOut } from 'lucide-react';
-import { ModulesProvider } from '@/context/modules-context';
+import { ModulesProvider, useModules } from '@/context/modules-context';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
+import Image from 'next/image';
 
 const DashboardSidebarItems = dynamic(() => import('@/components/layout/dashboard-sidebar-items').then(mod => mod.DashboardSidebarItems), {
   ssr: false,
@@ -43,11 +44,19 @@ const DashboardSidebarItems = dynamic(() => import('@/components/layout/dashboar
 
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const { companyProfile } = useModules();
+
   return (
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader>
-          <Logo className="h-10 w-auto" />
+          <div className="flex items-center gap-2">
+            {companyProfile?.logoUrl ? (
+                <Image src={companyProfile.logoUrl} alt={companyProfile.companyName} width={40} height={40} className="h-10 w-10 object-contain" />
+            ) : (
+                <Logo className="h-10 w-auto" />
+            )}
+          </div>
         </SidebarHeader>
         <SidebarContent>
           <DashboardSidebarItems />

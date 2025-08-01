@@ -1,11 +1,17 @@
+
+'use client';
 import * as React from "react"
+import { useModules } from "@/context/modules-context";
 
 export function Logo(props: React.SVGProps<SVGSVGElement>) {
+  const { companyProfile } = useModules();
+  const companyName = companyProfile?.companyName || 'D_PRO_MGT';
+
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 200 50"
-      aria-label="D_PRO_MGT logo"
+      aria-label={`${companyName} logo`}
       {...props}
     >
       <defs>
@@ -24,7 +30,7 @@ export function Logo(props: React.SVGProps<SVGSVGElement>) {
         fontWeight="bold"
         fill="url(#grad1)"
       >
-        D_PRO_MGT
+        {companyName}
       </text>
     </svg>
   );
