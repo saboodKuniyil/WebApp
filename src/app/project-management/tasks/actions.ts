@@ -12,10 +12,10 @@ const taskSchema = z.object({
   id: z.string(),
   title: z.string().min(1, 'Title is required'),
   description: z.string().optional(),
-  label: z.enum(['bug', 'feature', 'documentation']),
-  status: z.string().min(1, 'Status is required'),
-  priority: z.enum(['low', 'medium', 'high']),
-  assignee: z.string().min(1, 'Assignee is required'),
+  label: z.enum(['bug', 'feature', 'documentation']).optional(),
+  status: z.string().optional(),
+  priority: z.enum(['low', 'medium', 'high']).optional(),
+  assignee: z.string().optional(),
   projectId: z.string().min(1, 'Project is required'),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
@@ -57,7 +57,9 @@ export async function getNextTaskId(): Promise<string> {
     return `TS_${nextNumber}`;
 }
 
-async function getCompletionPercentageForStatus(projectId: string, status: string): Promise<number | undefined> {
+async function getCompletionPercentageForStatus(projectId: string, status: string | undefined): Promise<number | undefined> {
+    if (!status) return 0;
+    
     const projects = await getProjects();
     const project = projects.find(p => p.id === projectId);
     if (!project) return undefined;
@@ -79,13 +81,14 @@ export async function createTask(
     id: formData.get('id'),
     title: formData.get('title'),
     description: formData.get('description'),
-    label: formData.get('label'),
-    status: formData.get('status'),
-    priority: formData.get('priority'),
-    assignee: formData.get('assignee'),
+    label: formData.get('label') || undefined,
+    status: formData.get('status') || undefined,
+    priority: formData.get('priority') || undefined,
+    assignee: formData.get('assignee') || undefined,
     projectId: formData.get('projectId'),
     startDate: formData.get('startDate') || undefined,
     endDate: formData.get('endDate') || undefined,
+    budgetItems: formData.get('budgetItems') || '[]',
   });
 
   if (!validatedFields.success) {
@@ -95,7 +98,7 @@ export async function createTask(
     };
   }
   
-  const { id, title, description, label, status, priority, assignee, projectId, startDate, endDate } = validatedFields.data;
+  const { id, title, description, label, status, priority, assignee, projectId, startDate, endDate, budgetItems } = validatedFields.data;
   
   const completionPercentage = await getCompletionPercentageForStatus(projectId, status);
 
@@ -112,14 +115,15 @@ export async function createTask(
         id,
         title,
         description,
-        label,
-        status,
-        priority,
-        assignee,
+        label: label ?? 'feature',
+        status: status ?? 'backlog',
+        priority: priority ?? 'low',
+        assignee: assignee ?? 'Unassigned',
         projectId,
         startDate,
         endDate,
         completionPercentage: completionPercentage ?? 0,
+        budgetItems: budgetItems ?? [],
     });
 
     revalidatePath('/project-management/tasks');
@@ -137,8 +141,13 @@ export async function updateTask(
     const rawData = Object.fromEntries(formData.entries());
     const validatedFields = taskSchema.safeParse({
         ...rawData,
+        label: rawData.label || undefined,
+        status: rawData.status || undefined,
+        priority: rawData.priority || undefined,
+        assignee: rawData.assignee || undefined,
         startDate: rawData.startDate || undefined,
         endDate: rawData.endDate || undefined,
+        budgetItems: rawData.budgetItems || '[]',
     });
 
     if (!validatedFields.success) {
@@ -155,7 +164,7 @@ export async function updateTask(
     try {
         await updateDbTask({
             id,
-            status,
+            status: status ?? 'backlog',
             projectId,
             ...taskData,
             completionPercentage: completionPercentage ?? 0
@@ -212,3 +221,4 @@ export async function updateTaskStatus(taskId: string, newStatus: string): Promi
         return { message: 'Failed to update task status.' };
     }
 }
+

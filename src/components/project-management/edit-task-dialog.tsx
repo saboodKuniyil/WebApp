@@ -116,12 +116,6 @@ export function EditTaskDialog({ task, projects, taskBlueprints, isOpen, setIsOp
               <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.title[0]}</p>
             )}
           </div>
-          <div className="grid grid-cols-4 items-start gap-4">
-            <Label htmlFor="description" className="text-right pt-2">
-              Description
-            </Label>
-            <Textarea id="description" name="description" className="col-span-3" defaultValue={task.description} />
-          </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="projectId" className="text-right">
                 Project
@@ -139,6 +133,12 @@ export function EditTaskDialog({ task, projects, taskBlueprints, isOpen, setIsOp
             {state.errors?.projectId && (
                 <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.projectId[0]}</p>
             )}
+          </div>
+          <div className="grid grid-cols-4 items-start gap-4">
+            <Label htmlFor="description" className="text-right pt-2">
+              Description
+            </Label>
+            <Textarea id="description" name="description" className="col-span-3" defaultValue={task.description} />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="assignee" className="text-right">

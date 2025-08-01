@@ -760,6 +760,7 @@
     {
       "id": "EST-1001",
       "title": "estimation 001111",
+      "customerName": "Quantum Solutions",
       "tasks": [
         {
           "id": "task-1754059874600",
@@ -788,9 +789,24 @@
             }
           ],
           "totalCost": 1248.73
+        },
+        {
+          "id": "ET-1754074137093",
+          "title": "btts",
+          "description": "sdfsdf",
+          "items": [
+            {
+              "id": "SRV_CNS_7001",
+              "name": "Financial Consultation",
+              "quantity": 10,
+              "cost": 250,
+              "type": "product"
+            }
+          ],
+          "totalCost": 2500
         }
       ],
-      "totalCost": 1248.73,
+      "totalCost": 3748.73,
       "createdDate": "2025-08-01"
     },
     {
