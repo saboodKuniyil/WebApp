@@ -1,3 +1,4 @@
+
 'use server';
 
 import fs from 'fs/promises';
@@ -511,4 +512,15 @@ export async function deleteUser(userId: string): Promise<void> {
 export async function getUserRoles(): Promise<UserRole[]> {
     const data = await readDb();
     return data.userRoles || [];
+}
+
+export async function updateUserRole(updatedRole: Omit<UserRole, 'id'> & { id: string }): Promise<void> {
+  const data = await readDb();
+  const roleIndex = data.userRoles.findIndex(r => r.id === updatedRole.id);
+  if (roleIndex !== -1) {
+    data.userRoles[roleIndex] = { ...data.userRoles[roleIndex], ...updatedRole };
+    await writeDb(data);
+  } else {
+    throw new Error(`Role with id ${updatedRole.id} not found.`);
+  }
 }
