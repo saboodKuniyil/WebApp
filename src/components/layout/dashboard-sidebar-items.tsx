@@ -233,13 +233,13 @@ export function DashboardSidebarItems() {
                           <SidebarMenuItem>
                             <Collapsible open={isUserManagementOpen} onOpenChange={setIsUserManagementOpen}>
                               <CollapsibleTrigger asChild>
-                                <SidebarMenuSubButton className="w-full justify-between">
+                                <SidebarMenuButton className="w-full justify-between">
                                   <div className="flex items-center gap-2">
                                     <UsersIcon />
                                     User Management
                                   </div>
                                   <ChevronDown className={`h-4 w-4 transition-transform ${isUserManagementOpen ? 'rotate-180' : ''}`} />
-                                </SidebarMenuSubButton>
+                                </SidebarMenuButton>
                               </CollapsibleTrigger>
                               <CollapsibleContent>
                                 <SidebarMenuSub>
