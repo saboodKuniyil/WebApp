@@ -106,7 +106,7 @@ export function AddEstimationDialog({ products }: AddEstimationDialogProps) {
             id: product.id,
             name: product.name,
             quantity: productQuantity,
-            cost: product.purchasePrice,
+            cost: product.salesPrice, // Use sales price for estimation
             type: 'product',
         };
         setItems([...items, newItem]);
@@ -181,7 +181,7 @@ export function AddEstimationDialog({ products }: AddEstimationDialogProps) {
                                             </div>
                                             <div className="space-y-1">
                                                 <Label>Quantity</Label>
-                                                <Input type="number" value={productQuantity} onChange={e => setProductQuantity(Number(e.target.value))} className="w-24" />
+                                                <Input type="number" value={productQuantity} onChange={e => setProductQuantity(Number(e.target.value))} className="w-24" min="1" />
                                             </div>
                                             <Button type="button" onClick={handleAddProduct}><Plus className="h-4 w-4 mr-2" />Add</Button>
                                         </div>
@@ -194,7 +194,7 @@ export function AddEstimationDialog({ products }: AddEstimationDialogProps) {
                                             </div>
                                             <div className="space-y-1">
                                                 <Label>Quantity</Label>
-                                                <Input type="number" value={adhocQuantity} onChange={e => setAdhocQuantity(Number(e.target.value))} className="w-24" />
+                                                <Input type="number" value={adhocQuantity} onChange={e => setAdhocQuantity(Number(e.target.value))} className="w-24" min="1" />
                                             </div>
                                             <div className="space-y-1">
                                                 <Label>Cost per Item</Label>
