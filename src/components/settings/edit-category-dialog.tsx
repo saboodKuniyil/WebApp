@@ -43,30 +43,22 @@ interface EditCategoryDialogProps {
 export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategoryDialogProps) {
   const [state, dispatch] = useActionState(updateProductCategory, initialState);
   const { toast } = useToast();
-  const formRef = React.useRef<HTMLFormElement>(null);
   
-  // This state will now be the single source of truth for the subcategories list.
   const [currentSubcategories, setCurrentSubcategories] = React.useState<Subcategory[]>([]);
   const [newSubcategoryName, setNewSubcategoryName] = React.useState('');
   const [newSubcategoryAbbr, setNewSubcategoryAbbr] = React.useState('');
+  const [formKey, setFormKey] = React.useState(() => Date.now());
 
   React.useEffect(() => {
     if (category) {
       setCurrentSubcategories(category.subcategories);
     }
-  }, [category]);
-  
-  React.useEffect(() => {
-    if (!isOpen) {
-      // Reset state when dialog is closed
-      setNewSubcategoryName('');
-      setNewSubcategoryAbbr('');
-      // Important: Reset the action state as well
-      dispatch({ message: '', errors: {} });
+    // When the dialog opens, reset the form by changing its key
+    if (isOpen) {
+        setFormKey(Date.now());
     }
-  }, [isOpen, dispatch]);
-
-
+  }, [category, isOpen]);
+  
   React.useEffect(() => {
     if (state.message) {
       if (state.errors && Object.keys(state.errors).length > 0) {
@@ -101,7 +93,7 @@ export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategory
             Update the category name and manage its subcategories.
           </DialogDescription>
         </DialogHeader>
-        <form ref={formRef} action={dispatch} className="grid gap-4 py-4">
+        <form key={formKey} action={dispatch} className="grid gap-4 py-4">
           <input type="hidden" name="originalName" value={category.name} />
           <input type="hidden" name="subcategories" value={JSON.stringify(currentSubcategories)} />
           
