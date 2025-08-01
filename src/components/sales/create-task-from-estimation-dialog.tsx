@@ -42,20 +42,20 @@ function SubmitButton() {
 }
 
 interface CreateTaskFromEstimationDialogProps {
-    estimation: Estimation;
+    estimationTask: EstimationTask;
+    customerName: string;
     projects: Project[];
     taskBlueprints: TaskBlueprint[];
     isOpen: boolean;
     setIsOpen: (open: boolean) => void;
 }
 
-export function CreateTaskFromEstimationDialog({ estimation, projects, taskBlueprints, isOpen, setIsOpen }: CreateTaskFromEstimationDialogProps) {
+export function CreateTaskFromEstimationDialog({ estimationTask, customerName, projects, taskBlueprints, isOpen, setIsOpen }: CreateTaskFromEstimationDialogProps) {
   const [state, dispatch] = useActionState(createTask, initialState);
   const [nextId, setNextId] = React.useState('');
   const [startDate, setStartDate] = React.useState<Date>();
   const [endDate, setEndDate] = React.useState<Date>();
   const [selectedProjectId, setSelectedProjectId] = React.useState<string>('');
-  const [selectedEstimationTask, setSelectedEstimationTask] = React.useState<EstimationTask | null>(estimation.tasks[0] || null);
 
   const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
@@ -69,8 +69,7 @@ export function CreateTaskFromEstimationDialog({ estimation, projects, taskBluep
     setStartDate(undefined);
     setEndDate(undefined);
     setSelectedProjectId('');
-    setSelectedEstimationTask(estimation.tasks[0] || null)
-  },[estimation.tasks]);
+  },[]);
 
   React.useEffect(() => {
     if (state.message) {
@@ -96,11 +95,6 @@ export function CreateTaskFromEstimationDialog({ estimation, projects, taskBluep
       getNextTaskId().then(setNextId);
     }
   }, [isOpen]);
-  
-  const handleEstimationTaskChange = (taskId: string) => {
-    const task = estimation.tasks.find(t => t.id === taskId);
-    setSelectedEstimationTask(task || null);
-  }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -108,12 +102,12 @@ export function CreateTaskFromEstimationDialog({ estimation, projects, taskBluep
         <DialogHeader>
           <DialogTitle>Create Task from Estimation</DialogTitle>
           <DialogDescription>
-            Select an estimation task to create a new project task.
+            Create a new project task based on the estimation details.
           </DialogDescription>
         </DialogHeader>
         <form ref={formRef} action={dispatch}>
-         {selectedEstimationTask && (
-            <input type="hidden" name="budgetItems" value={JSON.stringify(selectedEstimationTask.items)} />
+         {estimationTask && (
+            <input type="hidden" name="budgetItems" value={JSON.stringify(estimationTask.items)} />
           )}
           <ScrollArea className="h-[60vh] pr-4">
             <div className="grid gap-4 py-4">
@@ -125,26 +119,10 @@ export function CreateTaskFromEstimationDialog({ estimation, projects, taskBluep
               </div>
               
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="estimationTask" className="text-right">
-                    Estimation Task
-                </Label>
-                <Select onValueChange={handleEstimationTaskChange} defaultValue={selectedEstimationTask?.id}>
-                  <SelectTrigger className="col-span-3">
-                    <SelectValue placeholder="Select an estimation task" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {estimation.tasks.map((task) => (
-                        <SelectItem key={task.id} value={task.id}>{task.title}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="title" className="text-right">
                   Task Title
                 </Label>
-                <Input id="title" name="title" className="col-span-3" defaultValue={selectedEstimationTask?.title} />
+                <Input id="title" name="title" className="col-span-3" defaultValue={estimationTask?.title} />
                 {state.errors?.title && (
                   <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.title[0]}</p>
                 )}
@@ -153,7 +131,7 @@ export function CreateTaskFromEstimationDialog({ estimation, projects, taskBluep
                 <Label htmlFor="description" className="text-right pt-2">
                   Description
                 </Label>
-                <Textarea id="description" name="description" className="col-span-3" defaultValue={selectedEstimationTask?.description} />
+                <Textarea id="description" name="description" className="col-span-3" defaultValue={estimationTask?.description} />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="projectId" className="text-right">

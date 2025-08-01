@@ -4,13 +4,18 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Pencil, Trash2, FileText, Calendar, User, DollarSign } from "lucide-react"
+import { Pencil, Trash2, FileText, Calendar, User, DollarSign, Briefcase } from "lucide-react"
 import { useModules } from "@/context/modules-context"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger as AccordionTriggerPrimitive } from '@/components/ui/accordion'
 import { EditEstimationDialog } from './edit-estimation-dialog';
 import { DeleteEstimationDialog } from './delete-estimation-dialog';
 import type { Estimation, EstimationTask, EstimationItem } from './estimations-list';
 import type { Product } from '../purchase/products-list';
+import { CreateTaskFromEstimationDialog } from './create-task-from-estimation-dialog';
+import { getProjects, getTaskBlueprints } from '@/lib/db';
+import type { Project } from '../project-management/projects-list';
+import type { TaskBlueprint } from '../project-management/task-blueprints-list';
+import { Skeleton } from '../ui/skeleton';
 
 const AccordionTrigger = React.forwardRef<
   React.ElementRef<typeof AccordionTriggerPrimitive>,
@@ -35,6 +40,32 @@ export function EstimationDetailView({ estimation, products }: EstimationDetailV
     const { currency } = useModules();
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
+
+    const [isCreateTaskDialogOpen, setIsCreateTaskDialogOpen] = React.useState(false);
+    const [selectedEstimationTask, setSelectedEstimationTask] = React.useState<EstimationTask | null>(null);
+    
+    const [projects, setProjects] = React.useState<Project[]>([]);
+    const [taskBlueprints, setTaskBlueprints] = React.useState<TaskBlueprint[]>([]);
+    const [isLoading, setIsLoading] = React.useState(true);
+
+    const handleOpenCreateTaskDialog = (task: EstimationTask) => {
+        setSelectedEstimationTask(task);
+        setIsCreateTaskDialogOpen(true);
+    };
+
+    React.useEffect(() => {
+        async function fetchData() {
+            setIsLoading(true);
+            const [fetchedProjects, fetchedTaskBlueprints] = await Promise.all([
+                getProjects(),
+                getTaskBlueprints()
+            ]);
+            setProjects(fetchedProjects);
+            setTaskBlueprints(fetchedTaskBlueprints);
+            setIsLoading(false);
+        }
+        fetchData();
+    }, []);
     
     const formatCurrency = React.useCallback((amount: number) => {
         if (!currency) {
@@ -50,6 +81,7 @@ export function EstimationDetailView({ estimation, products }: EstimationDetailV
     };
 
     return (
+        <>
         <div className="space-y-6">
             <Card>
                 <CardHeader className="p-4 border-b">
@@ -118,6 +150,10 @@ export function EstimationDetailView({ estimation, products }: EstimationDetailV
                                     <div className="flex-1" />
                                     <div className="flex items-center gap-4 pl-4">
                                         <span className="text-muted-foreground font-medium">{formatCurrency(task.totalCost)}</span>
+                                         <Button size="sm" variant="outline" onClick={() => handleOpenCreateTaskDialog(task)}>
+                                            <Briefcase className="mr-2 h-4 w-4" />
+                                            Create Task
+                                        </Button>
                                     </div>
                                 </div>
                                 <AccordionContent className="p-2 space-y-2">
@@ -155,5 +191,24 @@ export function EstimationDetailView({ estimation, products }: EstimationDetailV
                 estimation={estimation}
             />
         </div>
+        {selectedEstimationTask && !isLoading ? (
+            <CreateTaskFromEstimationDialog 
+                isOpen={isCreateTaskDialogOpen}
+                setIsOpen={setIsCreateTaskDialogOpen}
+                estimationTask={selectedEstimationTask}
+                customerName={estimation.customerName}
+                projects={projects}
+                taskBlueprints={taskBlueprints}
+            />
+        ) : (
+             <Dialog open={isCreateTaskDialogOpen} onOpenChange={setIsCreateTaskDialogOpen}>
+                <DialogContent>
+                    <div className="flex items-center justify-center p-8">
+                        <Skeleton className="h-20 w-full" />
+                    </div>
+                </DialogContent>
+            </Dialog>
+        )}
+        </>
     )
 }
