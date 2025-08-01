@@ -5,7 +5,7 @@ import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Briefcase, ShoppingCart, Heart, Wallet } from 'lucide-react';
+import { Briefcase, ShoppingCart, Heart, Wallet, Users } from 'lucide-react';
 import { useModules } from '@/context/modules-context';
 
 export default function ModulesPage() {
@@ -18,6 +18,8 @@ export default function ModulesPage() {
     setIsCrmEnabled,
     isPayrollEnabled,
     setIsPayrollEnabled,
+    isUserManagementEnabled,
+    setIsUserManagementEnabled,
   } = useModules();
 
   return (
@@ -127,6 +129,32 @@ export default function ModulesPage() {
                 checked={isPayrollEnabled}
                 onCheckedChange={setIsPayrollEnabled}
                 aria-label="Toggle Payroll Module"
+              />
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="hover:shadow-lg transition-shadow duration-300">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+            <div className="space-y-1.5">
+              <CardTitle className="text-xl flex items-center">
+                <Users className="mr-3 h-6 w-6 text-primary" />
+                User Management
+              </CardTitle>
+              <CardDescription>
+                Manage users, roles, and permissions.
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between rounded-lg border p-3">
+              <Label htmlFor="user-management-switch" className="font-medium">
+                {isUserManagementEnabled ? 'Module Active' : 'Module Inactive'}
+              </Label>
+              <Switch
+                id="user-management-switch"
+                checked={isUserManagementEnabled}
+                onCheckedChange={setIsUserManagementEnabled}
+                aria-label="Toggle User Management Module"
               />
             </div>
           </CardContent>

@@ -10,7 +10,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
 } from '@/components/ui/sidebar';
-import { Box, Calendar, LayoutDashboard, Briefcase, ShoppingCart, Home, Package, Users, FileText, Landmark, Truck, CheckSquare, AlertTriangle, ClipboardList, Settings, ChevronsRight, CircleDollarSign, Heart, Wallet, User, ClipboardSignature, PenSquare, Building } from 'lucide-react';
+import { Box, Calendar, LayoutDashboard, Briefcase, ShoppingCart, Home, Package, FileText, Landmark, Truck, CheckSquare, AlertTriangle, ClipboardList, Settings, ChevronsRight, CircleDollarSign, Heart, Wallet, User, ClipboardSignature, PenSquare, Building, Users as UsersIcon } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useModules } from '@/context/modules-context';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -18,7 +18,7 @@ import { ChevronDown } from 'lucide-react';
 
 export function DashboardSidebarItems() {
   const pathname = usePathname();
-  const { isProjectManagementEnabled, isPurchaseModuleEnabled, isCrmEnabled, isPayrollEnabled } = useModules();
+  const { isProjectManagementEnabled, isPurchaseModuleEnabled, isCrmEnabled, isPayrollEnabled, isUserManagementEnabled } = useModules();
   const [isPurchaseOpen, setIsPurchaseOpen] = React.useState(true);
   const [isProjectManagementOpen, setIsProjectManagementOpen] = React.useState(true);
   const [isSettingsOpen, setIsSettingsOpen] = React.useState(true);
@@ -135,7 +135,7 @@ export function DashboardSidebarItems() {
                 </SidebarMenuItem>
                  <SidebarMenuItem>
                   <SidebarMenuSubButton asChild isActive={pathname === '/purchase/vendors'}>
-                    <Link href="/purchase/vendors"><Users />Vendors</Link>
+                    <Link href="/purchase/vendors"><UsersIcon />Vendors</Link>
                   </SidebarMenuSubButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
@@ -228,6 +228,16 @@ export function DashboardSidebarItems() {
                                 </Link>
                             </SidebarMenuSubButton>
                         </SidebarMenuItem>
+                        {isUserManagementEnabled && (
+                          <SidebarMenuItem>
+                              <SidebarMenuSubButton asChild isActive={pathname.startsWith('/settings/user-management')}>
+                                  <Link href="/settings/user-management">
+                                      <UsersIcon />
+                                      User Management
+                                  </Link>
+                              </SidebarMenuSubButton>
+                          </SidebarMenuItem>
+                        )}
                         <SidebarMenuItem>
                             <Collapsible open={isPreferencesOpen} onOpenChange={setIsPreferencesOpen}>
                                 <CollapsibleTrigger asChild>
