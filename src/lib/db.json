@@ -600,5 +600,14 @@
       "department": "Management",
       "baseSalary": 95000
     }
-  ]
+  ],
+  "companyProfile": {
+    "companyName": "D_PRO_MGT Solutions",
+    "trnNumber": "123456789012345",
+    "logoUrl": "",
+    "address": "123 Business Bay, Dubai, UAE",
+    "bankName": "Emirates NBD",
+    "accountNumber": "101202303404",
+    "iban": "AE42026000101202303404"
+  }
 }

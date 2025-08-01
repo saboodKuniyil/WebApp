@@ -41,9 +41,20 @@ export type DashboardSettings = {
   showPurchaseStats?: boolean;
 };
 
+export type CompanyProfile = {
+  companyName: string;
+  trnNumber: string;
+  logoUrl: string;
+  address: string;
+  bankName: string;
+  accountNumber: string;
+  iban: string;
+};
+
 export type AppSettings = {
     currency: string;
     dashboard?: DashboardSettings;
+    companyProfile?: CompanyProfile;
 };
 
 type DbData = {
@@ -58,6 +69,7 @@ type DbData = {
   appSettings: AppSettings;
   employees: Employee[];
   positions: Position[];
+  companyProfile: CompanyProfile;
 };
 
 async function readDb(): Promise<DbData> {
@@ -88,7 +100,16 @@ async function readDb(): Promise<DbData> {
             }
           },
           employees: [],
-          positions: []
+          positions: [],
+          companyProfile: {
+            companyName: "",
+            trnNumber: "",
+            logoUrl: "",
+            address: "",
+            bankName: "",
+            accountNumber: "",
+            iban: ""
+          }
       };
     }
     throw error;
@@ -393,4 +414,30 @@ export async function getEmployees(): Promise<Employee[]> {
 export async function getPositions(): Promise<Position[]> {
   const data = await readDb();
   return data.positions || [];
+}
+
+// Company Profile functions
+export async function getCompanyProfile(): Promise<CompanyProfile> {
+  const data = await readDb();
+  return data.companyProfile || {
+    companyName: "",
+    trnNumber: "",
+    logoUrl: "",
+    address: "",
+    bankName: "",
+    accountNumber: "",
+    iban: ""
+  };
+}
+
+export async function updateCompanyProfile(newProfile: CompanyProfile): Promise<{ message: string; }> {
+  try {
+    const data = await readDb();
+    data.companyProfile = newProfile;
+    await writeDb(data);
+    return { message: 'Company profile updated successfully.' };
+  } catch (error) {
+    console.error('Database error:', error);
+    return { message: 'Failed to update company profile.' };
+  }
 }

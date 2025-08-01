@@ -10,7 +10,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
 } from '@/components/ui/sidebar';
-import { Box, Calendar, LayoutDashboard, Briefcase, ShoppingCart, Home, Package, Users, FileText, Landmark, Truck, CheckSquare, AlertTriangle, ClipboardList, Settings, ChevronsRight, CircleDollarSign, Heart, Wallet, User, ClipboardSignature, PenSquare } from 'lucide-react';
+import { Box, Calendar, LayoutDashboard, Briefcase, ShoppingCart, Home, Package, Users, FileText, Landmark, Truck, CheckSquare, AlertTriangle, ClipboardList, Settings, ChevronsRight, CircleDollarSign, Heart, Wallet, User, ClipboardSignature, PenSquare, Building } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useModules } from '@/context/modules-context';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -218,6 +218,14 @@ export function DashboardSidebarItems() {
                                 <Box />
                                 Modules
                             </Link>
+                            </SidebarMenuSubButton>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem>
+                            <SidebarMenuSubButton asChild isActive={pathname.startsWith('/settings/profile')}>
+                                <Link href="/settings/profile">
+                                    <Building />
+                                    Profile
+                                </Link>
                             </SidebarMenuSubButton>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
