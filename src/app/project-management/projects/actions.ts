@@ -8,7 +8,7 @@ import { redirect } from 'next/navigation';
 import type { Project } from '@/components/project-management/projects-list';
 
 const projectSchema = z.object({
-  id: z.string().min(1, 'ID is required'),
+  id: z.string(),
   title: z.string().min(1, 'Title is required'),
   description: z.string().optional(),
   manager: z.string().optional(),
