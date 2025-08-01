@@ -15,15 +15,6 @@ import type { Currency } from '@/components/settings/currency-management';
 import type { Estimation, EstimationTask } from '@/components/sales/estimations-list';
 import { z } from 'zod';
 
-export const EstimationItemSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  quantity: z.coerce.number().min(0.001, "Quantity must be positive"),
-  cost: z.coerce.number().min(0, "Cost must be a positive number"),
-  type: z.enum(['product', 'adhoc']),
-});
-
-
 const dbPath = path.join(process.cwd(), 'src', 'lib', 'db.json');
 
 // Define types for the new Payroll module
