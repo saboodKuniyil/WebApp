@@ -28,6 +28,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Card } from '../ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger as AccordionTriggerPrimitive } from '../ui/accordion';
+import { Textarea } from '../ui/textarea';
 
 const AccordionTrigger = React.forwardRef<
   React.ElementRef<typeof AccordionTriggerPrimitive>,
@@ -71,10 +72,12 @@ export function AddEstimationDialog({ products }: AddEstimationDialogProps) {
 
     // State for adding a new task
     const [newTaskTitle, setNewTaskTitle] = React.useState('');
+    const [newTaskDescription, setNewTaskDescription] = React.useState('');
     
     const { toast } = useToast();
     const formRef = React.useRef<HTMLFormElement>(null);
     const { currency } = useModules();
+    const taskCounterRef = React.useRef(1001);
 
     const formatCurrency = React.useCallback((amount: number) => {
         if (!currency) {
@@ -93,6 +96,7 @@ export function AddEstimationDialog({ products }: AddEstimationDialogProps) {
         setAdhocQuantity(1);
         setAdhocCost(0);
         setNewTaskTitle('');
+        setNewTaskDescription('');
     }, []);
 
     React.useEffect(() => {
@@ -178,13 +182,15 @@ export function AddEstimationDialog({ products }: AddEstimationDialogProps) {
     const handleAddTask = () => {
         if (!newTaskTitle.trim()) return;
         const newTask: EstimationTask = {
-            id: `task-${Date.now()}`,
+            id: `ET-${taskCounterRef.current++}`,
             title: newTaskTitle,
+            description: newTaskDescription,
             items: [],
             totalCost: 0
         };
         setTasks([...tasks, newTask]);
         setNewTaskTitle('');
+        setNewTaskDescription('');
     };
 
     const handleRemoveTask = (taskId: string) => {
@@ -223,13 +229,20 @@ export function AddEstimationDialog({ products }: AddEstimationDialogProps) {
 
                             <Card className="p-4 space-y-2">
                                 <Label>Add a New Task/Scope</Label>
-                                <div className="flex gap-2">
+                                <div className="space-y-2">
                                     <Input 
-                                        placeholder="E.g., Kitchen Cabinets, Living Room Flooring"
+                                        placeholder="Task Title (e.g., Kitchen Cabinets, Living Room Flooring)"
                                         value={newTaskTitle}
                                         onChange={e => setNewTaskTitle(e.target.value)}
-                                        onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleAddTask())}
                                     />
+                                    <Textarea
+                                        placeholder="Task Description (optional)"
+                                        value={newTaskDescription}
+                                        onChange={e => setNewTaskDescription(e.target.value)}
+                                        rows={2}
+                                    />
+                                </div>
+                                <div className="flex justify-end">
                                     <Button type="button" onClick={handleAddTask}><Plus className="h-4 w-4 mr-2" />Add Task</Button>
                                 </div>
                             </Card>
@@ -241,11 +254,14 @@ export function AddEstimationDialog({ products }: AddEstimationDialogProps) {
                                         <Accordion type="multiple" className="w-full space-y-2">
                                             {tasks.map(task => (
                                                 <AccordionItem key={task.id} value={task.id} className="border bg-background rounded-md px-4">
-                                                    <div className="flex items-center w-full py-2">
+                                                     <div className="flex items-center w-full py-2">
                                                         <AccordionTrigger>
                                                           <div className="flex items-center gap-2">
                                                               <GripVertical className="h-5 w-5 text-muted-foreground" />
-                                                              <span className="font-semibold text-lg">{task.title}</span>
+                                                              <div>
+                                                                  <span className="font-semibold text-lg">{task.title}</span>
+                                                                  <p className="text-xs text-muted-foreground font-mono">{task.id}</p>
+                                                              </div>
                                                           </div>
                                                         </AccordionTrigger>
                                                         <div className="flex-1" />
@@ -257,6 +273,7 @@ export function AddEstimationDialog({ products }: AddEstimationDialogProps) {
                                                         </div>
                                                     </div>
                                                     <AccordionContent className="p-2 space-y-4">
+                                                        {task.description && <p className="text-sm text-muted-foreground border-b pb-4 mb-4 whitespace-pre-wrap">{task.description}</p>}
                                                          {task.items.map(item => (
                                                             <div key={item.id} className="grid grid-cols-[1fr_80px_80px_80px_40px] items-center gap-x-4 p-2 border rounded-md text-sm">
                                                                 <span className="truncate" title={item.name}>{item.name}</span>

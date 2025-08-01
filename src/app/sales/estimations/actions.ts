@@ -4,7 +4,6 @@
 import { z } from 'zod';
 import { getEstimations, createEstimation as createDbEstimation } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
-import type { Estimation } from '@/components/sales/estimations-list';
 
 const estimationItemSchema = z.object({
   id: z.string(),
@@ -17,6 +16,7 @@ const estimationItemSchema = z.object({
 const estimationTaskSchema = z.object({
     id: z.string(),
     title: z.string().min(1, 'Task title is required'),
+    description: z.string().optional(),
     items: z.array(estimationItemSchema).min(1, 'Each task must have at least one item'),
     totalCost: z.coerce.number(),
 });

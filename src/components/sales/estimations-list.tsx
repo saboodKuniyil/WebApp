@@ -57,6 +57,7 @@ export type EstimationItem = {
 export type EstimationTask = {
     id: string;
     title: string;
+    description?: string;
     items: EstimationItem[];
     totalCost: number;
 }
