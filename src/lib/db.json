@@ -156,6 +156,19 @@
       "startDate": "2025-07-23T20:00:00.000Z",
       "endDate": "2025-07-29T20:00:00.000Z",
       "completionPercentage": 60
+    },
+    {
+      "id": "TS_9003",
+      "title": "ddd",
+      "description": "dddd",
+      "label": "bug",
+      "status": "backlog",
+      "priority": "low",
+      "assignee": "Alice",
+      "projectId": "PR_9001",
+      "startDate": "2025-08-13T20:00:00.000Z",
+      "endDate": "2025-08-13T20:00:00.000Z",
+      "completionPercentage": 0
     }
   ],
   "issues": [
@@ -809,6 +822,37 @@
         }
       ],
       "totalCost": 619.99,
+      "createdDate": "2025-08-01"
+    },
+    {
+      "id": "EST-1003",
+      "title": "dddd",
+      "customerName": "Quantum Solutions",
+      "tasks": [
+        {
+          "id": "ET-1001",
+          "title": "ddd",
+          "description": "dddd",
+          "items": [
+            {
+              "id": "SRV_CNS_7001",
+              "name": "Financial Consultation",
+              "quantity": 1,
+              "cost": 250,
+              "type": "product"
+            },
+            {
+              "id": "FG_FNT_7002",
+              "name": "TPR Desk 1700*55",
+              "quantity": 1,
+              "cost": 810.99,
+              "type": "product"
+            }
+          ],
+          "totalCost": 1060.99
+        }
+      ],
+      "totalCost": 1060.99,
       "createdDate": "2025-08-01"
     }
   ]

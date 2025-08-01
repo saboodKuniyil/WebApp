@@ -1,8 +1,10 @@
 
 
+
 'use client';
 
 import * as React from 'react';
+import Link from 'next/link';
 import {
   CaretSortIcon,
   ChevronDownIcon,
@@ -21,7 +23,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
-import { Button, buttonVariants } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   DropdownMenu,
@@ -45,7 +47,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { AddEstimationDialog } from './add-estimation-dialog';
 import type { Product } from '../purchase/products-list';
 import { useModules } from '@/context/modules-context';
-import { cn } from '@/lib/utils';
 import { CreateTaskFromEstimationDialog } from './create-task-from-estimation-dialog';
 import { getProjects, getTaskBlueprints } from '@/lib/db';
 import type { Project } from '../project-management/projects-list';
@@ -114,12 +115,20 @@ const getColumns = (
           <CaretSortIcon className="ml-2 h-4 w-4" />
         </Button>
     ),
-    cell: ({ row }) => <div>{row.getValue('id')}</div>,
+    cell: ({ row }) => (
+        <Link href={`/sales/estimations/${row.original.id}`} className="font-medium hover:underline">
+            {row.getValue('id')}
+        </Link>
+    ),
   },
   {
     accessorKey: 'title',
     header: 'Title',
-    cell: ({ row }) => <div className="font-medium">{row.getValue('title')}</div>,
+    cell: ({ row }) => (
+        <Link href={`/sales/estimations/${row.original.id}`} className="font-medium hover:underline">
+            {row.getValue('title')}
+        </Link>
+    ),
   },
   {
     accessorKey: 'customerName',
@@ -152,14 +161,17 @@ const getColumns = (
 
       return (
         <DropdownMenu>
-          <DropdownMenuTrigger className={cn(buttonVariants({ variant: "ghost" }), "h-8 w-8 p-0")}>
-            <span className="sr-only">Open menu</span>
-            <DotsHorizontalIcon className="h-4 w-4" />
+          <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Open menu</span>
+                  <DotsHorizontalIcon className="h-4 w-4" />
+              </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem>View Estimation</DropdownMenuItem>
-            <DropdownMenuItem>Edit Estimation</DropdownMenuItem>
+            <DropdownMenuItem asChild>
+                <Link href={`/sales/estimations/${estimation.id}`}>View Estimation</Link>
+            </DropdownMenuItem>
              <DropdownMenuItem onClick={() => handleOpenDialog(estimation)}>Create Task from Estimation</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="text-red-600">Delete Estimation</DropdownMenuItem>
