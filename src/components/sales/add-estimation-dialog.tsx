@@ -318,7 +318,18 @@ export function AddEstimationDialog({ products }: AddEstimationDialogProps) {
                                                                     <div className="flex items-end gap-2">
                                                                         <div className="flex-1 space-y-1">
                                                                             <Label>Product</Label>
-                                                                            <Select onValueChange={setSelectedProduct}><SelectTrigger><SelectValue placeholder="Select a product" /></SelectTrigger><SelectContent>{products.map(p => <SelectItem key={p.id} value={p.id}>{p.name} ({p.id})</SelectItem>)}</SelectContent></Select>
+                                                                            <Select onValueChange={setSelectedProduct}><SelectTrigger><SelectValue placeholder="Select a product" /></SelectTrigger>
+                                                                            <SelectContent>
+                                                                                {products.map(p => 
+                                                                                    <SelectItem key={p.id} value={p.id}>
+                                                                                        <div className="flex justify-between w-full">
+                                                                                            <span>{p.name}</span>
+                                                                                            <span className="text-muted-foreground ml-4">{formatCurrency(p.salesPrice)}</span>
+                                                                                        </div>
+                                                                                    </SelectItem>
+                                                                                )}
+                                                                            </SelectContent>
+                                                                            </Select>
                                                                         </div>
                                                                         <div className="space-y-1"><Label>Quantity</Label><Input type="number" value={productQuantity} onChange={e => setProductQuantity(Number(e.target.value))} className="w-24" min="1" /></div>
                                                                         <Button type="button" onClick={() => handleAddProduct(task.id)}><Plus className="h-4 w-4 mr-2" />Add</Button>
