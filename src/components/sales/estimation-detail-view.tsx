@@ -16,6 +16,8 @@ import { getProjects, getTaskBlueprints } from '@/lib/db';
 import type { Project } from '../project-management/projects-list';
 import type { TaskBlueprint } from '../project-management/task-blueprints-list';
 import { Skeleton } from '../ui/skeleton';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+
 
 const AccordionTrigger = React.forwardRef<
   React.ElementRef<typeof AccordionTriggerPrimitive>,
