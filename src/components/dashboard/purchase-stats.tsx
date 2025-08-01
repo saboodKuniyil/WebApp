@@ -1,40 +1,51 @@
 
+'use client';
+
+import * as React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, Users, Truck } from "lucide-react";
 import { getProducts } from "@/lib/db";
 import Link from 'next/link';
-import { unstable_noStore as noStore } from 'next/cache';
+import { Skeleton } from '../ui/skeleton';
 
-async function fetchStats() {
-    noStore();
-    const products = await getProducts();
-    const totalProducts = products.length;
-    // Mock data for vendors and orders until implemented
-    const totalVendors = 15;
-    const pendingOrders = 3;
+type Stats = {
+    totalProducts: number;
+    totalVendors: number;
+    pendingOrders: number;
+};
 
-    return { totalProducts, totalVendors, pendingOrders };
-}
+export function PurchaseStats() {
+    const [stats, setStats] = React.useState<Stats | null>(null);
 
-export async function PurchaseStats() {
-    const { totalProducts, totalVendors, pendingOrders } = await fetchStats();
+    React.useEffect(() => {
+        async function fetchStats() {
+            const products = await getProducts();
+            const totalProducts = products.length;
+            // Mock data for vendors and orders until implemented
+            const totalVendors = 15;
+            const pendingOrders = 3;
+
+            setStats({ totalProducts, totalVendors, pendingOrders });
+        }
+        fetchStats();
+    }, []);
     
-    const stats = [
+    const statCards = [
         {
             title: "Total Products",
-            value: totalProducts,
+            value: stats?.totalProducts,
             Icon: Package,
             href: "/purchase/products"
         },
         {
             title: "Total Vendors",
-            value: totalVendors,
+            value: stats?.totalVendors,
             Icon: Users,
             href: "/purchase/vendors"
         },
         {
             title: "Pending Orders",
-            value: pendingOrders,
+            value: stats?.pendingOrders,
             Icon: Truck,
             href: "/purchase/orders"
         },
@@ -42,7 +53,7 @@ export async function PurchaseStats() {
 
     return (
         <>
-            {stats.map((stat) => (
+            {statCards.map((stat) => (
                 <Card key={stat.title} className="hover:shadow-lg transition-shadow duration-300">
                      <Link href={stat.href}>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -50,7 +61,11 @@ export async function PurchaseStats() {
                             <stat.Icon className={`h-4 w-4 text-muted-foreground`} />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stat.value}</div>
+                             {stats === null ? (
+                                <Skeleton className="h-7 w-12" />
+                            ) : (
+                                <div className="text-2xl font-bold">{stat.value}</div>
+                            )}
                         </CardContent>
                     </Link>
                 </Card>

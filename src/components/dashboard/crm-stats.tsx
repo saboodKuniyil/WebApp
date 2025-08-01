@@ -1,46 +1,48 @@
 
+'use client';
+
+import * as React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Users, Briefcase } from "lucide-react";
 import Link from "next/link";
-import { unstable_noStore as noStore } from "next/cache";
+import { Skeleton } from '../ui/skeleton';
 
-// Mock data functions - in a real app, these would hit a database
-async function getTodaysAppointments() {
-    noStore();
-    return 5;
-}
+type Stats = {
+    todaysAppointments: number;
+    newLeads: number;
+    activeDeals: number;
+};
 
-async function getNewLeads() {
-    noStore();
-    return 12;
-}
+export function CrmStats() {
+    const [stats, setStats] = React.useState<Stats | null>(null);
 
-async function getActiveDeals() {
-    noStore();
-    return 8;
-}
-
-export async function CrmStats() {
-    const todaysAppointments = await getTodaysAppointments();
-    const newLeads = await getNewLeads();
-    const activeDeals = await getActiveDeals();
+    React.useEffect(() => {
+        // Mock data fetching - in a real app, these would hit a database
+        async function fetchStats() {
+            const todaysAppointments = 5;
+            const newLeads = 12;
+            const activeDeals = 8;
+            setStats({ todaysAppointments, newLeads, activeDeals });
+        }
+        fetchStats();
+    }, []);
     
-    const stats = [
+    const statCards = [
         {
             title: "Today's Appointments",
-            value: todaysAppointments,
+            value: stats?.todaysAppointments,
             Icon: Calendar,
             href: "/crm/calendar"
         },
         {
             title: "New Leads (this week)",
-            value: newLeads,
+            value: stats?.newLeads,
             Icon: Users,
             href: "/crm/leads"
         },
         {
             title: "Active Deals",
-            value: activeDeals,
+            value: stats?.activeDeals,
             Icon: Briefcase,
             href: "/crm/deals"
         },
@@ -48,7 +50,7 @@ export async function CrmStats() {
 
     return (
         <>
-            {stats.map((stat) => (
+            {statCards.map((stat) => (
                 <Card key={stat.title} className="hover:shadow-lg transition-shadow duration-300">
                      <Link href={stat.href}>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -56,7 +58,11 @@ export async function CrmStats() {
                             <stat.Icon className={`h-4 w-4 text-muted-foreground`} />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stat.value}</div>
+                             {stats === null ? (
+                                <Skeleton className="h-7 w-12" />
+                            ) : (
+                                <div className="text-2xl font-bold">{stat.value}</div>
+                            )}
                         </CardContent>
                     </Link>
                 </Card>
