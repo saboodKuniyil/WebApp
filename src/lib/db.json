@@ -517,7 +517,7 @@
     },
     "enabled_modules": {
       "project_management": false,
-      "purchase": false,
+      "purchase": true,
       "crm": false,
       "payroll": false,
       "user_management": true,
