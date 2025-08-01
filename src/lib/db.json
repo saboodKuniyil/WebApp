@@ -568,5 +568,37 @@
       "code": "OMR",
       "symbol": "OMR"
     }
+  ],
+  "employees": [
+    {
+      "id": "EMP-001",
+      "name": "John Doe",
+      "positionId": "POS-001",
+      "email": "john.doe@example.com",
+      "phone": "123-456-7890",
+      "hireDate": "2023-01-15"
+    },
+    {
+      "id": "EMP-002",
+      "name": "Jane Smith",
+      "positionId": "POS-002",
+      "email": "jane.smith@example.com",
+      "phone": "098-765-4321",
+      "hireDate": "2022-11-20"
+    }
+  ],
+  "positions": [
+    {
+      "id": "POS-001",
+      "title": "Software Engineer",
+      "department": "Technology",
+      "baseSalary": 80000
+    },
+    {
+      "id": "POS-002",
+      "title": "Project Manager",
+      "department": "Management",
+      "baseSalary": 95000
+    }
   ]
 }

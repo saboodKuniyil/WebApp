@@ -10,7 +10,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
 } from '@/components/ui/sidebar';
-import { Box, Calendar, LayoutDashboard, Briefcase, ShoppingCart, Home, Package, Users, FileText, Landmark, Truck, CheckSquare, AlertTriangle, ClipboardList, Settings, ChevronsRight, CircleDollarSign, Heart } from 'lucide-react';
+import { Box, Calendar, LayoutDashboard, Briefcase, ShoppingCart, Home, Package, Users, FileText, Landmark, Truck, CheckSquare, AlertTriangle, ClipboardList, Settings, ChevronsRight, CircleDollarSign, Heart, Wallet, User, ClipboardSignature, PenSquare } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useModules } from '@/context/modules-context';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -18,12 +18,13 @@ import { ChevronDown } from 'lucide-react';
 
 export function DashboardSidebarItems() {
   const pathname = usePathname();
-  const { isProjectManagementEnabled, isPurchaseModuleEnabled, isCrmEnabled } = useModules();
+  const { isProjectManagementEnabled, isPurchaseModuleEnabled, isCrmEnabled, isPayrollEnabled } = useModules();
   const [isPurchaseOpen, setIsPurchaseOpen] = React.useState(true);
   const [isProjectManagementOpen, setIsProjectManagementOpen] = React.useState(true);
   const [isSettingsOpen, setIsSettingsOpen] = React.useState(true);
   const [isPreferencesOpen, setIsPreferencesOpen] = React.useState(true);
   const [isCrmOpen, setIsCrmOpen] = React.useState(true);
+  const [isPayrollOpen, setIsPayrollOpen] = React.useState(true);
 
   return (
     <SidebarMenu>
@@ -157,6 +158,47 @@ export function DashboardSidebarItems() {
           </Collapsible>
         </SidebarMenuItem>
       )}
+
+      {isPayrollEnabled && (
+         <SidebarMenuItem>
+            <Collapsible open={isPayrollOpen} onOpenChange={setIsPayrollOpen}>
+              <CollapsibleTrigger asChild>
+                  <SidebarMenuButton className="w-full justify-between">
+                      <div className="flex items-center gap-2">
+                          <Wallet />
+                          Payroll
+                      </div>
+                      <ChevronDown className={`h-4 w-4 transition-transform ${isPayrollOpen ? 'rotate-180' : ''}`} />
+                  </SidebarMenuButton>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <SidebarMenuSub>
+                  <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/payroll/dashboard'}>
+                      <Link href="/payroll/dashboard"><Home />Dashboard</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                   <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/payroll/employees'}>
+                      <Link href="/payroll/employees"><User />Employees</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/payroll/positions'}>
+                      <Link href="/payroll/positions"><ClipboardSignature />Positions</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/payroll/daily-entry'}>
+                      <Link href="/payroll/daily-entry"><PenSquare />Daily Entry</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                </SidebarMenuSub>
+              </CollapsibleContent>
+            </Collapsible>
+         </SidebarMenuItem>
+      )}
+
        <SidebarMenuItem>
             <Collapsible open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
                 <CollapsibleTrigger asChild>

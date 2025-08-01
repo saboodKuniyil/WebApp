@@ -14,6 +14,24 @@ import type { Currency } from '@/components/settings/currency-management';
 
 const dbPath = path.join(process.cwd(), 'src', 'lib', 'db.json');
 
+// Define types for the new Payroll module
+export type Employee = {
+  id: string;
+  name: string;
+  positionId: string;
+  email: string;
+  phone: string;
+  hireDate: string;
+};
+
+export type Position = {
+  id: string;
+  title: string;
+  department: string;
+  baseSalary: number;
+};
+
+
 export type DashboardSettings = {
   showFinancialStats: boolean;
   showRevenueChart: boolean;
@@ -38,6 +56,8 @@ type DbData = {
   units: Unit[];
   currencies: Currency[];
   appSettings: AppSettings;
+  employees: Employee[];
+  positions: Position[];
 };
 
 async function readDb(): Promise<DbData> {
@@ -66,7 +86,9 @@ async function readDb(): Promise<DbData> {
                 showCrmStats: true,
                 showPurchaseStats: true,
             }
-          }
+          },
+          employees: [],
+          positions: []
       };
     }
     throw error;
@@ -359,4 +381,16 @@ export async function updateAppSettings(newSettings: Partial<AppSettings>): Prom
         console.error('Database error:', error);
         return { message: 'Failed to update settings.' };
     }
+}
+
+
+// Payroll functions
+export async function getEmployees(): Promise<Employee[]> {
+  const data = await readDb();
+  return data.employees || [];
+}
+
+export async function getPositions(): Promise<Position[]> {
+  const data = await readDb();
+  return data.positions || [];
 }
