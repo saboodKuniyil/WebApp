@@ -5,13 +5,8 @@ import type { User } from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 async function getUsers(): Promise<User[]> {
-  try {
     const users = await fetchUsers();
     return users;
-  } catch (error) {
-    console.error('Failed to read database:', error);
-    return [];
-  }
 }
 
 export default async function UserManagementPage() {

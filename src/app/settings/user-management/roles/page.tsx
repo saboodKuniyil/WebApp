@@ -4,13 +4,8 @@ import { getUserRoles } from '@/lib/db';
 import type { UserRole } from "@/lib/db";
 
 async function getRoles(): Promise<UserRole[]> {
-  try {
     const roles = await getUserRoles();
     return roles;
-  } catch (error) {
-    console.error('Failed to read database:', error);
-    return [];
-  }
 }
 
 export default async function RolesPage() {

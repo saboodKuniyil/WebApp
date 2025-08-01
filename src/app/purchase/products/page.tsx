@@ -4,13 +4,8 @@ import { getProducts as fetchProducts } from '@/lib/db';
 import type { Product } from "@/components/purchase/products-list";
 
 async function getProducts(): Promise<Product[]> {
-  try {
     const products = await fetchProducts();
     return products;
-  } catch (error) {
-    console.error('Failed to read database:', error);
-    return [];
-  }
 }
 
 export default async function ProductsPage() {

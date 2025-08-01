@@ -19,14 +19,43 @@ import { ChevronDown } from 'lucide-react';
 export function DashboardSidebarItems() {
   const pathname = usePathname();
   const { isProjectManagementEnabled, isPurchaseModuleEnabled, isCrmEnabled, isPayrollEnabled, isUserManagementEnabled, isSalesModuleEnabled } = useModules();
-  const [isPurchaseOpen, setIsPurchaseOpen] = React.useState(true);
-  const [isProjectManagementOpen, setIsProjectManagementOpen] = React.useState(true);
-  const [isSettingsOpen, setIsSettingsOpen] = React.useState(true);
-  const [isPreferencesOpen, setIsPreferencesOpen] = React.useState(true);
-  const [isCrmOpen, setIsCrmOpen] = React.useState(true);
-  const [isPayrollOpen, setIsPayrollOpen] = React.useState(true);
-  const [isSalesOpen, setIsSalesOpen] = React.useState(true);
+  
+  // Set all to false by default
+  const [isCrmOpen, setIsCrmOpen] = React.useState(false);
+  const [isSalesOpen, setIsSalesOpen] = React.useState(false);
+  const [isProjectManagementOpen, setIsProjectManagementOpen] = React.useState(false);
+  const [isPurchaseOpen, setIsPurchaseOpen] = React.useState(false);
+  const [isPayrollOpen, setIsPayrollOpen] = React.useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
   const [isUserManagementOpen, setIsUserManagementOpen] = React.useState(false);
+  const [isPreferencesOpen, setIsPreferencesOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    if (pathname.startsWith('/crm')) {
+      setIsCrmOpen(true);
+    }
+    if (pathname.startsWith('/sales')) {
+      setIsSalesOpen(true);
+    }
+    if (pathname.startsWith('/project-management')) {
+        setIsProjectManagementOpen(true);
+    }
+    if (pathname.startsWith('/purchase')) {
+      setIsPurchaseOpen(true);
+    }
+     if (pathname.startsWith('/payroll')) {
+      setIsPayrollOpen(true);
+    }
+    if (pathname.startsWith('/settings') || pathname.startsWith('/modules')) {
+      setIsSettingsOpen(true);
+    }
+    if (pathname.startsWith('/settings/user-management')) {
+        setIsUserManagementOpen(true);
+    }
+     if (pathname.startsWith('/settings/preferences')) {
+        setIsPreferencesOpen(true);
+    }
+  }, [pathname]);
 
 
   return (
@@ -133,22 +162,22 @@ export function DashboardSidebarItems() {
                     </SidebarMenuSubButton>
                   </SidebarMenuItem>
                   <SidebarMenuItem>
-                    <SidebarMenuSubButton asChild isActive={pathname === '/project-management/projects'}>
+                    <SidebarMenuSubButton asChild isActive={pathname.startsWith('/project-management/projects')}>
                       <Link href="/project-management/projects"><Briefcase />Projects</Link>
                     </SidebarMenuSubButton>
                   </SidebarMenuItem>
                   <SidebarMenuItem>
-                    <SidebarMenuSubButton asChild isActive={pathname === '/project-management/tasks'}>
+                    <SidebarMenuSubButton asChild isActive={pathname.startsWith('/project-management/tasks')}>
                       <Link href="/project-management/tasks"><CheckSquare />Tasks</Link>
                     </SidebarMenuSubButton>
                   </SidebarMenuItem>
                   <SidebarMenuItem>
-                    <SidebarMenuSubButton asChild isActive={pathname === '/project-management/task-blueprints'}>
+                    <SidebarMenuSubButton asChild isActive={pathname.startsWith('/project-management/task-blueprints')}>
                       <Link href="/project-management/task-blueprints"><ClipboardList />Task Blueprints</Link>
                     </SidebarMenuSubButton>
                   </SidebarMenuItem>
                   <SidebarMenuItem>
-                    <SidebarMenuSubButton asChild isActive={pathname === '/project-management/issues'}>
+                    <SidebarMenuSubButton asChild isActive={pathname.startsWith('/project-management/issues')}>
                       <Link href="/project-management/issues"><AlertTriangle />Issues</Link>
                     </SidebarMenuSubButton>
                   </SidebarMenuItem>
@@ -177,7 +206,7 @@ export function DashboardSidebarItems() {
                   </SidebarMenuSubButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                  <SidebarMenuSubButton asChild isActive={pathname === '/purchase/products'}>
+                  <SidebarMenuSubButton asChild isActive={pathname.startsWith('/purchase/products')}>
                     <Link href="/purchase/products"><Package />Products</Link>
                   </SidebarMenuSubButton>
                 </SidebarMenuItem>
@@ -291,12 +320,12 @@ export function DashboardSidebarItems() {
                                 <CollapsibleContent>
                                     <SidebarMenuSub>
                                         <SidebarMenuItem>
-                                            <SidebarMenuSubButton asChild isActive={pathname === '/settings/user-management'}>
+                                            <SidebarMenuSubButton asChild isActive={pathname.startsWith('/settings/user-management') && !pathname.includes('/roles')}>
                                                 <Link href="/settings/user-management"><UsersIcon />Users</Link>
                                             </SidebarMenuSubButton>
                                         </SidebarMenuItem>
                                         <SidebarMenuItem>
-                                            <SidebarMenuSubButton asChild isActive={pathname === '/settings/user-management/roles'}>
+                                            <SidebarMenuSubButton asChild isActive={pathname.startsWith('/settings/user-management/roles')}>
                                                 <Link href="/settings/user-management/roles"><ShieldCheck />Roles &amp; Permissions</Link>
                                             </SidebarMenuSubButton>
                                         </SidebarMenuItem>

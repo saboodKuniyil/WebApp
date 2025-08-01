@@ -6,33 +6,18 @@ import type { Task } from "@/components/project-management/tasks-list";
 import type { TaskBlueprint } from "@/components/project-management/task-blueprints-list";
 
 async function getProjects(): Promise<Project[]> {
-  try {
-    const projects = await fetchProjects();
-    return projects;
-  } catch (error) {
-    console.error('Failed to read database:', error);
-    return [];
-  }
+  const projects = await fetchProjects();
+  return projects;
 }
 
 async function getTasks(): Promise<Task[]> {
-  try {
-    const tasks = await fetchTasks();
-    return tasks;
-  } catch (error) {
-    console.error('Failed to read database:', error);
-    return [];
-  }
+  const tasks = await fetchTasks();
+  return tasks;
 }
 
 async function getTaskBlueprints(): Promise<TaskBlueprint[]> {
-  try {
-    const blueprints = await fetchTaskBlueprints();
-    return blueprints;
-  } catch (error) {
-    console.error('Failed to read database:', error);
-    return [];
-  }
+  const blueprints = await fetchTaskBlueprints();
+  return blueprints;
 }
 
 

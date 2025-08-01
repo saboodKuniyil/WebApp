@@ -535,10 +535,10 @@
       "showPurchaseStats": true
     },
     "enabled_modules": {
-      "project_management": false,
+      "project_management": true,
       "purchase": true,
-      "crm": false,
-      "payroll": false,
+      "crm": true,
+      "payroll": true,
       "user_management": true,
       "sales": true
     }
