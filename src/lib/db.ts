@@ -80,7 +80,6 @@ export type CompanyProfile = {
 export type AppSettings = {
     currency: string;
     dashboard?: DashboardSettings;
-    companyProfile?: CompanyProfile;
 };
 
 type DbData = {
@@ -462,7 +461,7 @@ export async function getCompanyProfile(): Promise<CompanyProfile> {
 
 export async function updateCompanyProfile(newProfileData: Partial<CompanyProfile>): Promise<void> {
     const data = await readDb();
-    data.companyProfile = { ...data.companyProfile, ...newProfileData };
+    data.companyProfile = { ...(data.companyProfile || {}), ...newProfileData };
     await writeDb(data);
 }
 
