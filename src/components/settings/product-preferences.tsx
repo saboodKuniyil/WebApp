@@ -19,22 +19,8 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { AddCategoryDialog } from './add-category-dialog';
-import { Button } from '../ui/button';
-import { Edit, Trash2 } from 'lucide-react';
-import { EditCategoryDialog } from './edit-category-dialog';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { deleteProductCategory } from '@/app/settings/preferences/product-preference/actions';
-import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CategoryActions } from './category-actions';
 
 
 export type Subcategory = {
@@ -55,36 +41,8 @@ interface ProductPreferencesProps {
 
 const productTypes = ["Finished Good", "Raw Material", "Service"];
 
-export function ProductPreferences({ data }: ProductPreferencesProps) {
-  const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
-  const [selectedCategory, setSelectedCategory] = React.useState<ProductCategory | null>(null);
-  const { toast } = useToast();
 
-  const handleEdit = (category: ProductCategory) => {
-    setSelectedCategory(category);
-    setIsEditDialogOpen(true);
-  };
-  
-  const handleDelete = (category: ProductCategory) => {
-    setSelectedCategory(category);
-    setIsDeleteDialogOpen(true);
-  };
-
-  const confirmDelete = async () => {
-    if (selectedCategory) {
-      const result = await deleteProductCategory(selectedCategory.name);
-       if (result.message.includes('success')) {
-        toast({ title: 'Success', description: result.message });
-      } else {
-        toast({ variant: 'destructive', title: 'Error', description: result.message });
-      }
-      setIsDeleteDialogOpen(false);
-      setSelectedCategory(null);
-    }
-  };
-  
-  const columns: ColumnDef<ProductCategory>[] = [
+export const columns: ColumnDef<ProductCategory>[] = [
     {
       accessorKey: 'name',
       header: 'Category Name',
@@ -107,18 +65,13 @@ export function ProductPreferences({ data }: ProductPreferencesProps) {
     {
         id: 'actions',
         header: () => <div className="text-right">Actions</div>,
-        cell: ({ row }) => (
-            <div className="flex gap-2 justify-end">
-                <Button variant="ghost" size="icon" onClick={() => handleEdit(row.original)}>
-                    <Edit className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="icon" onClick={() => handleDelete(row.original)}>
-                    <Trash2 className="h-4 w-4 text-destructive" />
-                </Button>
-            </div>
-        ),
+        cell: ({ row }) => {
+            return <CategoryActions category={row.original} />
+        },
     }
   ];
+
+export function ProductPreferences({ data }: ProductPreferencesProps) {
 
   const tables = productTypes.reduce((acc, type) => {
     acc[type] = useReactTable({
@@ -130,7 +83,6 @@ export function ProductPreferences({ data }: ProductPreferencesProps) {
   }, {} as Record<string, ReturnType<typeof useReactTable<ProductCategory>>>);
   
   return (
-    <>
       <Card>
           <CardHeader>
               <CardTitle>Categories</CardTitle>
@@ -203,30 +155,6 @@ export function ProductPreferences({ data }: ProductPreferencesProps) {
             </Tabs>
           </CardContent>
       </Card>
-      <EditCategoryDialog 
-          isOpen={isEditDialogOpen}
-          setIsOpen={setIsEditDialogOpen}
-          category={selectedCategory}
-      />
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
-            <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete the 
-                <span className="font-bold"> "{selectedCategory?.name}"</span> category.
-                Products using this category will need to be updated manually.
-            </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-destructive hover:bg-destructive/90">
-                Delete
-            </AlertDialogAction>
-            </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
   );
 }
     

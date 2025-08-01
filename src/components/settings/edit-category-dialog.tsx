@@ -18,7 +18,7 @@ import { Label } from '@/components/ui/label';
 import { X, Plus } from 'lucide-react';
 import { updateProductCategory } from '@/app/settings/preferences/product-preference/actions';
 import { useToast } from '@/hooks/use-toast';
-import { ProductCategory, Subcategory } from './product-preferences';
+import type { ProductCategory, Subcategory } from './product-preferences';
 import {
   Select,
   SelectContent,
@@ -37,7 +37,7 @@ function SubmitButton() {
 interface EditCategoryDialogProps {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
-  category: ProductCategory | null;
+  category: ProductCategory;
 }
 
 export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategoryDialogProps) {
@@ -47,17 +47,17 @@ export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategory
   const [currentSubcategories, setCurrentSubcategories] = React.useState<Subcategory[]>([]);
   const [newSubcategoryName, setNewSubcategoryName] = React.useState('');
   const [newSubcategoryAbbr, setNewSubcategoryAbbr] = React.useState('');
-  const [formKey, setFormKey] = React.useState(() => Date.now());
+  
+  const formRef = React.useRef<HTMLFormElement>(null);
 
   React.useEffect(() => {
-    if (category) {
-      setCurrentSubcategories(category.subcategories);
-    }
-    // When the dialog opens, reset the form by changing its key
     if (isOpen) {
-        setFormKey(Date.now());
+      // When the dialog opens, reset its state from the passed category
+      setCurrentSubcategories(category.subcategories || []);
+      // Reset action state in case there were previous errors
+      dispatch({ message: '', errors: {} });
     }
-  }, [category, isOpen]);
+  }, [isOpen, category, dispatch]);
   
   React.useEffect(() => {
     if (state.message) {
@@ -81,8 +81,6 @@ export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategory
   const handleRemoveSubcategory = (subNameToRemove: string) => {
     setCurrentSubcategories(currentSubcategories.filter(s => s.name !== subNameToRemove));
   };
-  
-  if (!category) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -93,7 +91,7 @@ export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategory
             Update the category name and manage its subcategories.
           </DialogDescription>
         </DialogHeader>
-        <form key={formKey} action={dispatch} className="grid gap-4 py-4">
+        <form ref={formRef} action={dispatch} className="grid gap-4 py-4">
           <input type="hidden" name="originalName" value={category.name} />
           <input type="hidden" name="subcategories" value={JSON.stringify(currentSubcategories)} />
           
@@ -182,7 +180,7 @@ export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategory
           </div>
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="outline">Cancel</Button>
+              <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>Cancel</Button>
             </DialogClose>
             <SubmitButton />
           </DialogFooter>
