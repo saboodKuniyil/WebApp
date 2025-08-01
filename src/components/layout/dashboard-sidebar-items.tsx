@@ -42,14 +42,7 @@ export function DashboardSidebarItems() {
           </Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
-      <SidebarMenuItem>
-        <SidebarMenuButton asChild isActive={pathname === '/modules'}>
-          <Link href="/modules">
-            <Box />
-            Modules
-          </Link>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
+      
       {isProjectManagementEnabled && (
          <SidebarMenuItem>
             <Collapsible open={isProjectManagementOpen} onOpenChange={setIsProjectManagementOpen}>
@@ -156,6 +149,14 @@ export function DashboardSidebarItems() {
                 </CollapsibleTrigger>
                 <CollapsibleContent>
                     <SidebarMenuSub>
+                         <SidebarMenuItem>
+                            <SidebarMenuSubButton asChild isActive={pathname === '/modules'}>
+                            <Link href="/modules">
+                                <Box />
+                                Modules
+                            </Link>
+                            </SidebarMenuSubButton>
+                        </SidebarMenuItem>
                         <SidebarMenuItem>
                             <Collapsible open={isPreferencesOpen} onOpenChange={setIsPreferencesOpen}>
                                 <CollapsibleTrigger asChild>
