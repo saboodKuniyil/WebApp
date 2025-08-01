@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import * as React from 'react';
@@ -16,7 +17,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { PlusCircle, Plus, Trash2, GripVertical } from 'lucide-react';
+import { PlusCircle, Plus, Trash2, GripVertical, ChevronDown } from 'lucide-react';
 import { createEstimation, getNextEstimationId } from '@/app/sales/estimations/actions';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '../ui/scroll-area';
@@ -26,7 +27,21 @@ import type { EstimationItem, EstimationTask } from './estimations-list';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Card } from '../ui/card';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger as AccordionTriggerPrimitive } from '../ui/accordion';
+
+const AccordionTrigger = React.forwardRef<
+  React.ElementRef<typeof AccordionTriggerPrimitive>,
+  React.ComponentPropsWithoutRef<typeof AccordionTriggerPrimitive>
+>(({ className, children, ...props }, ref) => (
+  <AccordionTriggerPrimitive
+    ref={ref}
+    className="py-0 hover:no-underline"
+    {...props}
+  >
+    {children}
+  </AccordionTriggerPrimitive>
+));
+AccordionTrigger.displayName = AccordionTriggerPrimitive.displayName
 
 const initialState = { message: '', errors: {} };
 
@@ -226,20 +241,21 @@ export function AddEstimationDialog({ products }: AddEstimationDialogProps) {
                                         <Accordion type="multiple" className="w-full space-y-2">
                                             {tasks.map(task => (
                                                 <AccordionItem key={task.id} value={task.id} className="border bg-background rounded-md px-4">
-                                                    <AccordionTrigger className="py-2">
-                                                        <div className="flex items-center justify-between w-full">
-                                                            <div className="flex items-center gap-2">
-                                                                <GripVertical className="h-5 w-5 text-muted-foreground" />
-                                                                <span className="font-semibold text-lg">{task.title}</span>
-                                                            </div>
-                                                            <div className="flex items-center gap-4">
-                                                                <span className="text-muted-foreground font-medium">{formatCurrency(task.totalCost)}</span>
-                                                                <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-destructive/10" onClick={(e) => { e.stopPropagation(); handleRemoveTask(task.id);}}>
-                                                                    <Trash2 className="h-4 w-4 text-destructive" />
-                                                                </Button>
-                                                            </div>
+                                                    <div className="flex items-center w-full py-2">
+                                                        <AccordionTrigger>
+                                                          <div className="flex items-center gap-2">
+                                                              <GripVertical className="h-5 w-5 text-muted-foreground" />
+                                                              <span className="font-semibold text-lg">{task.title}</span>
+                                                          </div>
+                                                        </AccordionTrigger>
+                                                        <div className="flex-1" />
+                                                        <div className="flex items-center gap-4 pl-4">
+                                                            <span className="text-muted-foreground font-medium">{formatCurrency(task.totalCost)}</span>
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-destructive/10" onClick={(e) => { e.stopPropagation(); handleRemoveTask(task.id);}}>
+                                                                <Trash2 className="h-4 w-4 text-destructive" />
+                                                            </Button>
                                                         </div>
-                                                    </AccordionTrigger>
+                                                    </div>
                                                     <AccordionContent className="p-2 space-y-4">
                                                          {task.items.map(item => (
                                                             <div key={item.id} className="grid grid-cols-[1fr_80px_80px_80px_40px] items-center gap-x-4 p-2 border rounded-md text-sm">
