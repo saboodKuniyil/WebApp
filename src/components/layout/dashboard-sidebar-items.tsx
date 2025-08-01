@@ -10,7 +10,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
 } from '@/components/ui/sidebar';
-import { Box, Calendar, LayoutDashboard, Briefcase, ShoppingCart, Home, Package, FileText, Landmark, Truck, CheckSquare, AlertTriangle, ClipboardList, Settings, ChevronsRight, CircleDollarSign, Heart, Wallet, User, ClipboardSignature, PenSquare, Building, Users as UsersIcon, ShieldCheck, DollarSign, FileSignature } from 'lucide-react';
+import { Box, Calendar, LayoutDashboard, Briefcase, ShoppingCart, Home, Package, FileText, Landmark, Truck, CheckSquare, AlertTriangle, ClipboardList, Settings, ChevronsRight, CircleDollarSign, Heart, Wallet, User, ClipboardSignature, PenSquare, Building, Users as UsersIcon, ShieldCheck, DollarSign, FileSignature, ShoppingBag } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useModules } from '@/context/modules-context';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -88,13 +88,18 @@ export function DashboardSidebarItems() {
                     </SidebarMenuSubButton>
                   </SidebarMenuItem>
                    <SidebarMenuItem>
-                    <SidebarMenuSubButton asChild isActive={pathname === '/sales/invoices'}>
-                      <Link href="/sales/invoices"><FileText />Invoices</Link>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/sales/estimations'}>
+                      <Link href="/sales/estimations"><FileSignature />Estimations</Link>
                     </SidebarMenuSubButton>
                   </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuSubButton asChild isActive={pathname === '/sales/quotations'}>
-                      <Link href="/sales/quotations"><FileSignature />Quotations</Link>
+                   <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/sales/sales-orders'}>
+                      <Link href="/sales/sales-orders"><ShoppingBag />Sales Orders</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                   <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/sales/invoices'}>
+                      <Link href="/sales/invoices"><FileText />Invoices</Link>
                     </SidebarMenuSubButton>
                   </SidebarMenuItem>
                 </SidebarMenuSub>

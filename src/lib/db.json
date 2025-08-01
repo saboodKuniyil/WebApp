@@ -1,4 +1,3 @@
-
 {
   "projects": [
     {
@@ -517,10 +516,10 @@
       "showPurchaseStats": true
     },
     "enabled_modules": {
-      "project_management": true,
-      "purchase": true,
-      "crm": true,
-      "payroll": true,
+      "project_management": false,
+      "purchase": false,
+      "crm": false,
+      "payroll": false,
       "user_management": true,
       "sales": true
     }
