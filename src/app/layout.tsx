@@ -50,13 +50,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader>
-          <div className="flex items-center gap-2">
-            {companyProfile?.logoUrl ? (
-                <Image src={companyProfile.logoUrl} alt={companyProfile.companyName} width={40} height={40} className="h-10 w-10 object-contain" />
-            ) : (
-                <Logo className="h-10 w-auto" />
-            )}
-          </div>
+          <Logo className="h-10 w-auto" />
         </SidebarHeader>
         <SidebarContent>
           <DashboardSidebarItems />
@@ -64,12 +58,22 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
       </Sidebar>
       <SidebarInset>
         <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm md:h-16 md:px-6">
-            <div className="flex w-full items-center justify-between">
-                <div className="flex items-center gap-4">
+            <div className="flex w-full items-center">
+                <div className="flex items-center gap-4 flex-1">
                     <SidebarTrigger className="md:hidden" />
                 </div>
                 
-                <div className="flex items-center gap-4">
+                <div className="flex-1 flex justify-center">
+                   <div className="flex items-center gap-2">
+                    {companyProfile?.logoUrl ? (
+                        <Image src={companyProfile.logoUrl} alt={companyProfile.companyName} width={40} height={40} className="h-10 w-auto object-contain" data-ai-hint="logo company" />
+                    ) : (
+                       <Logo className="h-10 w-auto" />
+                    )}
+                   </div>
+                </div>
+
+                <div className="flex items-center gap-4 flex-1 justify-end">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="relative h-10 w-10 rounded-full">
