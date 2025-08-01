@@ -48,6 +48,7 @@ export async function createProductCategory(
   }
 
   const { name, abbreviation, productType, subcategories } = validatedFields.data;
+  const upperAbbr = abbreviation.toUpperCase();
 
   try {
     const categories = await getProductCategories();
@@ -57,7 +58,7 @@ export async function createProductCategory(
         return { message: 'Failed to create category. A category with this name already exists.' };
     }
     
-    const abbreviationExists = categories.some(c => c.abbreviation.toLowerCase() === abbreviation.toLowerCase());
+    const abbreviationExists = categories.some(c => c.abbreviation.toLowerCase() === upperAbbr.toLowerCase());
     if (abbreviationExists) {
         return { message: 'Failed to create category. A category with this abbreviation already exists.' };
     }
@@ -65,7 +66,7 @@ export async function createProductCategory(
 
     await createDbProductCategory({
         name,
-        abbreviation,
+        abbreviation: upperAbbr,
         productType,
         subcategories,
     });
@@ -101,9 +102,17 @@ export async function updateProductCategory(prevState: CategoryFormState, formDa
     }
 
     const { originalName, name, abbreviation, productType, subcategories } = validatedFields.data;
+    const upperAbbr = abbreviation.toUpperCase();
 
     try {
         const categories = await getProductCategories();
+        const existingCategory = categories.find(c => c.name.toLowerCase() === originalName.toLowerCase());
+
+        if (!existingCategory) {
+            return { message: 'Failed to update category. The original category could not be found.' };
+        }
+
+        // Check for duplicate name only if the name has changed
         if (originalName.toLowerCase() !== name.toLowerCase()) {
             const nameExists = categories.some(c => c.name.toLowerCase() === name.toLowerCase());
             if (nameExists) {
@@ -111,15 +120,15 @@ export async function updateProductCategory(prevState: CategoryFormState, formDa
             }
         }
         
-        const existingCategory = categories.find(c => c.name.toLowerCase() === originalName.toLowerCase());
-        if (existingCategory && existingCategory.abbreviation.toLowerCase() !== abbreviation.toLowerCase()) {
-             const abbreviationExists = categories.some(c => c.abbreviation.toLowerCase() === abbreviation.toLowerCase());
+        // Check for duplicate abbreviation only if the abbreviation has changed
+        if (existingCategory.abbreviation.toLowerCase() !== upperAbbr.toLowerCase()) {
+             const abbreviationExists = categories.some(c => c.abbreviation.toLowerCase() === upperAbbr.toLowerCase());
              if (abbreviationExists) {
                 return { message: 'Failed to update category. Another category with this abbreviation already exists.' };
              }
         }
         
-        await updateDbProductCategory(originalName, { name, abbreviation, productType, subcategories });
+        await updateDbProductCategory(originalName, { name, abbreviation: upperAbbr, productType, subcategories });
         revalidatePath('/settings/preferences/product-preference');
         revalidatePath('/purchase/products');
         return { message: 'Category updated successfully.' };

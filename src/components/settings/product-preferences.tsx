@@ -106,9 +106,9 @@ export function ProductPreferences({ data }: ProductPreferencesProps) {
     },
     {
         id: 'actions',
-        header: 'Actions',
+        header: () => <div className="text-right">Actions</div>,
         cell: ({ row }) => (
-            <div className="flex gap-2">
+            <div className="flex gap-2 justify-end">
                 <Button variant="ghost" size="icon" onClick={() => handleEdit(row.original)}>
                     <Edit className="h-4 w-4" />
                 </Button>
@@ -132,11 +132,11 @@ export function ProductPreferences({ data }: ProductPreferencesProps) {
   return (
     <>
       <Card>
-          <CardHeader className="p-2">
+          <CardHeader>
               <CardTitle>Categories</CardTitle>
               <CardDescription>Manage your product categories and subcategories by product type.</CardDescription>
           </CardHeader>
-          <CardContent className="p-2 pt-0">
+          <CardContent>
             <Tabs defaultValue={productTypes[0]}>
                 <div className="flex justify-between items-center py-2">
                     <TabsList>
@@ -155,7 +155,7 @@ export function ProductPreferences({ data }: ProductPreferencesProps) {
                                 <TableRow key={headerGroup.id}>
                                     {headerGroup.headers.map((header) => {
                                     return (
-                                        <TableHead key={header.id} className="p-2">
+                                        <TableHead key={header.id}>
                                         {header.isPlaceholder
                                             ? null
                                             : flexRender(
@@ -176,7 +176,7 @@ export function ProductPreferences({ data }: ProductPreferencesProps) {
                                     data-state={row.getIsSelected() && 'selected'}
                                     >
                                     {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id} className="p-2">
+                                        <TableCell key={cell.id}>
                                         {flexRender(
                                             cell.column.columnDef.cell,
                                             cell.getContext()
@@ -203,13 +203,11 @@ export function ProductPreferences({ data }: ProductPreferencesProps) {
             </Tabs>
           </CardContent>
       </Card>
-      {selectedCategory && (
-          <EditCategoryDialog 
-              isOpen={isEditDialogOpen}
-              setIsOpen={setIsEditDialogOpen}
-              category={selectedCategory}
-          />
-      )}
+      <EditCategoryDialog 
+          isOpen={isEditDialogOpen}
+          setIsOpen={setIsEditDialogOpen}
+          category={selectedCategory}
+      />
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
             <AlertDialogHeader>

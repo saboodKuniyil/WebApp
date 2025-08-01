@@ -321,15 +321,20 @@ export async function createProductCategory(newCategory: ProductCategory): Promi
     await writeDb(data);
 }
 
-export async function updateProductCategory(originalName: string, updatedCategory: ProductCategory): Promise<void> {
+export async function updateProductCategory(originalName: string, updatedCategoryData: Omit<ProductCategory, 'name'> & { name: string }): Promise<void> {
     const data = await readDb();
-    const categoryIndex = data.productCategories.findIndex(c => c.name === originalName);
+    const categoryIndex = data.productCategories.findIndex(c => c.name.toLowerCase() === originalName.toLowerCase());
+    
     if (categoryIndex !== -1) {
+        const originalCategory = data.productCategories[categoryIndex];
+        // Create the updated category object by merging
+        const updatedCategory = { ...originalCategory, ...updatedCategoryData };
         data.productCategories[categoryIndex] = updatedCategory;
-        // Also update any products that were using the old category name
-        if (originalName !== updatedCategory.name) {
+
+        // If the category name itself was changed, update all products using it
+        if (originalName.toLowerCase() !== updatedCategory.name.toLowerCase()) {
             data.products.forEach(p => {
-                if (p.category === originalName) {
+                if (p.category.toLowerCase() === originalName.toLowerCase()) {
                     p.category = updatedCategory.name;
                 }
             });
@@ -342,7 +347,7 @@ export async function updateProductCategory(originalName: string, updatedCategor
 
 export async function deleteProductCategory(categoryName: string): Promise<void> {
     const data = await readDb();
-    const categoryIndex = data.productCategories.findIndex(c => c.name === categoryName);
+    const categoryIndex = data.productCategories.findIndex(c => c.name.toLowerCase() === categoryName.toLowerCase());
     if (categoryIndex !== -1) {
         data.productCategories.splice(categoryIndex, 1);
         await writeDb(data);
@@ -543,3 +548,4 @@ export async function updateUserRole(updatedRole: Omit<UserRole, 'id'> & { id: s
     throw new Error(`Role with id ${updatedRole.id} not found.`);
   }
 }
+

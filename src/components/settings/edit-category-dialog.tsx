@@ -37,22 +37,33 @@ function SubmitButton() {
 interface EditCategoryDialogProps {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
-  category: ProductCategory;
+  category: ProductCategory | null;
 }
 
 export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategoryDialogProps) {
   const [state, dispatch] = useActionState(updateProductCategory, initialState);
   const { toast } = useToast();
+  const formRef = React.useRef<HTMLFormElement>(null);
 
-  const [subcategories, setSubcategories] = React.useState<Subcategory[]>(category.subcategories);
+  const [subcategories, setSubcategories] = React.useState<Subcategory[]>([]);
   const [newSubcategoryName, setNewSubcategoryName] = React.useState('');
   const [newSubcategoryAbbr, setNewSubcategoryAbbr] = React.useState('');
 
   React.useEffect(() => {
     if (category) {
       setSubcategories(category.subcategories);
+    } else {
+        setSubcategories([]);
     }
   }, [category]);
+  
+  React.useEffect(() => {
+    // When the dialog is closed, reset the form action's state
+    if (!isOpen) {
+      dispatch({ message: '', errors: {} });
+    }
+  }, [isOpen, dispatch]);
+
 
   React.useEffect(() => {
     if (state.message) {
@@ -76,17 +87,19 @@ export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategory
   const handleRemoveSubcategory = (sub: string) => {
     setSubcategories(subcategories.filter(s => s.name !== sub));
   };
+  
+  if (!category) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Edit Category</DialogTitle>
+          <DialogTitle>Edit Category: {category.name}</DialogTitle>
           <DialogDescription>
             Update the category name and manage its subcategories.
           </DialogDescription>
         </DialogHeader>
-        <form action={dispatch} className="grid gap-4 py-4">
+        <form ref={formRef} action={dispatch} className="grid gap-4 py-4">
           <input type="hidden" name="originalName" value={category.name} />
           <input type="hidden" name="subcategories" value={JSON.stringify(subcategories)} />
           

@@ -5,6 +5,7 @@ import { getProductCategories, getUnits } from '@/lib/db';
 import type { ProductCategory } from "@/components/settings/product-preferences";
 import type { Unit } from "@/components/settings/units-management";
 import { unstable_noStore as noStore } from 'next/cache';
+import { Separator } from "@/components/ui/separator";
 
 async function fetchProductCategories(): Promise<ProductCategory[]> {
   noStore();
@@ -25,8 +26,9 @@ export default async function ProductPreferencePage() {
       <div className="flex items-center justify-between space-y-2">
         <h1 className="text-3xl font-bold tracking-tight font-headline">Product Preferences</h1>
       </div>
-      <div className="grid gap-6 lg:grid-cols-1">
+      <div className="space-y-6">
         <ProductPreferences data={categories} />
+        <Separator />
         <UnitsManagement data={units} />
       </div>
     </main>
