@@ -3,6 +3,7 @@ import { UsersList } from "@/components/settings/users-list";
 import { getUsers as fetchUsers } from '@/lib/db';
 import type { User } from "@/lib/db";
 import { unstable_noStore as noStore } from 'next/cache';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 async function getUsers(): Promise<User[]> {
   noStore();
@@ -20,10 +21,15 @@ export default async function UserManagementPage() {
 
   return (
     <main className="flex-1 space-y-4 p-2 md:p-4 pt-4">
-      <div className="flex items-center justify-between space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight font-headline">User Management</h1>
-      </div>
-      <UsersList data={users} />
+      <Card>
+        <CardHeader>
+          <CardTitle>User Management</CardTitle>
+          <CardDescription>Manage your organization's users and their roles.</CardDescription>
+        </CardHeader>
+        <CardContent>
+            <UsersList data={users} />
+        </CardContent>
+      </Card>
     </main>
   );
 }
