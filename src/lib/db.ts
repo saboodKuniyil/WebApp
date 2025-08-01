@@ -31,6 +31,14 @@ export type Position = {
   baseSalary: number;
 };
 
+export type User = {
+    id: string;
+    name: string;
+    email: string;
+    role: 'Admin' | 'Manager' | 'User';
+    status: 'active' | 'inactive';
+}
+
 
 export type DashboardSettings = {
   showFinancialStats: boolean;
@@ -70,6 +78,7 @@ type DbData = {
   employees: Employee[];
   positions: Position[];
   companyProfile: CompanyProfile;
+  users: User[];
 };
 
 async function readDb(): Promise<DbData> {
@@ -109,7 +118,8 @@ async function readDb(): Promise<DbData> {
             bankName: "",
             accountNumber: "",
             iban: ""
-          }
+          },
+          users: [],
       };
     }
     throw error;
@@ -439,5 +449,42 @@ export async function updateCompanyProfile(newProfile: CompanyProfile): Promise<
   } catch (error) {
     console.error('Database error:', error);
     return { message: 'Failed to update company profile.' };
+  }
+}
+
+// User Management functions
+export async function getUsers(): Promise<User[]> {
+  const data = await readDb();
+  return data.users || [];
+}
+
+export async function createUser(newUser: User): Promise<void> {
+  const data = await readDb();
+  if (!data.users) {
+    data.users = [];
+  }
+  data.users.push(newUser);
+  await writeDb(data);
+}
+
+export async function updateUser(updatedUser: User): Promise<void> {
+  const data = await readDb();
+  const userIndex = data.users.findIndex(u => u.id === updatedUser.id);
+  if (userIndex !== -1) {
+    data.users[userIndex] = updatedUser;
+    await writeDb(data);
+  } else {
+    throw new Error(`User with id ${updatedUser.id} not found.`);
+  }
+}
+
+export async function deleteUser(userId: string): Promise<void> {
+  const data = await readDb();
+  const userIndex = data.users.findIndex(u => u.id === userId);
+  if (userIndex !== -1) {
+    data.users.splice(userIndex, 1);
+    await writeDb(data);
+  } else {
+    throw new Error(`User with id ${userId} not found.`);
   }
 }
