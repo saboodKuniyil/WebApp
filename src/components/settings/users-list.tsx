@@ -41,7 +41,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
 import { AddUserDialog } from './add-user-dialog';
 import { EditUserDialog } from './edit-user-dialog';
 import { DeleteUserDialog } from './delete-user-dialog';
@@ -165,10 +165,11 @@ export function UsersList({ data }: { data: User[] }) {
   return (
     <>
       <Card>
-        <CardHeader className="p-4">
+        <CardHeader>
           <CardTitle>Users</CardTitle>
+          <CardDescription>Manage your organization's users and their roles.</CardDescription>
         </CardHeader>
-        <CardContent className="p-4 pt-0">
+        <CardContent>
           <div className="w-full">
             <div className="flex items-center justify-between py-4">
               <Input
