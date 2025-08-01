@@ -2,31 +2,53 @@
 'use client';
 
 import * as React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Briefcase, ShoppingCart, Heart, Wallet, Users, DollarSign } from 'lucide-react';
 import { useModules } from '@/context/modules-context';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
+import { updateModuleSettings } from './actions';
 
 export default function ModulesPage() {
   const { 
-    isProjectManagementEnabled, 
-    setIsProjectManagementEnabled, 
-    isPurchaseModuleEnabled, 
-    setIsPurchaseModuleEnabled,
-    isCrmEnabled,
-    setIsCrmEnabled,
-    isPayrollEnabled,
-    setIsPayrollEnabled,
-    isUserManagementEnabled,
-    setIsUserManagementEnabled,
-    isSalesModuleEnabled,
-    setIsSalesModuleEnabled,
+    appSettings,
+    setAppSettings,
     isInitialLoad,
   } = useModules();
+
+  const [isPending, startTransition] = React.useTransition();
+  const { toast } = useToast();
+
+  const [modules, setModules] = React.useState(appSettings?.enabled_modules);
+
+  React.useEffect(() => {
+    setModules(appSettings?.enabled_modules);
+  }, [appSettings]);
+
+  const handleSwitchChange = (moduleName: keyof typeof modules, checked: boolean) => {
+    setModules(prev => prev ? { ...prev, [moduleName]: checked } : null);
+  }
+
+  const handleSaveChanges = () => {
+    if (!modules) return;
+    
+    startTransition(async () => {
+      const result = await updateModuleSettings(modules);
+       if (result.message.includes('success')) {
+        if(appSettings) {
+           setAppSettings({ ...appSettings, enabled_modules: modules });
+        }
+        toast({ title: 'Success', description: 'Module settings updated.' });
+      } else {
+        toast({ variant: 'destructive', title: 'Error', description: result.message });
+      }
+    });
+  }
   
-  if (isInitialLoad) {
+  if (isInitialLoad || !modules) {
     return (
         <main className="flex-1 space-y-4 p-2 md:p-4 pt-4">
             <div className="flex items-center justify-between space-y-2">
@@ -53,6 +75,9 @@ export default function ModulesPage() {
     <main className="flex-1 space-y-4 p-2 md:p-4 pt-4">
       <div className="flex items-center justify-between space-y-2">
         <h1 className="text-3xl font-bold tracking-tight font-headline">Modules</h1>
+         <Button onClick={handleSaveChanges} disabled={isPending}>
+          {isPending ? 'Updating...' : 'Update Settings'}
+        </Button>
       </div>
       
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -71,12 +96,12 @@ export default function ModulesPage() {
           <CardContent>
             <div className="flex items-center justify-between rounded-lg border p-3">
               <Label htmlFor="project-management-switch" className="font-medium">
-                {isProjectManagementEnabled ? 'Module Active' : 'Module Inactive'}
+                {modules.project_management ? 'Module Active' : 'Module Inactive'}
               </Label>
               <Switch
                 id="project-management-switch"
-                checked={isProjectManagementEnabled}
-                onCheckedChange={setIsProjectManagementEnabled}
+                checked={modules.project_management}
+                onCheckedChange={(checked) => handleSwitchChange('project_management', checked)}
                 aria-label="Toggle Project Management Module"
               />
             </div>
@@ -97,12 +122,12 @@ export default function ModulesPage() {
           <CardContent>
             <div className="flex items-center justify-between rounded-lg border p-3">
               <Label htmlFor="purchase-switch" className="font-medium">
-                {isPurchaseModuleEnabled ? 'Module Active' : 'Module Inactive'}
+                {modules.purchase ? 'Module Active' : 'Module Inactive'}
               </Label>
               <Switch
                 id="purchase-switch"
-                checked={isPurchaseModuleEnabled}
-                onCheckedChange={setIsPurchaseModuleEnabled}
+                checked={modules.purchase}
+                onCheckedChange={(checked) => handleSwitchChange('purchase', checked)}
                 aria-label="Toggle Purchase Module"
               />
             </div>
@@ -123,12 +148,12 @@ export default function ModulesPage() {
           <CardContent>
             <div className="flex items-center justify-between rounded-lg border p-3">
               <Label htmlFor="crm-switch" className="font-medium">
-                {isCrmEnabled ? 'Module Active' : 'Module Inactive'}
+                {modules.crm ? 'Module Active' : 'Module Inactive'}
               </Label>
               <Switch
                 id="crm-switch"
-                checked={isCrmEnabled}
-                onCheckedChange={setIsCrmEnabled}
+                checked={modules.crm}
+                onCheckedChange={(checked) => handleSwitchChange('crm', checked)}
                 aria-label="Toggle CRM Module"
               />
             </div>
@@ -149,12 +174,12 @@ export default function ModulesPage() {
           <CardContent>
             <div className="flex items-center justify-between rounded-lg border p-3">
               <Label htmlFor="payroll-switch" className="font-medium">
-                {isPayrollEnabled ? 'Module Active' : 'Module Inactive'}
+                {modules.payroll ? 'Module Active' : 'Module Inactive'}
               </Label>
               <Switch
                 id="payroll-switch"
-                checked={isPayrollEnabled}
-                onCheckedChange={setIsPayrollEnabled}
+                checked={modules.payroll}
+                onCheckedChange={(checked) => handleSwitchChange('payroll', checked)}
                 aria-label="Toggle Payroll Module"
               />
             </div>
@@ -175,12 +200,12 @@ export default function ModulesPage() {
           <CardContent>
             <div className="flex items-center justify-between rounded-lg border p-3">
               <Label htmlFor="sales-switch" className="font-medium">
-                {isSalesModuleEnabled ? 'Module Active' : 'Module Inactive'}
+                {modules.sales ? 'Module Active' : 'Module Inactive'}
               </Label>
               <Switch
                 id="sales-switch"
-                checked={isSalesModuleEnabled}
-                onCheckedChange={setIsSalesModuleEnabled}
+                checked={modules.sales}
+                onCheckedChange={(checked) => handleSwitchChange('sales', checked)}
                 aria-label="Toggle Sales Module"
               />
             </div>
@@ -201,12 +226,12 @@ export default function ModulesPage() {
           <CardContent>
             <div className="flex items-center justify-between rounded-lg border p-3">
               <Label htmlFor="user-management-switch" className="font-medium">
-                {isUserManagementEnabled ? 'Module Active' : 'Module Inactive'}
+                {modules.user_management ? 'Module Active' : 'Module Inactive'}
               </Label>
               <Switch
                 id="user-management-switch"
-                checked={isUserManagementEnabled}
-                onCheckedChange={setIsUserManagementEnabled}
+                checked={modules.user_management}
+                onCheckedChange={(checked) => handleSwitchChange('user_management', checked)}
                 aria-label="Toggle User Management Module"
               />
             </div>

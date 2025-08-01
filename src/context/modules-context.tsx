@@ -8,17 +8,11 @@ import type { AppSettings, CompanyProfile } from '@/lib/db';
 
 interface ModulesContextType {
   isProjectManagementEnabled: boolean;
-  setIsProjectManagementEnabled: (value: boolean) => void;
   isPurchaseModuleEnabled: boolean;
-  setIsPurchaseModuleEnabled: (value: boolean) => void;
   isCrmEnabled: boolean;
-  setIsCrmEnabled: (value: boolean) => void;
   isPayrollEnabled: boolean;
-  setIsPayrollEnabled: (value: boolean) => void;
   isUserManagementEnabled: boolean;
-  setIsUserManagementEnabled: (value: boolean) => void;
   isSalesModuleEnabled: boolean;
-  setIsSalesModuleEnabled: (value: boolean) => void;
   currency: Currency | null;
   setCurrency: (currency: Currency | null) => void;
   allCurrencies: Currency[];
@@ -33,22 +27,17 @@ interface ModulesContextType {
 const ModulesContext = createContext<ModulesContextType | undefined>(undefined);
 
 export const ModulesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [isProjectManagementEnabled, setIsProjectManagementEnabled] = useState(false);
-  const [isPurchaseModuleEnabled, setIsPurchaseModuleEnabled] = useState(false);
-  const [isCrmEnabled, setIsCrmEnabled] = useState(false);
-  const [isPayrollEnabled, setIsPayrollEnabled] = useState(false);
-  const [isUserManagementEnabled, setIsUserManagementEnabled] = useState(false);
-  const [isSalesModuleEnabled, setIsSalesModuleEnabled] = useState(false);
+  const [appSettings, setAppSettings] = useState<AppSettings | null>(null);
   
   const [currency, setCurrency] = useState<Currency | null>(null);
   const [allCurrencies, setAllCurrencies] = useState<Currency[]>([]);
-  const [appSettings, setAppSettings] = useState<AppSettings | null>(null);
   const [companyProfile, setCompanyProfile] = useState<CompanyProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   useEffect(() => {
     async function fetchInitialData() {
+      setIsLoading(true);
       const [settings, currencies, profile] = await Promise.all([
         getAppSettings(),
         getCurrencies(),
@@ -60,14 +49,6 @@ export const ModulesProvider: React.FC<{ children: ReactNode }> = ({ children })
       setCurrency(currentCurrency);
       setAppSettings(settings);
       setCompanyProfile(profile);
-
-      // These would ideally come from a database/settings file
-      setIsProjectManagementEnabled(true);
-      setIsPurchaseModuleEnabled(true);
-      setIsCrmEnabled(true);
-      setIsPayrollEnabled(true);
-      setIsUserManagementEnabled(true);
-      setIsSalesModuleEnabled(true);
       
       setIsLoading(false);
       setIsInitialLoad(false);
@@ -75,20 +56,21 @@ export const ModulesProvider: React.FC<{ children: ReactNode }> = ({ children })
     fetchInitialData();
   }, []);
 
+  const isProjectManagementEnabled = appSettings?.enabled_modules?.project_management ?? false;
+  const isPurchaseModuleEnabled = appSettings?.enabled_modules?.purchase ?? false;
+  const isCrmEnabled = appSettings?.enabled_modules?.crm ?? false;
+  const isPayrollEnabled = appSettings?.enabled_modules?.payroll ?? false;
+  const isUserManagementEnabled = appSettings?.enabled_modules?.user_management ?? false;
+  const isSalesModuleEnabled = appSettings?.enabled_modules?.sales ?? false;
+
   return (
     <ModulesContext.Provider value={{ 
-        isProjectManagementEnabled, 
-        setIsProjectManagementEnabled, 
-        isPurchaseModuleEnabled, 
-        setIsPurchaseModuleEnabled,
+        isProjectManagementEnabled,
+        isPurchaseModuleEnabled,
         isCrmEnabled,
-        setIsCrmEnabled,
         isPayrollEnabled,
-        setIsPayrollEnabled,
         isUserManagementEnabled,
-        setIsUserManagementEnabled,
         isSalesModuleEnabled,
-        setIsSalesModuleEnabled,
         currency,
         setCurrency,
         allCurrencies,

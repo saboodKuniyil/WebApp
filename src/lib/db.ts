@@ -77,9 +77,19 @@ export type CompanyProfile = {
   iban: string;
 };
 
+export type EnabledModules = {
+    project_management: boolean;
+    purchase: boolean;
+    crm: boolean;
+    payroll: boolean;
+    user_management: boolean;
+    sales: boolean;
+}
+
 export type AppSettings = {
     currency: string;
     dashboard?: DashboardSettings;
+    enabled_modules?: EnabledModules;
 };
 
 type DbData = {
@@ -124,6 +134,14 @@ async function readDb(): Promise<DbData> {
                 showProjectManagementStats: true,
                 showCrmStats: true,
                 showPurchaseStats: true,
+            },
+            enabled_modules: {
+                project_management: true,
+                purchase: true,
+                crm: true,
+                payroll: true,
+                user_management: true,
+                sales: true,
             }
           },
           employees: [],
@@ -416,9 +434,17 @@ export async function getAppSettings(): Promise<AppSettings> {
             showProjectManagementStats: true,
             showCrmStats: true,
             showPurchaseStats: true,
+        },
+        enabled_modules: {
+            project_management: true,
+            purchase: true,
+            crm: true,
+            payroll: true,
+            user_management: true,
+            sales: true,
         }
     };
-    return { ...defaultSettings, ...data.appSettings };
+    return { ...defaultSettings, ...data.appSettings, enabled_modules: { ...defaultSettings.enabled_modules, ...data.appSettings?.enabled_modules } };
 }
 
 export async function updateAppSettings(newSettings: Partial<AppSettings>): Promise<{ message: string; }> {
