@@ -5,7 +5,13 @@ import { useModules } from "@/context/modules-context";
 
 export function Logo(props: React.SVGProps<SVGSVGElement>) {
   const { companyProfile } = useModules();
-  const companyName = companyProfile?.companyName || 'D_PRO_MGT';
+  const [isClient, setIsClient] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const companyName = isClient && companyProfile?.companyName ? companyProfile.companyName : 'BizView';
 
   return (
     <svg
@@ -30,7 +36,7 @@ export function Logo(props: React.SVGProps<SVGSVGElement>) {
         fontWeight="bold"
         fill="url(#grad1)"
       >
-        {companyName}
+        {isClient ? companyName : 'BizView'}
       </text>
     </svg>
   );
