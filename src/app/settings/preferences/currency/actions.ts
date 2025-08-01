@@ -4,6 +4,7 @@
 import { z } from 'zod';
 import { getCurrencies, createCurrency as createDbCurrency, updateCurrency as updateDbCurrency, deleteCurrency as deleteDbCurrency, getAppSettings, updateAppSettings as updateDbAppSettings } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
+import type { AppSettings } from '@/lib/db';
 
 const currencySchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -113,10 +114,11 @@ export async function deleteCurrency(currencyCode: string) {
     }
 }
 
-export async function updateAppSettings(settings: { currency: string }) {
+export async function updateAppSettings(settings: Partial<AppSettings>) {
     try {
         await updateDbAppSettings(settings);
         revalidatePath('/settings/preferences/currency');
+        revalidatePath('/settings/preferences/dashboard'); 
         revalidatePath('/'); // Revalidate all pages that might use currency
         return { message: 'Settings updated successfully.' };
     } catch (error) {

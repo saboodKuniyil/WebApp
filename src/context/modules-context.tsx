@@ -4,6 +4,7 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { getAppSettings, getCurrencies } from '@/lib/db';
 import type { Currency } from '@/components/settings/currency-management';
+import type { AppSettings } from '@/lib/db';
 
 interface ModulesContextType {
   isProjectManagementEnabled: boolean;
@@ -15,6 +16,8 @@ interface ModulesContextType {
   currency: Currency | null;
   setCurrency: (currency: Currency | null) => void;
   allCurrencies: Currency[];
+  appSettings: AppSettings | null;
+  setAppSettings: (settings: AppSettings) => void;
 }
 
 const ModulesContext = createContext<ModulesContextType | undefined>(undefined);
@@ -25,6 +28,7 @@ export const ModulesProvider: React.FC<{ children: ReactNode }> = ({ children })
   const [isCrmEnabled, setIsCrmEnabled] = useState(true);
   const [currency, setCurrency] = useState<Currency | null>(null);
   const [allCurrencies, setAllCurrencies] = useState<Currency[]>([]);
+  const [appSettings, setAppSettings] = useState<AppSettings | null>(null);
 
   useEffect(() => {
     async function fetchInitialData() {
@@ -33,6 +37,7 @@ export const ModulesProvider: React.FC<{ children: ReactNode }> = ({ children })
       const currentCurrency = currencies.find(c => c.code === settings.currency) || null;
       setAllCurrencies(currencies);
       setCurrency(currentCurrency);
+      setAppSettings(settings);
     }
     fetchInitialData();
   }, []);
@@ -47,7 +52,9 @@ export const ModulesProvider: React.FC<{ children: ReactNode }> = ({ children })
         setIsCrmEnabled,
         currency,
         setCurrency,
-        allCurrencies
+        allCurrencies,
+        appSettings,
+        setAppSettings
     }}>
       {children}
     </ModulesContext.Provider>

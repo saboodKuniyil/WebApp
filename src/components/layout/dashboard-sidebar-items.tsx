@@ -192,6 +192,11 @@ export function DashboardSidebarItems() {
                                 <CollapsibleContent>
                                     <SidebarMenuSub>
                                         <SidebarMenuItem>
+                                            <SidebarMenuSubButton asChild isActive={pathname === '/settings/preferences/dashboard'}>
+                                                <Link href="/settings/preferences/dashboard"><LayoutDashboard />Dashboard</Link>
+                                            </SidebarMenuSubButton>
+                                        </SidebarMenuItem>
+                                        <SidebarMenuItem>
                                             <SidebarMenuSubButton asChild isActive={pathname === '/settings/preferences/product-preference'}>
                                                 <Link href="/settings/preferences/product-preference"><Package />Product Preference</Link>
                                             </SidebarMenuSubButton>

@@ -14,8 +14,15 @@ import type { Currency } from '@/components/settings/currency-management';
 
 const dbPath = path.join(process.cwd(), 'src', 'lib', 'db.json');
 
-type AppSettings = {
+export type DashboardSettings = {
+  showFinancialStats: boolean;
+  showRevenueChart: boolean;
+  showSalesAnalysis: boolean;
+};
+
+export type AppSettings = {
     currency: string;
+    dashboard?: DashboardSettings;
 };
 
 type DbData = {
@@ -46,7 +53,14 @@ async function readDb(): Promise<DbData> {
           productCategories: [], 
           units: [],
           currencies: [],
-          appSettings: { currency: 'USD' }
+          appSettings: { 
+            currency: 'USD',
+            dashboard: {
+                showFinancialStats: true,
+                showRevenueChart: true,
+                showSalesAnalysis: true
+            }
+          }
       };
     }
     throw error;
@@ -315,11 +329,25 @@ export async function deleteCurrency(currencyCode: string): Promise<void> {
 
 export async function getAppSettings(): Promise<AppSettings> {
     const data = await readDb();
-    return data.appSettings || { currency: 'USD' };
+    const defaultSettings: AppSettings = {
+        currency: 'USD',
+        dashboard: {
+            showFinancialStats: true,
+            showRevenueChart: true,
+            showSalesAnalysis: true
+        }
+    };
+    return { ...defaultSettings, ...data.appSettings };
 }
 
-export async function updateAppSettings(newSettings: Partial<AppSettings>): Promise<void> {
-    const data = await readDb();
-    data.appSettings = { ...data.appSettings, ...newSettings };
-    await writeDb(data);
+export async function updateAppSettings(newSettings: Partial<AppSettings>): Promise<{ message: string; }> {
+    try {
+        const data = await readDb();
+        data.appSettings = { ...data.appSettings, ...newSettings };
+        await writeDb(data);
+        return { message: 'Settings updated successfully.' };
+    } catch (error) {
+        console.error('Database error:', error);
+        return { message: 'Failed to update settings.' };
+    }
 }
