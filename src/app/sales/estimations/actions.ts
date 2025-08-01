@@ -14,14 +14,20 @@ const estimationItemSchema = z.object({
   type: z.enum(['product', 'adhoc']),
 });
 
+const estimationTaskSchema = z.object({
+    id: z.string(),
+    title: z.string().min(1, 'Task title is required'),
+    items: z.array(estimationItemSchema).min(1, 'Each task must have at least one item'),
+    totalCost: z.coerce.number(),
+});
 
 const estimationSchema = z.object({
   id: z.string(),
   title: z.string().min(1, 'Title is required'),
-  items: z.string()
-    .min(1, 'At least one item is required')
+  tasks: z.string()
+    .min(1, 'At least one task is required')
     .transform(val => JSON.parse(val))
-    .pipe(z.array(estimationItemSchema).min(1, 'At least one item is required')),
+    .pipe(z.array(estimationTaskSchema).min(1, 'At least one task is required')),
   totalCost: z.coerce.number(),
   createdDate: z.string(),
 });
@@ -31,7 +37,7 @@ export type EstimationFormState = {
   errors?: {
     id?: string[];
     title?: string[];
-    items?: string[];
+    tasks?: string[];
   };
 };
 
@@ -59,25 +65,30 @@ export async function createEstimation(
   const validatedFields = estimationSchema.safeParse({
     id: formData.get('id'),
     title: formData.get('title'),
-    items: formData.get('items'),
+    tasks: formData.get('tasks'),
     totalCost: formData.get('totalCost'),
     createdDate: new Date().toISOString().split('T')[0],
   });
-
+  
   if (!validatedFields.success) {
+    const errors = validatedFields.error.flatten().fieldErrors;
+    // Provide more specific feedback for task/item errors
+    if(errors.tasks) {
+        return { message: 'Failed to create estimation. Ensure every task has a title and at least one item.', errors }
+    }
     return {
       message: 'Failed to create estimation.',
       errors: validatedFields.error.flatten().fieldErrors,
     };
   }
 
-  const { id, title, items, totalCost, createdDate } = validatedFields.data;
+  const { id, title, tasks, totalCost, createdDate } = validatedFields.data;
 
   try {
     await createDbEstimation({
       id,
       title,
-      items,
+      tasks,
       totalCost,
       createdDate
     });

@@ -11,7 +11,7 @@ import type { Product } from '@/components/purchase/products-list';
 import type { ProductCategory } from '@/components/settings/product-preferences';
 import type { Unit } from '@/components/settings/units-management';
 import type { Currency } from '@/components/settings/currency-management';
-import type { Estimation } from '@/components/sales/estimations-list';
+import type { Estimation, EstimationTask } from '@/components/sales/estimations-list';
 
 const dbPath = path.join(process.cwd(), 'src', 'lib', 'db.json');
 

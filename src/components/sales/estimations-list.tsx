@@ -54,10 +54,17 @@ export type EstimationItem = {
     type: 'product' | 'adhoc';
 };
 
-export type Estimation = {
+export type EstimationTask = {
     id: string;
     title: string;
     items: EstimationItem[];
+    totalCost: number;
+}
+
+export type Estimation = {
+    id: string;
+    title: string;
+    tasks: EstimationTask[];
     totalCost: number;
     createdDate: string;
 };
