@@ -44,22 +44,24 @@ export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategory
   const [state, dispatch] = useActionState(updateProductCategory, initialState);
   const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
-
-  const [subcategories, setSubcategories] = React.useState<Subcategory[]>([]);
+  
+  // This state will now be the single source of truth for the subcategories list.
+  const [currentSubcategories, setCurrentSubcategories] = React.useState<Subcategory[]>([]);
   const [newSubcategoryName, setNewSubcategoryName] = React.useState('');
   const [newSubcategoryAbbr, setNewSubcategoryAbbr] = React.useState('');
 
   React.useEffect(() => {
     if (category) {
-      setSubcategories(category.subcategories);
-    } else {
-        setSubcategories([]);
+      setCurrentSubcategories(category.subcategories);
     }
   }, [category]);
   
   React.useEffect(() => {
-    // When the dialog is closed, reset the form action's state
     if (!isOpen) {
+      // Reset state when dialog is closed
+      setNewSubcategoryName('');
+      setNewSubcategoryAbbr('');
+      // Important: Reset the action state as well
       dispatch({ message: '', errors: {} });
     }
   }, [isOpen, dispatch]);
@@ -77,15 +79,15 @@ export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategory
   }, [state, toast, setIsOpen]);
 
   const handleAddSubcategory = () => {
-    if (newSubcategoryName.trim() && newSubcategoryAbbr.trim().length === 3 && !subcategories.some(s => s.name === newSubcategoryName.trim())) {
-      setSubcategories([...subcategories, { name: newSubcategoryName.trim(), abbreviation: newSubcategoryAbbr.trim().toUpperCase() }]);
+    if (newSubcategoryName.trim() && newSubcategoryAbbr.trim().length === 3 && !currentSubcategories.some(s => s.name === newSubcategoryName.trim())) {
+      setCurrentSubcategories([...currentSubcategories, { name: newSubcategoryName.trim(), abbreviation: newSubcategoryAbbr.trim().toUpperCase() }]);
       setNewSubcategoryName('');
       setNewSubcategoryAbbr('');
     }
   };
 
-  const handleRemoveSubcategory = (sub: string) => {
-    setSubcategories(subcategories.filter(s => s.name !== sub));
+  const handleRemoveSubcategory = (subNameToRemove: string) => {
+    setCurrentSubcategories(currentSubcategories.filter(s => s.name !== subNameToRemove));
   };
   
   if (!category) return null;
@@ -101,7 +103,7 @@ export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategory
         </DialogHeader>
         <form ref={formRef} action={dispatch} className="grid gap-4 py-4">
           <input type="hidden" name="originalName" value={category.name} />
-          <input type="hidden" name="subcategories" value={JSON.stringify(subcategories)} />
+          <input type="hidden" name="subcategories" value={JSON.stringify(currentSubcategories)} />
           
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="productType" className="text-right">
@@ -175,7 +177,7 @@ export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategory
                     </Button>
                 </div>
                 <div className="space-y-2">
-                    {subcategories.map(sub => (
+                    {currentSubcategories.map(sub => (
                         <div key={sub.name} className="flex items-center justify-between rounded-md border p-2 text-sm">
                           <span>{sub.name} ({sub.abbreviation})</span>
                             <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveSubcategory(sub.name)}>
@@ -197,4 +199,3 @@ export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategory
     </Dialog>
   );
 }
-    
