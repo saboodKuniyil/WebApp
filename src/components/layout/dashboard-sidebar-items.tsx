@@ -353,11 +353,6 @@ export function DashboardSidebarItems() {
                                             </SidebarMenuSubButton>
                                         </SidebarMenuItem>
                                         <SidebarMenuItem>
-                                            <SidebarMenuSubButton asChild isActive={pathname === '/settings/preferences/product-preference'}>
-                                                <Link href="/settings/preferences/product-preference"><Package />Product Preference</Link>
-                                            </SidebarMenuSubButton>
-                                        </SidebarMenuItem>
-                                        <SidebarMenuItem>
                                             <SidebarMenuSubButton asChild isActive={pathname === '/settings/preferences/currency'}>
                                                 <Link href="/settings/preferences/currency"><CircleDollarSign />Currency</Link>
                                             </SidebarMenuSubButton>
