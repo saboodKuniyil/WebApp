@@ -5,14 +5,8 @@ import { z } from 'zod';
 import { getTasks, createTask as createDbTask, updateTask as updateDbTask, deleteTask as deleteDbTask, getProjects, getTaskBlueprints } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { EstimationItemSchema } from '@/lib/schemas';
 
-export const EstimationItemSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  quantity: z.coerce.number().min(0.001, "Quantity must be positive"),
-  cost: z.coerce.number().min(0, "Cost must be a positive number"),
-  type: z.enum(['product', 'adhoc']),
-});
 
 const taskSchema = z.object({
   id: z.string(),
