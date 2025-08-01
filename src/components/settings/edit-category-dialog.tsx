@@ -43,21 +43,15 @@ interface EditCategoryDialogProps {
 export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategoryDialogProps) {
   const [state, dispatch] = useActionState(updateProductCategory, initialState);
   const { toast } = useToast();
-  const formRef = React.useRef<HTMLFormElement>(null);
 
-  const [name, setName] = React.useState(category.name);
-  const [abbreviation, setAbbreviation] = React.useState(category.abbreviation);
-  const [productType, setProductType] = React.useState(category.productType);
   const [subcategories, setSubcategories] = React.useState<Subcategory[]>(category.subcategories);
   const [newSubcategoryName, setNewSubcategoryName] = React.useState('');
   const [newSubcategoryAbbr, setNewSubcategoryAbbr] = React.useState('');
 
-
   React.useEffect(() => {
-    setName(category.name);
-    setAbbreviation(category.abbreviation);
-    setProductType(category.productType);
-    setSubcategories(category.subcategories);
+    if (category) {
+      setSubcategories(category.subcategories);
+    }
   }, [category]);
 
   React.useEffect(() => {
@@ -92,7 +86,7 @@ export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategory
             Update the category name and manage its subcategories.
           </DialogDescription>
         </DialogHeader>
-        <form ref={formRef} action={dispatch} className="grid gap-4 py-4">
+        <form action={dispatch} className="grid gap-4 py-4">
           <input type="hidden" name="originalName" value={category.name} />
           <input type="hidden" name="subcategories" value={JSON.stringify(subcategories)} />
           
@@ -100,7 +94,7 @@ export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategory
             <Label htmlFor="productType" className="text-right">
               Product Type
             </Label>
-            <Select name="productType" value={productType} onValueChange={setProductType}>
+            <Select name="productType" defaultValue={category.productType}>
               <SelectTrigger className="col-span-3">
                 <SelectValue placeholder="Select a product type" />
               </SelectTrigger>
@@ -122,8 +116,7 @@ export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategory
             <Input
               id="name"
               name="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              defaultValue={category.name}
               className="col-span-3"
             />
             {state.errors?.name && (
@@ -137,8 +130,7 @@ export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategory
             <Input
               id="abbreviation"
               name="abbreviation"
-              value={abbreviation}
-              onChange={(e) => setAbbreviation(e.target.value.toUpperCase())}
+              defaultValue={category.abbreviation}
               className="col-span-3"
               maxLength={3}
             />
@@ -183,7 +175,7 @@ export function EditCategoryDialog({ isOpen, setIsOpen, category }: EditCategory
           </div>
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button type="button" variant="outline">Cancel</Button>
             </DialogClose>
             <SubmitButton />
           </DialogFooter>

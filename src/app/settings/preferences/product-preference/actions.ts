@@ -84,7 +84,7 @@ const updateCategorySchema = z.object({
     name: z.string().min(1, 'Category name cannot be empty.'),
     abbreviation: z.string().length(3, 'Abbreviation must be 3 characters'),
     productType: z.string().min(1, 'Product type is required'),
-    subcategories: z.string().transform((val) => JSON.parse(val))
+    subcategories: z.string().transform((val) => JSON.parse(val)).pipe(z.array(subcategorySchema))
 });
 
 export async function updateProductCategory(prevState: CategoryFormState, formData: FormData): Promise<CategoryFormState> {
@@ -104,15 +104,15 @@ export async function updateProductCategory(prevState: CategoryFormState, formDa
 
     try {
         const categories = await getProductCategories();
-        if (originalName !== name) {
+        if (originalName.toLowerCase() !== name.toLowerCase()) {
             const nameExists = categories.some(c => c.name.toLowerCase() === name.toLowerCase());
             if (nameExists) {
                 return { message: 'Failed to update category. Another category with this name already exists.' };
             }
         }
         
-        const existingCategory = categories.find(c => c.name === originalName);
-        if (existingCategory && existingCategory.abbreviation !== abbreviation) {
+        const existingCategory = categories.find(c => c.name.toLowerCase() === originalName.toLowerCase());
+        if (existingCategory && existingCategory.abbreviation.toLowerCase() !== abbreviation.toLowerCase()) {
              const abbreviationExists = categories.some(c => c.abbreviation.toLowerCase() === abbreviation.toLowerCase());
              if (abbreviationExists) {
                 return { message: 'Failed to update category. Another category with this abbreviation already exists.' };
