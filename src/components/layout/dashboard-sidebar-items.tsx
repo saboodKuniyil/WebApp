@@ -10,7 +10,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
 } from '@/components/ui/sidebar';
-import { Box, Calendar, LayoutDashboard, Briefcase, ShoppingCart, Home, Package, Users, FileText, Landmark, Truck, CheckSquare, AlertTriangle, ClipboardList, Settings, ChevronsRight, CircleDollarSign } from 'lucide-react';
+import { Box, Calendar, LayoutDashboard, Briefcase, ShoppingCart, Home, Package, Users, FileText, Landmark, Truck, CheckSquare, AlertTriangle, ClipboardList, Settings, ChevronsRight, CircleDollarSign, Heart } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useModules } from '@/context/modules-context';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -18,11 +18,12 @@ import { ChevronDown } from 'lucide-react';
 
 export function DashboardSidebarItems() {
   const pathname = usePathname();
-  const { isProjectManagementEnabled, isPurchaseModuleEnabled } = useModules();
+  const { isProjectManagementEnabled, isPurchaseModuleEnabled, isCrmEnabled } = useModules();
   const [isPurchaseOpen, setIsPurchaseOpen] = React.useState(true);
   const [isProjectManagementOpen, setIsProjectManagementOpen] = React.useState(true);
   const [isSettingsOpen, setIsSettingsOpen] = React.useState(true);
   const [isPreferencesOpen, setIsPreferencesOpen] = React.useState(true);
+  const [isCrmOpen, setIsCrmOpen] = React.useState(true);
 
   return (
     <SidebarMenu>
@@ -34,15 +35,35 @@ export function DashboardSidebarItems() {
           </Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
-      <SidebarMenuItem>
-        <SidebarMenuButton asChild isActive={pathname === '/calendar'}>
-          <Link href="/calendar">
-            <Calendar />
-            Calendar
-          </Link>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
       
+      {isCrmEnabled && (
+         <SidebarMenuItem>
+            <Collapsible open={isCrmOpen} onOpenChange={setIsCrmOpen}>
+              <CollapsibleTrigger asChild>
+                  <SidebarMenuButton className="w-full justify-between">
+                      <div className="flex items-center gap-2">
+                          <Heart />
+                          CRM
+                      </div>
+                      <ChevronDown className={`h-4 w-4 transition-transform ${isCrmOpen ? 'rotate-180' : ''}`} />
+                  </SidebarMenuButton>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <SidebarMenuSub>
+                  <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/crm/calendar'}>
+                      <Link href="/crm/calendar">
+                        <Calendar />
+                        Calendar
+                      </Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                </SidebarMenuSub>
+              </CollapsibleContent>
+            </Collapsible>
+         </SidebarMenuItem>
+      )}
+
       {isProjectManagementEnabled && (
          <SidebarMenuItem>
             <Collapsible open={isProjectManagementOpen} onOpenChange={setIsProjectManagementOpen}>

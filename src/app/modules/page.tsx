@@ -5,11 +5,18 @@ import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Briefcase, ShoppingCart } from 'lucide-react';
+import { Briefcase, ShoppingCart, Heart } from 'lucide-react';
 import { useModules } from '@/context/modules-context';
 
 export default function ModulesPage() {
-  const { isProjectManagementEnabled, setIsProjectManagementEnabled, isPurchaseModuleEnabled, setIsPurchaseModuleEnabled } = useModules();
+  const { 
+    isProjectManagementEnabled, 
+    setIsProjectManagementEnabled, 
+    isPurchaseModuleEnabled, 
+    setIsPurchaseModuleEnabled,
+    isCrmEnabled,
+    setIsCrmEnabled
+  } = useModules();
 
   return (
     <main className="flex-1 space-y-4 p-2 md:p-4 pt-4">
@@ -66,6 +73,32 @@ export default function ModulesPage() {
                 checked={isPurchaseModuleEnabled}
                 onCheckedChange={setIsPurchaseModuleEnabled}
                 aria-label="Toggle Purchase Module"
+              />
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="hover:shadow-lg transition-shadow duration-300">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+            <div className="space-y-1.5">
+              <CardTitle className="text-xl flex items-center">
+                <Heart className="mr-3 h-6 w-6 text-primary" />
+                CRM
+              </CardTitle>
+              <CardDescription>
+                Manage customer relationships and calendars.
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between rounded-lg border p-3">
+              <Label htmlFor="crm-switch" className="font-medium">
+                {isCrmEnabled ? 'Module Active' : 'Module Inactive'}
+              </Label>
+              <Switch
+                id="crm-switch"
+                checked={isCrmEnabled}
+                onCheckedChange={setIsCrmEnabled}
+                aria-label="Toggle CRM Module"
               />
             </div>
           </CardContent>

@@ -10,6 +10,8 @@ interface ModulesContextType {
   setIsProjectManagementEnabled: (value: boolean) => void;
   isPurchaseModuleEnabled: boolean;
   setIsPurchaseModuleEnabled: (value: boolean) => void;
+  isCrmEnabled: boolean;
+  setIsCrmEnabled: (value: boolean) => void;
   currency: Currency | null;
   setCurrency: (currency: Currency | null) => void;
   allCurrencies: Currency[];
@@ -20,6 +22,7 @@ const ModulesContext = createContext<ModulesContextType | undefined>(undefined);
 export const ModulesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isProjectManagementEnabled, setIsProjectManagementEnabled] = useState(true);
   const [isPurchaseModuleEnabled, setIsPurchaseModuleEnabled] = useState(true);
+  const [isCrmEnabled, setIsCrmEnabled] = useState(true);
   const [currency, setCurrency] = useState<Currency | null>(null);
   const [allCurrencies, setAllCurrencies] = useState<Currency[]>([]);
 
@@ -40,6 +43,8 @@ export const ModulesProvider: React.FC<{ children: ReactNode }> = ({ children })
         setIsProjectManagementEnabled, 
         isPurchaseModuleEnabled, 
         setIsPurchaseModuleEnabled,
+        isCrmEnabled,
+        setIsCrmEnabled,
         currency,
         setCurrency,
         allCurrencies
