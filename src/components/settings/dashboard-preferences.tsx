@@ -10,6 +10,7 @@ import { updateAppSettings as updateDbAppSettings } from '@/lib/db';
 import type { AppSettings } from '@/lib/db';
 import { useModules } from '@/context/modules-context';
 import { Button } from '../ui/button';
+import { Separator } from '../ui/separator';
 
 interface DashboardPreferencesProps {
   settings: AppSettings;
@@ -19,6 +20,10 @@ export function DashboardPreferences({ settings }: DashboardPreferencesProps) {
   const [showFinancialStats, setShowFinancialStats] = React.useState(settings.dashboard?.showFinancialStats ?? true);
   const [showRevenueChart, setShowRevenueChart] = React.useState(settings.dashboard?.showRevenueChart ?? true);
   const [showSalesAnalysis, setShowSalesAnalysis] = React.useState(settings.dashboard?.showSalesAnalysis ?? true);
+  const [showProjectManagementStats, setShowProjectManagementStats] = React.useState(settings.dashboard?.showProjectManagementStats ?? true);
+  const [showCrmStats, setShowCrmStats] = React.useState(settings.dashboard?.showCrmStats ?? true);
+  const [showPurchaseStats, setShowPurchaseStats] = React.useState(settings.dashboard?.showPurchaseStats ?? true);
+
   const [isPending, startTransition] = React.useTransition();
   
   const { toast } = useToast();
@@ -32,6 +37,9 @@ export function DashboardPreferences({ settings }: DashboardPreferencesProps) {
           showFinancialStats,
           showRevenueChart,
           showSalesAnalysis,
+          showProjectManagementStats,
+          showCrmStats,
+          showPurchaseStats,
         },
       };
 
@@ -86,6 +94,43 @@ export function DashboardPreferences({ settings }: DashboardPreferencesProps) {
             aria-label="Toggle Sales Analysis"
           />
         </div>
+
+        <Separator />
+
+        <div className="flex items-center justify-between rounded-lg border p-3">
+          <Label htmlFor="pm-stats-switch" className="font-medium">
+            Project Management Stats
+          </Label>
+          <Switch
+            id="pm-stats-switch"
+            checked={showProjectManagementStats}
+            onCheckedChange={setShowProjectManagementStats}
+            aria-label="Toggle Project Management Stats"
+          />
+        </div>
+        <div className="flex items-center justify-between rounded-lg border p-3">
+          <Label htmlFor="crm-stats-switch" className="font-medium">
+            CRM Stats
+          </Label>
+          <Switch
+            id="crm-stats-switch"
+            checked={showCrmStats}
+            onCheckedChange={setShowCrmStats}
+            aria-label="Toggle CRM Stats"
+          />
+        </div>
+        <div className="flex items-center justify-between rounded-lg border p-3">
+          <Label htmlFor="purchase-stats-switch" className="font-medium">
+            Purchase Stats
+          </Label>
+          <Switch
+            id="purchase-stats-switch"
+            checked={showPurchaseStats}
+            onCheckedChange={setShowPurchaseStats}
+            aria-label="Toggle Purchase Stats"
+          />
+        </div>
+
         <div className="flex justify-end pt-4">
             <Button onClick={handleSave} disabled={isPending}>
                 {isPending ? 'Saving...' : 'Save Preferences'}

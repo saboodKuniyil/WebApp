@@ -18,6 +18,9 @@ export type DashboardSettings = {
   showFinancialStats: boolean;
   showRevenueChart: boolean;
   showSalesAnalysis: boolean;
+  showProjectManagementStats?: boolean;
+  showCrmStats?: boolean;
+  showPurchaseStats?: boolean;
 };
 
 export type AppSettings = {
@@ -58,7 +61,10 @@ async function readDb(): Promise<DbData> {
             dashboard: {
                 showFinancialStats: true,
                 showRevenueChart: true,
-                showSalesAnalysis: true
+                showSalesAnalysis: true,
+                showProjectManagementStats: true,
+                showCrmStats: true,
+                showPurchaseStats: true,
             }
           }
       };
@@ -334,7 +340,10 @@ export async function getAppSettings(): Promise<AppSettings> {
         dashboard: {
             showFinancialStats: true,
             showRevenueChart: true,
-            showSalesAnalysis: true
+            showSalesAnalysis: true,
+            showProjectManagementStats: true,
+            showCrmStats: true,
+            showPurchaseStats: true,
         }
     };
     return { ...defaultSettings, ...data.appSettings };
