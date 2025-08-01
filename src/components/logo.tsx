@@ -36,7 +36,7 @@ export function Logo(props: React.SVGProps<SVGSVGElement>) {
         fontWeight="bold"
         fill="url(#grad1)"
       >
-        {isClient ? companyName : 'BizView'}
+        {companyName}
       </text>
     </svg>
   );
