@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { getTasks, createTask as createDbTask, updateTask as updateDbTask, deleteTask as deleteDbTask, getProjects, getTaskBlueprints } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { EstimationItemSchema } from '@/lib/db';
 
 const taskSchema = z.object({
   id: z.string(),
@@ -17,6 +18,7 @@ const taskSchema = z.object({
   projectId: z.string().min(1, 'Project is required'),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
+  budgetItems: z.string().transform(val => JSON.parse(val)).pipe(z.array(EstimationItemSchema)).optional(),
 });
 
 export type TaskFormState = {
@@ -33,6 +35,7 @@ export type TaskFormState = {
     startDate?: string[];
     endDate?: string[];
     completionPercentage?: string[];
+    budgetItems?: string[];
   };
 };
 
@@ -130,17 +133,11 @@ export async function updateTask(
     prevState: TaskFormState,
     formData: FormData
 ): Promise<TaskFormState> {
+    const rawData = Object.fromEntries(formData.entries());
     const validatedFields = taskSchema.safeParse({
-        id: formData.get('id'),
-        title: formData.get('title'),
-        description: formData.get('description'),
-        label: formData.get('label'),
-        status: formData.get('status'),
-        priority: formData.get('priority'),
-        assignee: formData.get('assignee'),
-        projectId: formData.get('projectId'),
-        startDate: formData.get('startDate') || undefined,
-        endDate: formData.get('endDate') || undefined,
+        ...rawData,
+        startDate: rawData.startDate || undefined,
+        endDate: rawData.endDate || undefined,
     });
 
     if (!validatedFields.success) {

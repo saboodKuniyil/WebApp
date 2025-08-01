@@ -1,9 +1,10 @@
 
-import { getTaskById, getProjects as fetchProjects, getIssuesByTaskId, getTaskBlueprints as fetchTaskBlueprints } from '@/lib/db';
+import { getTaskById, getProjects as fetchProjects, getIssuesByTaskId, getTaskBlueprints as fetchTaskBlueprints, getProducts } from '@/lib/db';
 import type { Task } from "@/components/project-management/tasks-list";
 import type { Project } from "@/components/project-management/projects-list";
 import type { Issue } from "@/components/project-management/issues-list";
-import type { TaskBlueprint } from '@/components/project-management/task-blueprints-list';
+import type { TaskBlueprint } from "@/components/project-management/task-blueprints-list";
+import type { Product } from '@/components/purchase/products-list';
 import { notFound } from 'next/navigation';
 import { TaskDetailView } from '@/components/project-management/task-detail-view';
 import Link from 'next/link';
@@ -26,6 +27,11 @@ async function getTaskBlueprints(): Promise<TaskBlueprint[]> {
     return await fetchTaskBlueprints();
 }
 
+async function fetchProducts(): Promise<Product[]> {
+    return await getProducts();
+}
+
+
 export default async function TaskDetailPage({ params }: { params: { id: string } }) {
   const task = await getTask(params.id);
   
@@ -37,6 +43,7 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
   const project = projects.find(p => p.id === task.projectId);
   const issues = await getIssues(task.id);
   const taskBlueprints = await getTaskBlueprints();
+  const products = await fetchProducts();
 
   return (
     <main className="flex-1 space-y-4 p-2 md:p-4 pt-4">
@@ -48,7 +55,7 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
             </Link>
         </Button>
       </div>
-      <TaskDetailView task={task} project={project} issues={issues} projects={projects} taskBlueprints={taskBlueprints} />
+      <TaskDetailView task={task} project={project} issues={issues} projects={projects} taskBlueprints={taskBlueprints} products={products} />
     </main>
   );
 }

@@ -51,6 +51,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Progress } from '../ui/progress';
 import { updateTaskStatus } from '@/app/project-management/tasks/actions';
 import { useToast } from '@/hooks/use-toast';
+import type { EstimationItem } from '../sales/estimations-list';
 
 export type Task = {
   id: string;
@@ -64,6 +65,7 @@ export type Task = {
   startDate?: string;
   endDate?: string;
   completionPercentage?: number;
+  budgetItems?: EstimationItem[];
 };
 
 
