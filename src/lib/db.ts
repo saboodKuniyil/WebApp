@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import fs from 'fs/promises';
@@ -9,7 +10,7 @@ import type { Issue } from '@/components/project-management/issues-list';
 import type { TaskBlueprint } from '@/components/project-management/task-blueprints-list';
 import type { Product } from '@/components/purchase/products-list';
 import type { ProductCategory } from '@/components/settings/product-preferences';
-import type { Unit } from '@/components/settings/units-management';
+import type { Unit } from '../components/settings/units-management';
 import type { Currency } from '@/components/settings/currency-management';
 import type { Estimation, EstimationTask } from '@/components/sales/estimations-list';
 
@@ -558,11 +559,11 @@ export async function getEstimations(): Promise<Estimation[]> {
     return data.estimations || [];
 }
 
-export async function createEstimation(newEstimation: Estimation): Promise<void> {
+export async function createEstimation(newEstimation: Omit<Estimation, 'customerName'> & { customerName: string }): Promise<void> {
     const data = await readDb();
     if (!data.estimations) {
         data.estimations = [];
     }
-    data.estimations.push(newEstimation);
+    data.estimations.push(newEstimation as Estimation);
     await writeDb(data);
 }

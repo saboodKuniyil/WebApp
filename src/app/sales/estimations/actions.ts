@@ -24,6 +24,7 @@ const estimationTaskSchema = z.object({
 const estimationSchema = z.object({
   id: z.string(),
   title: z.string().min(1, 'Title is required'),
+  customerName: z.string().min(1, 'Customer is required'),
   tasks: z.string()
     .min(1, 'At least one task is required')
     .transform(val => JSON.parse(val))
@@ -37,6 +38,7 @@ export type EstimationFormState = {
   errors?: {
     id?: string[];
     title?: string[];
+    customerName?: string[];
     tasks?: string[];
   };
 };
@@ -65,6 +67,7 @@ export async function createEstimation(
   const validatedFields = estimationSchema.safeParse({
     id: formData.get('id'),
     title: formData.get('title'),
+    customerName: formData.get('customerName'),
     tasks: formData.get('tasks'),
     totalCost: formData.get('totalCost'),
     createdDate: new Date().toISOString().split('T')[0],
@@ -82,12 +85,13 @@ export async function createEstimation(
     };
   }
 
-  const { id, title, tasks, totalCost, createdDate } = validatedFields.data;
+  const { id, title, customerName, tasks, totalCost, createdDate } = validatedFields.data;
 
   try {
     await createDbEstimation({
       id,
       title,
+      customerName,
       tasks,
       totalCost,
       createdDate

@@ -46,6 +46,14 @@ AccordionTrigger.displayName = AccordionTriggerPrimitive.displayName
 
 const initialState = { message: '', errors: {} };
 
+// Mock customers - in a real app, this would come from an API
+const customers = [
+    { id: 'CUST-001', name: 'Innovate Inc.' },
+    { id: 'CUST-002', name: 'Quantum Solutions' },
+    { id: 'CUST-003', name: 'Synergy Corp' },
+    { id: 'CUST-004', name: 'Apex Logistics' },
+];
+
 interface AddEstimationDialogProps {
     products: Product[];
 }
@@ -225,6 +233,20 @@ export function AddEstimationDialog({ products }: AddEstimationDialogProps) {
                                 <Label htmlFor="title" className="text-right">Title</Label>
                                 <Input id="title" name="title" className="col-span-3" />
                                 {state.errors?.title && <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.title[0]}</p>}
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="customerName" className="text-right">Customer</Label>
+                                <Select name="customerName">
+                                    <SelectTrigger className="col-span-3">
+                                        <SelectValue placeholder="Select a customer" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {customers.map((customer) => (
+                                            <SelectItem key={customer.id} value={customer.name}>{customer.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {state.errors?.customerName && <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.customerName[0]}</p>}
                             </div>
 
                             <Card className="p-4 space-y-2">

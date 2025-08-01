@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import * as React from 'react';
@@ -66,6 +67,7 @@ export type EstimationTask = {
 export type Estimation = {
     id: string;
     title: string;
+    customerName: string;
     tasks: EstimationTask[];
     totalCost: number;
     createdDate: string;
@@ -113,6 +115,11 @@ const getColumns = (
     accessorKey: 'title',
     header: 'Title',
     cell: ({ row }) => <div className="font-medium">{row.getValue('title')}</div>,
+  },
+  {
+    accessorKey: 'customerName',
+    header: 'Customer',
+    cell: ({ row }) => <div>{row.getValue('customerName')}</div>,
   },
   {
     accessorKey: 'totalCost',
