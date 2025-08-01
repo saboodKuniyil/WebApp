@@ -30,7 +30,10 @@ export async function getNextUserId(): Promise<string> {
     if (users.length === 0) {
         return 'USR-001';
     }
-    const userIds = users.map(u => parseInt(u.id.replace('USR-', ''), 10));
+    const userIds = users.map(u => parseInt(u.id.replace('USR-', ''), 10)).filter(num => !isNaN(num));
+    if(userIds.length === 0) {
+      return 'USR-001';
+    }
     const lastIdNumber = Math.max(...userIds);
     return `USR-${(lastIdNumber + 1).toString().padStart(3, '0')}`;
 }
@@ -95,6 +98,20 @@ export async function updateUser(
     const { id, ...userData } = validatedFields.data;
 
     try {
+        const users = await getUsers();
+        const existingUser = users.find(u => u.id === id);
+        if (!existingUser) {
+            return { message: 'User not found.' };
+        }
+
+        // Check if email is being changed to one that already exists
+        if (userData.email !== existingUser.email) {
+            const emailExists = users.some(u => u.email === userData.email);
+            if (emailExists) {
+                return { message: 'Failed to update user. Email already exists.' };
+            }
+        }
+
         await updateDbUser({ id, ...userData });
         revalidatePath('/settings/user-management');
         return { message: 'User updated successfully.' };
