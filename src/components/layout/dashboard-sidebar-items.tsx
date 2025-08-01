@@ -10,7 +10,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
 } from '@/components/ui/sidebar';
-import { Box, Calendar, LayoutDashboard, Briefcase, ShoppingCart, Home, Package, FileText, Landmark, Truck, CheckSquare, AlertTriangle, ClipboardList, Settings, ChevronsRight, CircleDollarSign, Heart, Wallet, User, ClipboardSignature, PenSquare, Building, Users as UsersIcon, ShieldCheck } from 'lucide-react';
+import { Box, Calendar, LayoutDashboard, Briefcase, ShoppingCart, Home, Package, FileText, Landmark, Truck, CheckSquare, AlertTriangle, ClipboardList, Settings, ChevronsRight, CircleDollarSign, Heart, Wallet, User, ClipboardSignature, PenSquare, Building, Users as UsersIcon, ShieldCheck, DollarSign, FileSignature } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useModules } from '@/context/modules-context';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -18,14 +18,16 @@ import { ChevronDown } from 'lucide-react';
 
 export function DashboardSidebarItems() {
   const pathname = usePathname();
-  const { isProjectManagementEnabled, isPurchaseModuleEnabled, isCrmEnabled, isPayrollEnabled, isUserManagementEnabled } = useModules();
+  const { isProjectManagementEnabled, isPurchaseModuleEnabled, isCrmEnabled, isPayrollEnabled, isUserManagementEnabled, isSalesModuleEnabled } = useModules();
   const [isPurchaseOpen, setIsPurchaseOpen] = React.useState(true);
   const [isProjectManagementOpen, setIsProjectManagementOpen] = React.useState(true);
   const [isSettingsOpen, setIsSettingsOpen] = React.useState(true);
   const [isPreferencesOpen, setIsPreferencesOpen] = React.useState(true);
   const [isCrmOpen, setIsCrmOpen] = React.useState(true);
   const [isPayrollOpen, setIsPayrollOpen] = React.useState(true);
-  const [isUserManagementOpen, setIsUserManagementOpen] = React.useState(true);
+  const [isSalesOpen, setIsSalesOpen] = React.useState(true);
+  const [isUserManagementOpen, setIsUserManagementOpen] = React.useState(false);
+
 
   return (
     <SidebarMenu>
@@ -58,6 +60,41 @@ export function DashboardSidebarItems() {
                         <Calendar />
                         Calendar
                       </Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                </SidebarMenuSub>
+              </CollapsibleContent>
+            </Collapsible>
+         </SidebarMenuItem>
+      )}
+
+      {isSalesModuleEnabled && (
+         <SidebarMenuItem>
+            <Collapsible open={isSalesOpen} onOpenChange={setIsSalesOpen}>
+              <CollapsibleTrigger asChild>
+                  <SidebarMenuButton className="w-full justify-between">
+                      <div className="flex items-center gap-2">
+                          <DollarSign />
+                          Sales
+                      </div>
+                      <ChevronDown className={`h-4 w-4 transition-transform ${isSalesOpen ? 'rotate-180' : ''}`} />
+                  </SidebarMenuButton>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <SidebarMenuSub>
+                  <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/sales/dashboard'}>
+                      <Link href="/sales/dashboard"><Home />Dashboard</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                   <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/sales/invoices'}>
+                      <Link href="/sales/invoices"><FileText />Invoices</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/sales/quotations'}>
+                      <Link href="/sales/quotations"><FileSignature />Quotations</Link>
                     </SidebarMenuSubButton>
                   </SidebarMenuItem>
                 </SidebarMenuSub>
@@ -231,30 +268,30 @@ export function DashboardSidebarItems() {
                         </SidebarMenuItem>
                         {isUserManagementEnabled && (
                           <SidebarMenuItem>
-                            <Collapsible open={isUserManagementOpen} onOpenChange={setIsUserManagementOpen}>
-                              <CollapsibleTrigger asChild>
-                                <SidebarMenuButton className="w-full justify-between">
-                                  <div className="flex items-center gap-2">
-                                    <UsersIcon />
-                                    User Management
-                                  </div>
-                                  <ChevronDown className={`h-4 w-4 transition-transform ${isUserManagementOpen ? 'rotate-180' : ''}`} />
-                                </SidebarMenuButton>
-                              </CollapsibleTrigger>
-                              <CollapsibleContent>
-                                <SidebarMenuSub>
-                                    <SidebarMenuItem>
-                                        <SidebarMenuSubButton asChild isActive={pathname === '/settings/user-management'}>
-                                            <Link href="/settings/user-management"><UsersIcon />Users</Link>
-                                        </SidebarMenuSubButton>
-                                    </SidebarMenuItem>
-                                    <SidebarMenuItem>
-                                        <SidebarMenuSubButton asChild isActive={pathname === '/settings/user-management/roles'}>
-                                            <Link href="/settings/user-management/roles"><ShieldCheck />Roles &amp; Permissions</Link>
-                                        </SidebarMenuSubButton>
-                                    </SidebarMenuItem>
-                                </SidebarMenuSub>
-                              </CollapsibleContent>
+                             <Collapsible open={isUserManagementOpen} onOpenChange={setIsUserManagementOpen}>
+                                <CollapsibleTrigger asChild>
+                                    <SidebarMenuSubButton className="w-full justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <UsersIcon />
+                                            User Management
+                                        </div>
+                                        <ChevronDown className={`h-4 w-4 transition-transform ${isUserManagementOpen ? 'rotate-180' : ''}`} />
+                                    </SidebarMenuSubButton>
+                                </CollapsibleTrigger>
+                                <CollapsibleContent>
+                                    <SidebarMenuSub>
+                                        <SidebarMenuItem>
+                                            <SidebarMenuSubButton asChild isActive={pathname === '/settings/user-management'}>
+                                                <Link href="/settings/user-management"><UsersIcon />Users</Link>
+                                            </SidebarMenuSubButton>
+                                        </SidebarMenuItem>
+                                        <SidebarMenuItem>
+                                            <SidebarMenuSubButton asChild isActive={pathname === '/settings/user-management/roles'}>
+                                                <Link href="/settings/user-management/roles"><ShieldCheck />Roles &amp; Permissions</Link>
+                                            </SidebarMenuSubButton>
+                                        </SidebarMenuItem>
+                                    </SidebarMenuSub>
+                                </CollapsibleContent>
                             </Collapsible>
                           </SidebarMenuItem>
                         )}
