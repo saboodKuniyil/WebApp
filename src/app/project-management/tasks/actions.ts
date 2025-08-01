@@ -45,7 +45,7 @@ export async function getNextTaskId(): Promise<string> {
       .filter(num => !isNaN(num));
 
     if (taskIds.length === 0) {
-        return 'TS_9001';
+        return 'TS_72001';
     }
 
     const lastNumber = Math.max(...taskIds);

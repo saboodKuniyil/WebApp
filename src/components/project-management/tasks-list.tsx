@@ -262,9 +262,7 @@ export function TasksList({ data, projects, taskBlueprints }: TasksListProps) {
     []
   );
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({
-        description: false,
-    });
+    React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [mounted, setMounted] = React.useState(false);
   const [isPending, startTransition] = React.useTransition();
