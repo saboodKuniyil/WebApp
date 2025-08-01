@@ -46,6 +46,10 @@ import { AddEstimationDialog } from './add-estimation-dialog';
 import type { Product } from '../purchase/products-list';
 import { useModules } from '@/context/modules-context';
 import { cn } from '@/lib/utils';
+import { CreateTaskFromEstimationDialog } from './create-task-from-estimation-dialog';
+import { getProjects, getTaskBlueprints } from '@/lib/db';
+import type { Project } from '../project-management/projects-list';
+import type { TaskBlueprint } from '../project-management/task-blueprints-list';
 
 
 export type EstimationItem = {
@@ -74,7 +78,8 @@ export type Estimation = {
 };
 
 const getColumns = (
-    formatCurrency: (amount: number) => string
+    formatCurrency: (amount: number) => string,
+    handleOpenDialog: (estimation: Estimation) => void,
 ): ColumnDef<Estimation>[] => [
   {
     id: 'select',
@@ -155,6 +160,7 @@ const getColumns = (
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem>View Estimation</DropdownMenuItem>
             <DropdownMenuItem>Edit Estimation</DropdownMenuItem>
+             <DropdownMenuItem onClick={() => handleOpenDialog(estimation)}>Create Task from Estimation</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="text-red-600">Delete Estimation</DropdownMenuItem>
           </DropdownMenuContent>
@@ -175,7 +181,34 @@ export function EstimationsList({ data, products }: EstimationsListProps) {
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   
+  const [isCreateTaskDialogOpen, setIsCreateTaskDialogOpen] = React.useState(false);
+  const [selectedEstimation, setSelectedEstimation] = React.useState<Estimation | null>(null);
+  
+  const [projects, setProjects] = React.useState<Project[]>([]);
+  const [taskBlueprints, setTaskBlueprints] = React.useState<TaskBlueprint[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+
+
   const { currency } = useModules();
+
+  const handleOpenCreateTaskDialog = (estimation: Estimation) => {
+    setSelectedEstimation(estimation);
+    setIsCreateTaskDialogOpen(true);
+  };
+
+  React.useEffect(() => {
+    async function fetchData() {
+        setIsLoading(true);
+        const [fetchedProjects, fetchedTaskBlueprints] = await Promise.all([
+            getProjects(),
+            getTaskBlueprints()
+        ]);
+        setProjects(fetchedProjects);
+        setTaskBlueprints(fetchedTaskBlueprints);
+        setIsLoading(false);
+    }
+    fetchData();
+  }, []);
 
   const formatCurrency = React.useCallback((amount: number) => {
     if (!currency) {
@@ -190,7 +223,7 @@ export function EstimationsList({ data, products }: EstimationsListProps) {
     }).format(amount);
   }, [currency]);
 
-  const columns = React.useMemo(() => getColumns(formatCurrency), [formatCurrency]);
+  const columns = React.useMemo(() => getColumns(formatCurrency, handleOpenCreateTaskDialog), [formatCurrency]);
 
   const table = useReactTable({
     data,
@@ -212,6 +245,7 @@ export function EstimationsList({ data, products }: EstimationsListProps) {
   });
 
   return (
+    <>
     <Card>
       <CardHeader className="p-2">
         <CardTitle>All Estimations</CardTitle>
@@ -299,7 +333,15 @@ export function EstimationsList({ data, products }: EstimationsListProps) {
         </div>
       </CardContent>
     </Card>
+    {selectedEstimation && !isLoading && (
+        <CreateTaskFromEstimationDialog 
+            isOpen={isCreateTaskDialogOpen}
+            setIsOpen={setIsCreateTaskDialogOpen}
+            estimation={selectedEstimation}
+            projects={projects}
+            taskBlueprints={taskBlueprints}
+        />
+    )}
+    </>
   );
 }
-
-    
