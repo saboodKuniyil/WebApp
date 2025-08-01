@@ -3,15 +3,12 @@ import { IssuesList } from "@/components/project-management/issues-list";
 import { getIssues, getTasks } from '@/lib/db';
 import type { Issue } from "@/components/project-management/issues-list";
 import type { Task } from "@/components/project-management/tasks-list";
-import { unstable_noStore as noStore } from 'next/cache';
 
 async function fetchIssues(): Promise<Issue[]> {
-    noStore();
     return getIssues();
 }
 
 async function fetchTasks(): Promise<Task[]> {
-    noStore();
     return getTasks();
 }
 

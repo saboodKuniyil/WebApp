@@ -1,41 +1,22 @@
 
-'use client';
-
 import { FinancialStats } from '@/components/dashboard/financial-stats';
 import { RevenueChart } from '@/components/dashboard/revenue-chart';
 import { SalesAnalysis } from '@/components/dashboard/sales-analysis';
 import { ProjectManagementStats } from '@/components/dashboard/project-management-stats';
 import { CrmStats } from '@/components/dashboard/crm-stats';
 import { PurchaseStats } from '@/components/dashboard/purchase-stats';
-import { useModules } from '@/context/modules-context';
-import { Skeleton } from '@/components/ui/skeleton';
+import { getAppSettings, getProjects, getTasks, getIssues, getProducts } from '@/lib/db';
 
-export default function DashboardPage() {
-  const { appSettings, isProjectManagementEnabled, isCrmEnabled, isPurchaseModuleEnabled } = useModules();
-
-  if (!appSettings) {
-    return (
-        <main className="flex-1 space-y-4 p-2 md:p-4 pt-4">
-            <div className="flex items-center justify-between space-y-2">
-                <Skeleton className="h-9 w-64" />
-            </div>
-            
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                <Skeleton className="h-28 w-full" />
-                <Skeleton className="h-28 w-full" />
-                <Skeleton className="h-28 w-full" />
-                <Skeleton className="h-28 w-full" />
-                <Skeleton className="h-28 w-full" />
-                <Skeleton className="h-28 w-full" />
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                <div className="lg:col-span-4"><Skeleton className="h-80 w-full" /></div>
-                <div className="lg:col-span-3"><Skeleton className="h-80 w-full" /></div>
-            </div>
-        </main>
-    )
-  }
+export default async function DashboardPage() {
+  const appSettings = await getAppSettings();
+  const projects = await getProjects();
+  const tasks = await getTasks();
+  const issues = await getIssues();
+  const products = await getProducts();
+  
+  const isProjectManagementEnabled = appSettings.enabled_modules?.project_management ?? false;
+  const isCrmEnabled = appSettings.enabled_modules?.crm ?? false;
+  const isPurchaseModuleEnabled = appSettings.enabled_modules?.purchase ?? false;
 
   return (
     <main className="flex-1 space-y-4 p-2 md:p-4 pt-4">
@@ -45,9 +26,9 @@ export default function DashboardPage() {
       
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {appSettings.dashboard?.showFinancialStats && <FinancialStats />}
-        {isProjectManagementEnabled && appSettings.dashboard?.showProjectManagementStats && <ProjectManagementStats />}
+        {isProjectManagementEnabled && appSettings.dashboard?.showProjectManagementStats && <ProjectManagementStats projects={projects} tasks={tasks} issues={issues} />}
         {isCrmEnabled && appSettings.dashboard?.showCrmStats && <CrmStats />}
-        {isPurchaseModuleEnabled && appSettings.dashboard?.showPurchaseStats && <PurchaseStats />}
+        {isPurchaseModuleEnabled && appSettings.dashboard?.showPurchaseStats && <PurchaseStats products={products} />}
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">

@@ -2,10 +2,8 @@
 import { ProductsList } from "@/components/purchase/products-list";
 import { getProducts as fetchProducts } from '@/lib/db';
 import type { Product } from "@/components/purchase/products-list";
-import { unstable_noStore as noStore } from 'next/cache';
 
 async function getProducts(): Promise<Product[]> {
-  noStore();
   try {
     const products = await fetchProducts();
     return products;

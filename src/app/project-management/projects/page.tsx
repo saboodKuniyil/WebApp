@@ -4,10 +4,8 @@ import { getProjects as fetchProjects, getTasks as fetchTasks, getTaskBlueprints
 import type { Project } from "@/components/project-management/projects-list";
 import type { Task } from "@/components/project-management/tasks-list";
 import type { TaskBlueprint } from "@/components/project-management/task-blueprints-list";
-import { unstable_noStore as noStore } from 'next/cache';
 
 async function getProjects(): Promise<Project[]> {
-  noStore();
   try {
     const projects = await fetchProjects();
     return projects;
@@ -18,7 +16,6 @@ async function getProjects(): Promise<Project[]> {
 }
 
 async function getTasks(): Promise<Task[]> {
-  noStore();
   try {
     const tasks = await fetchTasks();
     return tasks;
@@ -29,7 +26,6 @@ async function getTasks(): Promise<Task[]> {
 }
 
 async function getTaskBlueprints(): Promise<TaskBlueprint[]> {
-  noStore();
   try {
     const blueprints = await fetchTaskBlueprints();
     return blueprints;

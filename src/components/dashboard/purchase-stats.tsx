@@ -1,51 +1,35 @@
 
-'use client';
-
-import * as React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, Users, Truck } from "lucide-react";
-import { getProducts } from "@/lib/db";
+import type { Product } from "@/components/purchase/products-list";
 import Link from 'next/link';
-import { Skeleton } from '../ui/skeleton';
 
-type Stats = {
-    totalProducts: number;
-    totalVendors: number;
-    pendingOrders: number;
-};
+interface PurchaseStatsProps {
+    products: Product[];
+}
 
-export function PurchaseStats() {
-    const [stats, setStats] = React.useState<Stats | null>(null);
-
-    React.useEffect(() => {
-        async function fetchStats() {
-            const products = await getProducts();
-            const totalProducts = products.length;
-            // Mock data for vendors and orders until implemented
-            const totalVendors = 15;
-            const pendingOrders = 3;
-
-            setStats({ totalProducts, totalVendors, pendingOrders });
-        }
-        fetchStats();
-    }, []);
+export function PurchaseStats({ products }: PurchaseStatsProps) {
+    const totalProducts = products.length;
+    // Mock data for vendors and orders until implemented
+    const totalVendors = 15;
+    const pendingOrders = 3;
     
     const statCards = [
         {
             title: "Total Products",
-            value: stats?.totalProducts,
+            value: totalProducts,
             Icon: Package,
             href: "/purchase/products"
         },
         {
             title: "Total Vendors",
-            value: stats?.totalVendors,
+            value: totalVendors,
             Icon: Users,
             href: "/purchase/vendors"
         },
         {
             title: "Pending Orders",
-            value: stats?.pendingOrders,
+            value: pendingOrders,
             Icon: Truck,
             href: "/purchase/orders"
         },
@@ -61,11 +45,7 @@ export function PurchaseStats() {
                             <stat.Icon className={`h-4 w-4 text-muted-foreground`} />
                         </CardHeader>
                         <CardContent>
-                             {stats === null ? (
-                                <Skeleton className="h-7 w-12" />
-                            ) : (
-                                <div className="text-2xl font-bold">{stat.value}</div>
-                            )}
+                             <div className="text-2xl font-bold">{stat.value}</div>
                         </CardContent>
                     </Link>
                 </Card>

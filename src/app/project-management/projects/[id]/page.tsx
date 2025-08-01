@@ -3,7 +3,6 @@ import { getProjectById, getTasksByProjectId, getTaskBlueprints as fetchTaskBlue
 import type { Project } from "@/components/project-management/projects-list";
 import type { Task } from "@/components/project-management/tasks-list";
 import type { TaskBlueprint } from '@/components/project-management/task-blueprints-list';
-import { unstable_noStore as noStore } from 'next/cache';
 import { notFound } from 'next/navigation';
 import { ProjectDetailView } from '@/components/project-management/project-detail-view';
 import Link from 'next/link';
@@ -11,17 +10,14 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
 
 async function getProject(id: string): Promise<Project | undefined> {
-  noStore();
   return await getProjectById(id);
 }
 
 async function getProjectTasks(projectId: string): Promise<Task[]> {
-  noStore();
   return await getTasksByProjectId(projectId);
 }
 
 async function getTaskBlueprints(): Promise<TaskBlueprint[]> {
-  noStore();
   return await fetchTaskBlueprints();
 }
 

@@ -2,10 +2,8 @@
 import { ProfileSettings } from "@/components/settings/profile-settings";
 import { getCompanyProfile } from '@/lib/db';
 import type { CompanyProfile } from "@/lib/db";
-import { unstable_noStore as noStore } from 'next/cache';
 
 async function fetchCompanyProfile(): Promise<CompanyProfile> {
-  noStore();
   return getCompanyProfile();
 }
 

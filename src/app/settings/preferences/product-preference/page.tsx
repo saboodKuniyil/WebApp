@@ -4,16 +4,13 @@ import { UnitsManagement } from "@/components/settings/units-management";
 import { getProductCategories, getUnits } from '@/lib/db';
 import type { ProductCategory } from "@/components/settings/product-preferences";
 import type { Unit } from "@/components/settings/units-management";
-import { unstable_noStore as noStore } from 'next/cache';
 import { Separator } from "@/components/ui/separator";
 
 async function fetchProductCategories(): Promise<ProductCategory[]> {
-  noStore();
   return getProductCategories();
 }
 
 async function fetchUnits(): Promise<Unit[]> {
-  noStore();
   return getUnits();
 }
 
