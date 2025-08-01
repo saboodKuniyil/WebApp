@@ -1,11 +1,28 @@
 
-export default function EstimationsPage() {
+import { EstimationsList } from "@/components/sales/estimations-list";
+import { getEstimations, getProducts } from '@/lib/db';
+import type { Estimation } from "@/components/sales/estimations-list";
+import type { Product } from "@/components/purchase/products-list";
+
+async function fetchEstimations(): Promise<Estimation[]> {
+    return getEstimations();
+}
+
+async function fetchProducts(): Promise<Product[]> {
+    return getProducts();
+}
+
+
+export default async function EstimationsPage() {
+  const estimations = await fetchEstimations();
+  const products = await fetchProducts();
+
   return (
     <main className="flex-1 space-y-4 p-2 md:p-4 pt-4">
       <div className="flex items-center justify-between space-y-2">
         <h1 className="text-3xl font-bold tracking-tight font-headline">Estimations</h1>
       </div>
-      <p>Manage your estimations here.</p>
+      <EstimationsList data={estimations} products={products} />
     </main>
   );
 }

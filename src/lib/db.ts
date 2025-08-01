@@ -11,6 +11,7 @@ import type { Product } from '@/components/purchase/products-list';
 import type { ProductCategory } from '@/components/settings/product-preferences';
 import type { Unit } from '@/components/settings/units-management';
 import type { Currency } from '@/components/settings/currency-management';
+import type { Estimation } from '@/components/sales/estimations-list';
 
 const dbPath = path.join(process.cwd(), 'src', 'lib', 'db.json');
 
@@ -107,6 +108,7 @@ type DbData = {
   companyProfile: CompanyProfile;
   users: User[];
   userRoles: UserRole[];
+  estimations: Estimation[];
 };
 
 async function readDb(): Promise<DbData> {
@@ -157,6 +159,7 @@ async function readDb(): Promise<DbData> {
           },
           users: [],
           userRoles: [],
+          estimations: [],
       };
     }
     throw error;
@@ -549,3 +552,17 @@ export async function updateUserRole(updatedRole: Omit<UserRole, 'id'> & { id: s
   }
 }
 
+// Estimations Functions
+export async function getEstimations(): Promise<Estimation[]> {
+    const data = await readDb();
+    return data.estimations || [];
+}
+
+export async function createEstimation(newEstimation: Estimation): Promise<void> {
+    const data = await readDb();
+    if (!data.estimations) {
+        data.estimations = [];
+    }
+    data.estimations.push(newEstimation);
+    await writeDb(data);
+}
