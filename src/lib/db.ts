@@ -1,4 +1,3 @@
-
 'use server';
 
 import fs from 'fs/promises';
@@ -38,6 +37,24 @@ export type User = {
     role: 'Admin' | 'Manager' | 'User';
     status: 'active' | 'inactive';
 }
+
+export type Permissions = {
+  view_dashboard: boolean;
+  manage_projects: boolean;
+  manage_tasks: boolean;
+  manage_purchase_module: boolean;
+  manage_crm_module: boolean;
+  manage_payroll_module: boolean;
+  manage_settings: boolean;
+  manage_users: boolean;
+};
+
+export type UserRole = {
+  id: string;
+  name: string;
+  description: string;
+  permissions: Permissions;
+};
 
 
 export type DashboardSettings = {
@@ -79,6 +96,7 @@ type DbData = {
   positions: Position[];
   companyProfile: CompanyProfile;
   users: User[];
+  userRoles: UserRole[];
 };
 
 async function readDb(): Promise<DbData> {
@@ -120,6 +138,7 @@ async function readDb(): Promise<DbData> {
             iban: ""
           },
           users: [],
+          userRoles: [],
       };
     }
     throw error;
@@ -487,4 +506,9 @@ export async function deleteUser(userId: string): Promise<void> {
   } else {
     throw new Error(`User with id ${userId} not found.`);
   }
+}
+
+export async function getUserRoles(): Promise<UserRole[]> {
+    const data = await readDb();
+    return data.userRoles || [];
 }

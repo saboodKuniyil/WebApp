@@ -631,5 +631,52 @@
       "role": "User",
       "status": "inactive"
     }
+  ],
+  "userRoles": [
+    {
+      "id": "admin",
+      "name": "Administrator",
+      "description": "Has full access to all system features and settings.",
+      "permissions": {
+        "view_dashboard": true,
+        "manage_projects": true,
+        "manage_tasks": true,
+        "manage_purchase_module": true,
+        "manage_crm_module": true,
+        "manage_payroll_module": true,
+        "manage_settings": true,
+        "manage_users": true
+      }
+    },
+    {
+      "id": "manager",
+      "name": "Manager",
+      "description": "Can manage projects, tasks, and team members.",
+      "permissions": {
+        "view_dashboard": true,
+        "manage_projects": true,
+        "manage_tasks": true,
+        "manage_purchase_module": true,
+        "manage_crm_module": false,
+        "manage_payroll_module": false,
+        "manage_settings": false,
+        "manage_users": false
+      }
+    },
+    {
+      "id": "user",
+      "name": "User",
+      "description": "Can view dashboards and assigned tasks.",
+      "permissions": {
+        "view_dashboard": true,
+        "manage_projects": false,
+        "manage_tasks": false,
+        "manage_purchase_module": false,
+        "manage_crm_module": false,
+        "manage_payroll_module": false,
+        "manage_settings": false,
+        "manage_users": false
+      }
+    }
   ]
 }
