@@ -533,9 +533,9 @@
   "appSettings": {
     "currency": "AED",
     "dashboard": {
-      "showFinancialStats": true,
-      "showRevenueChart": true,
-      "showSalesAnalysis": true,
+      "showFinancialStats": false,
+      "showRevenueChart": false,
+      "showSalesAnalysis": false,
       "showProjectManagementStats": false,
       "showCrmStats": false,
       "showPurchaseStats": true
