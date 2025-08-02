@@ -46,6 +46,7 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import type { Estimation, EstimationTask } from './estimations-list';
 import { Badge } from '../ui/badge';
+import { CreateQuotationDialog } from './create-quotation-dialog';
 
 
 export type Quotation = {
@@ -208,6 +209,7 @@ export function QuotationsList({ data, estimations, products }: QuotationsListPr
               className="max-w-sm h-8"
             />
             <div className="flex space-x-2">
+              <CreateQuotationDialog estimations={estimations} />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="ml-auto h-8">

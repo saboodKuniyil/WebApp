@@ -23,10 +23,28 @@ export async function getNextQuotationId(): Promise<string> {
     return `QUO-${nextNumber}`;
 }
 
+const createQuotationSchema = z.object({
+  estimationId: z.string().min(1, { message: 'Please select an estimation.' }),
+});
+
+
 export async function createQuotation(
-  estimationId: string
-): Promise<{ message: string; quotationId?: string; }> {
+  prevState: { message: string; quotationId?: string; errors?: any },
+  formData: FormData
+): Promise<{ message: string; quotationId?: string; errors?: any }> {
   
+  const validatedFields = createQuotationSchema.safeParse({
+    estimationId: formData.get('estimationId'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      message: 'Failed to create quotation.',
+      errors: validatedFields.error.flatten().fieldErrors,
+    };
+  }
+
+  const { estimationId } = validatedFields.data;
   const estimation = await getEstimationById(estimationId);
 
   if (!estimation) {
@@ -51,7 +69,7 @@ export async function createQuotation(
 
     revalidatePath('/sales/quotations');
     revalidatePath(`/sales/estimations/${estimationId}`); // Revalidate estimation to maybe show a link
-    return { message: 'Quotation created successfully.', quotationId: newId };
+    return { message: 'Quotation created successfully.', quotationId: newId, errors: {} };
   } catch (error) {
     console.error('Database Error:', error);
     return { message: 'Failed to create quotation.' };

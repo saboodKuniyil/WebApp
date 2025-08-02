@@ -38,10 +38,15 @@ export function EstimationDetailView({ estimation, products }: EstimationDetailV
 
     const handleCreateQuotation = async () => {
         setIsCreatingQuotation(true);
-        const result = await createQuotation(estimation.id);
+        const formData = new FormData();
+        formData.append('estimationId', estimation.id);
+        const result = await createQuotation({ message: '', errors: {} }, formData);
+
         if(result.message.includes('success')) {
             toast({ title: 'Success', description: 'Quotation created successfully.' });
-            router.push(`/sales/quotations/${result.quotationId}`);
+            if (result.quotationId) {
+                router.push(`/sales/quotations/${result.quotationId}`);
+            }
         } else {
             toast({ variant: 'destructive', title: 'Error', description: result.message });
         }

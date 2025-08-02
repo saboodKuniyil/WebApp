@@ -677,5 +677,46 @@
       "createdDate": "2025-08-02"
     }
   ],
-  "quotations": []
+  "quotations": [
+    {
+      "id": "QUO-1001",
+      "title": "estimation 001111",
+      "estimationId": "EST-1001",
+      "tasks": [
+        {
+          "id": "ET-1001",
+          "title": "Kitchen Cabinet",
+          "description": "",
+          "items": [
+            {
+              "id": "FG_FNT_7001",
+              "name": "Ergonomic Office Chair",
+              "quantity": 1,
+              "cost": 349.99,
+              "type": "product"
+            },
+            {
+              "id": "adhoc-1754059951753",
+              "name": "labour charges",
+              "quantity": 15,
+              "cost": 5.85,
+              "type": "adhoc"
+            },
+            {
+              "id": "FG_FNT_7002",
+              "name": "TPR Desk 1700*55",
+              "quantity": 1,
+              "cost": 810.99,
+              "type": "product"
+            }
+          ],
+          "totalCost": 1248.73
+        }
+      ],
+      "totalCost": 1248.73,
+      "status": "draft",
+      "customer": "N/A",
+      "createdDate": "2025-08-02"
+    }
+  ]
 }
