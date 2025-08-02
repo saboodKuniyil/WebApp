@@ -49,7 +49,7 @@ export async function createCustomerAction(
     email: formData.get('email'),
     phone: formData.get('phone'),
     address: formData.get('address'),
-    status: formData.get('status'),
+    status: formData.get('status') ?? 'active',
   });
 
   if (!validatedFields.success) {
