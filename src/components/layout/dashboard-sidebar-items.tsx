@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import * as React from 'react';
@@ -21,43 +20,14 @@ export function DashboardSidebarItems() {
   const pathname = usePathname();
   const { isProjectManagementEnabled, isPurchaseModuleEnabled, isCrmEnabled, isPayrollEnabled, isUserManagementEnabled, isSalesModuleEnabled } = useModules();
   
-  // Set all to false by default
-  const [isCrmOpen, setIsCrmOpen] = React.useState(false);
-  const [isSalesOpen, setIsSalesOpen] = React.useState(false);
-  const [isProjectManagementOpen, setIsProjectManagementOpen] = React.useState(false);
-  const [isPurchaseOpen, setIsPurchaseOpen] = React.useState(false);
-  const [isPayrollOpen, setIsPayrollOpen] = React.useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
-  const [isUserManagementOpen, setIsUserManagementOpen] = React.useState(false);
-  const [isPreferencesOpen, setIsPreferencesOpen] = React.useState(false);
-
-  React.useEffect(() => {
-    if (pathname.startsWith('/crm')) {
-      setIsCrmOpen(true);
-    }
-    if (pathname.startsWith('/sales')) {
-      setIsSalesOpen(true);
-    }
-    if (pathname.startsWith('/project-management')) {
-        setIsProjectManagementOpen(true);
-    }
-    if (pathname.startsWith('/purchase')) {
-      setIsPurchaseOpen(true);
-    }
-     if (pathname.startsWith('/payroll')) {
-      setIsPayrollOpen(true);
-    }
-    if (pathname.startsWith('/settings') || pathname.startsWith('/modules')) {
-      setIsSettingsOpen(true);
-    }
-    if (pathname.startsWith('/settings/user-management')) {
-        setIsUserManagementOpen(true);
-    }
-     if (pathname.startsWith('/settings/preferences')) {
-        setIsPreferencesOpen(true);
-    }
-  }, [pathname]);
-
+  const isCrmOpen = pathname.startsWith('/crm');
+  const isSalesOpen = pathname.startsWith('/sales');
+  const isProjectManagementOpen = pathname.startsWith('/project-management');
+  const isPurchaseOpen = pathname.startsWith('/purchase');
+  const isPayrollOpen = pathname.startsWith('/payroll');
+  const isSettingsOpen = pathname.startsWith('/settings') || pathname.startsWith('/modules');
+  const isUserManagementOpen = pathname.startsWith('/settings/user-management');
+  const isPreferencesOpen = pathname.startsWith('/settings/preferences');
 
   return (
     <SidebarMenu>
@@ -72,14 +42,14 @@ export function DashboardSidebarItems() {
       
       {isCrmEnabled && (
          <SidebarMenuItem>
-            <Collapsible open={isCrmOpen} onOpenChange={setIsCrmOpen}>
+            <Collapsible defaultOpen={isCrmOpen}>
               <CollapsibleTrigger asChild>
                   <SidebarMenuButton className="w-full justify-between">
                       <div className="flex items-center gap-2">
                           <Heart />
                           CRM
                       </div>
-                      <ChevronDown className={`h-4 w-4 transition-transform ${isCrmOpen ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`h-4 w-4 transition-transform data-[state=open]:rotate-180`} />
                   </SidebarMenuButton>
               </CollapsibleTrigger>
               <CollapsibleContent>
@@ -108,14 +78,14 @@ export function DashboardSidebarItems() {
 
       {isSalesModuleEnabled && (
          <SidebarMenuItem>
-            <Collapsible open={isSalesOpen} onOpenChange={setIsSalesOpen}>
+            <Collapsible defaultOpen={isSalesOpen}>
               <CollapsibleTrigger asChild>
                   <SidebarMenuButton className="w-full justify-between">
                       <div className="flex items-center gap-2">
                           <DollarSign />
                           Sales
                       </div>
-                      <ChevronDown className={`h-4 w-4 transition-transform ${isSalesOpen ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`h-4 w-4 transition-transform data-[state=open]:rotate-180`} />
                   </SidebarMenuButton>
               </CollapsibleTrigger>
               <CollapsibleContent>
@@ -153,14 +123,14 @@ export function DashboardSidebarItems() {
 
       {isProjectManagementEnabled && (
          <SidebarMenuItem>
-            <Collapsible open={isProjectManagementOpen} onOpenChange={setIsProjectManagementOpen}>
+            <Collapsible defaultOpen={isProjectManagementOpen}>
               <CollapsibleTrigger asChild>
                   <SidebarMenuButton className="w-full justify-between">
                       <div className="flex items-center gap-2">
                           <Briefcase />
                           Project Management
                       </div>
-                      <ChevronDown className={`h-4 w-4 transition-transform ${isProjectManagementOpen ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`h-4 w-4 transition-transform data-[state=open]:rotate-180`} />
                   </SidebarMenuButton>
               </CollapsibleTrigger>
               <CollapsibleContent>
@@ -197,14 +167,14 @@ export function DashboardSidebarItems() {
       )}
       {isPurchaseModuleEnabled && (
         <SidebarMenuItem>
-          <Collapsible open={isPurchaseOpen} onOpenChange={setIsPurchaseOpen}>
+          <Collapsible defaultOpen={isPurchaseOpen}>
             <CollapsibleTrigger asChild>
                 <SidebarMenuButton className="w-full justify-between">
                     <div className="flex items-center gap-2">
                         <ShoppingCart />
                         Purchase
                     </div>
-                    <ChevronDown className={`h-4 w-4 transition-transform ${isPurchaseOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`h-4 w-4 transition-transform data-[state=open]:rotate-180`} />
                 </SidebarMenuButton>
             </CollapsibleTrigger>
             <CollapsibleContent>
@@ -247,14 +217,14 @@ export function DashboardSidebarItems() {
 
       {isPayrollEnabled && (
          <SidebarMenuItem>
-            <Collapsible open={isPayrollOpen} onOpenChange={setIsPayrollOpen}>
+            <Collapsible defaultOpen={isPayrollOpen}>
               <CollapsibleTrigger asChild>
                   <SidebarMenuButton className="w-full justify-between">
                       <div className="flex items-center gap-2">
                           <Wallet />
                           Payroll
                       </div>
-                      <ChevronDown className={`h-4 w-4 transition-transform ${isPayrollOpen ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`h-4 w-4 transition-transform data-[state=open]:rotate-180`} />
                   </SidebarMenuButton>
               </CollapsibleTrigger>
               <CollapsibleContent>
@@ -286,14 +256,14 @@ export function DashboardSidebarItems() {
       )}
 
        <SidebarMenuItem>
-            <Collapsible open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+            <Collapsible defaultOpen={isSettingsOpen}>
                 <CollapsibleTrigger asChild>
                     <SidebarMenuButton className="w-full justify-between">
                         <div className="flex items-center gap-2">
                             <Settings />
                             Settings
                         </div>
-                        <ChevronDown className={`h-4 w-4 transition-transform ${isSettingsOpen ? 'rotate-180' : ''}`} />
+                        <ChevronDown className={`h-4 w-4 transition-transform data-[state=open]:rotate-180`} />
                     </SidebarMenuButton>
                 </CollapsibleTrigger>
                 <CollapsibleContent>
@@ -316,14 +286,14 @@ export function DashboardSidebarItems() {
                         </SidebarMenuItem>
                         {isUserManagementEnabled && (
                           <SidebarMenuItem>
-                             <Collapsible open={isUserManagementOpen} onOpenChange={setIsUserManagementOpen}>
+                             <Collapsible defaultOpen={isUserManagementOpen}>
                                 <CollapsibleTrigger asChild>
                                     <SidebarMenuSubButton className="w-full justify-between">
                                         <div className="flex items-center gap-2">
                                             <UsersIcon />
                                             User Management
                                         </div>
-                                        <ChevronDown className={`h-4 w-4 transition-transform ${isUserManagementOpen ? 'rotate-180' : ''}`} />
+                                        <ChevronDown className={`h-4 w-4 transition-transform data-[state=open]:rotate-180`} />
                                     </SidebarMenuSubButton>
                                 </CollapsibleTrigger>
                                 <CollapsibleContent>
@@ -352,14 +322,14 @@ export function DashboardSidebarItems() {
                             </SidebarMenuSubButton>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
-                            <Collapsible open={isPreferencesOpen} onOpenChange={setIsPreferencesOpen}>
+                            <Collapsible defaultOpen={isPreferencesOpen}>
                                 <CollapsibleTrigger asChild>
                                     <SidebarMenuSubButton className="w-full justify-between">
                                         <div className="flex items-center gap-2">
                                             <ChevronsRight />
                                             Preferences
                                         </div>
-                                        <ChevronDown className={`h-4 w-4 transition-transform ${isPreferencesOpen ? 'rotate-180' : ''}`} />
+                                        <ChevronDown className={`h-4 w-4 transition-transform data-[state=open]:rotate-180`} />
                                     </SidebarMenuSubButton>
                                 </CollapsibleTrigger>
                                 <CollapsibleContent>
