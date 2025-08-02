@@ -8,9 +8,9 @@ import { revalidatePath } from 'next/cache';
 const vendorSchema = z.object({
   id: z.string(),
   name: z.string().min(1, 'Name is required'),
-  email: z.string().email('Invalid email address'),
-  phone: z.string().min(1, 'Phone number is required'),
-  address: z.string().min(1, 'Address is required'),
+  email: z.string().email('Invalid email address').optional().or(z.literal('')),
+  phone: z.string().optional(),
+  address: z.string().optional(),
   status: z.enum(['active', 'inactive']),
 });
 
@@ -59,14 +59,23 @@ export async function createVendorAction(
     };
   }
 
-  try {
-     const vendors = await getVendors();
-     const emailExists = vendors.some(u => u.email === validatedFields.data.email);
-     if (emailExists) {
-        return { message: 'Failed to create vendor. Email already exists.' };
-     }
+  const { email } = validatedFields.data;
 
-    await createVendor(validatedFields.data);
+  try {
+    if(email) {
+      const vendors = await getVendors();
+      const emailExists = vendors.some(u => u.email === email);
+      if (emailExists) {
+          return { message: 'Failed to create vendor. Email already exists.' };
+      }
+    }
+    
+    await createVendor({
+        ...validatedFields.data,
+        email: validatedFields.data.email || '',
+        phone: validatedFields.data.phone || '',
+        address: validatedFields.data.address || '',
+    });
 
     revalidatePath('/purchase/vendors');
     return { message: 'Vendor created successfully.' };
@@ -103,14 +112,19 @@ export async function updateVendorAction(
             return { message: 'Vendor not found.' };
         }
 
-        if (validatedFields.data.email !== existingVendor.email) {
+        if (validatedFields.data.email && validatedFields.data.email !== existingVendor.email) {
             const emailExists = vendors.some(u => u.email === validatedFields.data.email);
             if (emailExists) {
                 return { message: 'Failed to update vendor. Email already exists.' };
             }
         }
 
-        await updateDbVendor(validatedFields.data);
+        await updateDbVendor({
+            ...validatedFields.data,
+            email: validatedFields.data.email || '',
+            phone: validatedFields.data.phone || '',
+            address: validatedFields.data.address || '',
+        });
         revalidatePath('/purchase/vendors');
         return { message: 'Vendor updated successfully.' };
     } catch (error) {

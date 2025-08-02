@@ -8,9 +8,9 @@ import { revalidatePath } from 'next/cache';
 const customerSchema = z.object({
   id: z.string(),
   name: z.string().min(1, 'Name is required'),
-  email: z.string().email('Invalid email address'),
-  phone: z.string().min(1, 'Phone number is required'),
-  address: z.string().min(1, 'Address is required'),
+  email: z.string().email('Invalid email address').optional().or(z.literal('')),
+  phone: z.string().optional(),
+  address: z.string().optional(),
   status: z.enum(['active', 'inactive']),
 });
 
@@ -58,15 +58,24 @@ export async function createCustomerAction(
       errors: validatedFields.error.flatten().fieldErrors,
     };
   }
+  
+  const { email } = validatedFields.data;
 
   try {
-     const customers = await getCustomers();
-     const emailExists = customers.some(u => u.email === validatedFields.data.email);
-     if (emailExists) {
-        return { message: 'Failed to create customer. Email already exists.' };
+     if (email) {
+        const customers = await getCustomers();
+        const emailExists = customers.some(u => u.email === email);
+        if (emailExists) {
+            return { message: 'Failed to create customer. Email already exists.' };
+        }
      }
 
-    await createCustomer(validatedFields.data);
+    await createCustomer({
+        ...validatedFields.data,
+        email: validatedFields.data.email || '',
+        phone: validatedFields.data.phone || '',
+        address: validatedFields.data.address || '',
+    });
 
     revalidatePath('/crm/customers');
     return { message: 'Customer created successfully.' };
@@ -103,14 +112,19 @@ export async function updateCustomerAction(
             return { message: 'Customer not found.' };
         }
 
-        if (validatedFields.data.email !== existingCustomer.email) {
+        if (validatedFields.data.email && validatedFields.data.email !== existingCustomer.email) {
             const emailExists = customers.some(u => u.email === validatedFields.data.email);
             if (emailExists) {
                 return { message: 'Failed to update customer. Email already exists.' };
             }
         }
 
-        await updateDbCustomer(validatedFields.data);
+        await updateDbCustomer({
+            ...validatedFields.data,
+            email: validatedFields.data.email || '',
+            phone: validatedFields.data.phone || '',
+            address: validatedFields.data.address || '',
+        });
         revalidatePath('/crm/customers');
         return { message: 'Customer updated successfully.' };
     } catch (error) {
