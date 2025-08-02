@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import type { Quotation, QuotationItem } from "./quotations-list";
 import { Button } from "../ui/button"
-import { Pencil, Save, Trash2, Plus } from "lucide-react"
+import { Pencil, Save, Trash2, Plus, Printer } from "lucide-react"
 import { useModules } from '@/context/modules-context';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Input } from '../ui/input';
@@ -14,6 +14,9 @@ import { Textarea } from '../ui/textarea';
 import { useActionState } from 'react';
 import { updateQuotationAction } from '@/app/sales/quotations/actions';
 import { useToast } from '@/hooks/use-toast';
+import { QuotationPrintLayout } from './quotation-print-layout';
+import ReactDOMServer from 'react-dom/server';
+
 
 interface QuotationDetailViewProps {
     quotation: Quotation;
@@ -98,6 +101,22 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
         setItems(prevItems => prevItems.filter(item => item.id !== itemId));
     };
 
+    const handlePrint = () => {
+        const printWindow = window.open('', '_blank', 'height=800,width=800');
+        if (printWindow) {
+            const printContent = ReactDOMServer.renderToString(
+                <QuotationPrintLayout
+                    quotation={{ ...quotation, items }}
+                    companyProfile={companyProfile}
+                    currency={currency}
+                />
+            );
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            printWindow.focus();
+        }
+    };
+
     return (
         <form ref={formRef} action={dispatch}>
             <input type="hidden" name="id" value={quotation.id} />
@@ -110,6 +129,10 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
                             <p className="text-muted-foreground">Quotation #{quotation.id}</p>
                         </div>
                         <div className="flex items-center gap-2">
+                             <Button type="button" variant="outline" onClick={handlePrint}>
+                                <Printer className="mr-2 h-4 w-4" />
+                                Print View
+                            </Button>
                             <Button type="submit">
                                 <Save className="mr-2 h-4 w-4" />
                                 Save Changes

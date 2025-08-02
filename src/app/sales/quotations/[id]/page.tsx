@@ -24,7 +24,6 @@ export default async function QuotationDetailPage({ params }: { params: { id: st
     notFound();
   }
   
-  const products = await fetchProducts();
 
   return (
     <main className="flex-1 space-y-4 p-2 md:p-4 pt-4">
@@ -36,7 +35,7 @@ export default async function QuotationDetailPage({ params }: { params: { id: st
             </Link>
         </Button>
       </div>
-      <QuotationDetailView quotation={quotation} products={products} />
+      <QuotationDetailView quotation={quotation} />
     </main>
   );
 }

@@ -713,10 +713,26 @@
           "totalCost": 1248.73
         }
       ],
-      "totalCost": 1248.73,
+      "totalCost": 12848.73,
       "status": "draft",
       "customer": "N/A",
-      "createdDate": "2025-08-02"
+      "createdDate": "2025-08-02",
+      "items": [
+        {
+          "id": "ET-1001",
+          "title": "Kitchen Cabinet",
+          "description": "",
+          "quantity": 1,
+          "rate": 1248.73
+        },
+        {
+          "id": "manual-1754146536663",
+          "title": "this is manual one",
+          "description": "Color 012",
+          "quantity": 5,
+          "rate": 2320
+        }
+      ]
     }
   ]
 }
