@@ -10,8 +10,8 @@ import type { Issue } from '@/components/project-management/issues-list';
 import type { TaskBlueprint } from '@/components/project-management/task-blueprints-list';
 import type { Product } from '@/components/purchase/products-list';
 import type { Currency } from '@/components/settings/currency-management';
-import type { Estimation, EstimationItem } from '@/components/sales/estimations-list';
-import type { Quotation, QuotationItem } from '@/components/sales/quotations-list';
+import type { Estimation } from './estimations-list';
+import type { Quotation } from '@/components/sales/quotations-list';
 
 const dbPath = path.join(process.cwd(), 'src', 'lib', 'db.json');
 
@@ -100,6 +100,28 @@ export type AppSettings = {
     dashboard?: DashboardSettings;
     enabled_modules?: EnabledModules;
     quotationSettings?: QuotationSettings;
+};
+
+export type EstimationItem = {
+    id: string; // Can be product ID or a generated ID for adhoc items
+    name: string;
+    quantity: number;
+    cost: number;
+    type: 'product' | 'adhoc';
+    size?: string;
+    color?: string;
+    model?: string;
+    notes?: string;
+    imageUrl?: string;
+};
+
+export type QuotationItem = {
+    id: string; // Corresponds to the EstimationTask ID
+    title: string;
+    description?: string;
+    quantity: number;
+    rate: number; // Corresponds to the EstimationTask totalCost
+    imageUrl?: string;
 };
 
 type DbData = {

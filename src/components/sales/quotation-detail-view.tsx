@@ -17,7 +17,7 @@ import { updateQuotationAction } from '@/app/sales/quotations/actions';
 import { useToast } from '@/hooks/use-toast';
 import { QuotationPrintLayout } from './quotation-print-layout';
 import ReactDOMServer from 'react-dom/server';
-
+import Image from 'next/image';
 
 interface QuotationDetailViewProps {
     quotation: Quotation;
@@ -205,26 +205,33 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
                                 {items.map(item => (
                                     <TableRow key={item.id}>
                                         <TableCell className="p-2 align-top">
-                                            {isEditing ? (
-                                                <>
-                                                <Input 
-                                                    value={item.title}
-                                                    onChange={(e) => handleItemChange(item.id, 'title', e.target.value)}
-                                                    className="font-medium"
-                                                />
-                                                <Textarea 
-                                                    value={item.description}
-                                                    onChange={(e) => handleItemChange(item.id, 'description', e.target.value)}
-                                                    className="text-xs text-muted-foreground mt-1"
-                                                    rows={2}
-                                                />
-                                                </>
-                                            ) : (
-                                                <>
-                                                <p className="font-medium">{item.title}</p>
-                                                <p className="text-xs text-muted-foreground mt-1 whitespace-pre-wrap">{item.description}</p>
-                                                </>
-                                            )}
+                                            <div className="flex items-start gap-4">
+                                                {item.imageUrl && (
+                                                    <Image src={item.imageUrl} alt={item.title} width={64} height={64} className="rounded-md object-cover w-16 h-16" />
+                                                )}
+                                                <div className="flex-1">
+                                                    {isEditing ? (
+                                                        <>
+                                                        <Input 
+                                                            value={item.title}
+                                                            onChange={(e) => handleItemChange(item.id, 'title', e.target.value)}
+                                                            className="font-medium"
+                                                        />
+                                                        <Textarea 
+                                                            value={item.description}
+                                                            onChange={(e) => handleItemChange(item.id, 'description', e.target.value)}
+                                                            className="text-xs text-muted-foreground mt-1"
+                                                            rows={2}
+                                                        />
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                        <p className="font-medium">{item.title}</p>
+                                                        <p className="text-xs text-muted-foreground mt-1 whitespace-pre-wrap">{item.description}</p>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </div>
                                         </TableCell>
                                         <TableCell className="p-2 align-top text-right">
                                             {isEditing ? (

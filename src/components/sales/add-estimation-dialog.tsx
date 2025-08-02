@@ -159,6 +159,7 @@ export function AddEstimationDialog({ products }: AddEstimationDialogProps) {
             quantity: productQuantity,
             cost: product.salesPrice,
             type: 'product',
+            imageUrl: product.imageUrl
         });
         setSelectedProduct('');
         setProductQuantity(1);

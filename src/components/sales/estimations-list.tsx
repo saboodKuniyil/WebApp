@@ -49,19 +49,8 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { EditEstimationDialog } from './edit-estimation-dialog';
 import { DeleteEstimationDialog } from './delete-estimation-dialog';
+import type { EstimationItem } from '@/lib/db';
 
-
-export type EstimationItem = {
-    id: string; // Can be product ID or a generated ID for adhoc items
-    name: string;
-    quantity: number;
-    cost: number;
-    type: 'product' | 'adhoc';
-    size?: string;
-    color?: string;
-    model?: string;
-    notes?: string;
-};
 
 export type EstimationTask = {
     id: string;

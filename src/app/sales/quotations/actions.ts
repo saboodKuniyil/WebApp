@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { getQuotations, createQuotation as createDbQuotation, getEstimationById, updateQuotation as updateDbQuotation } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import type { QuotationItem } from '@/components/sales/quotations-list';
+import type { QuotationItem, EstimationItem } from '@/lib/db';
 
 export async function getNextQuotationId(): Promise<string> {
     const quotations = await getQuotations();
@@ -54,13 +54,16 @@ export async function createQuotation(
   const newId = await getNextQuotationId();
 
   try {
-    const newQuotationItems: QuotationItem[] = estimation.tasks.map(task => ({
-      id: task.id,
-      title: task.title,
-      description: task.description,
-      quantity: 1, // Default quantity
-      rate: task.totalCost,
-    }));
+    const newQuotationItems: QuotationItem[] = estimation.tasks.flatMap(task => 
+        task.items.map((item: EstimationItem) => ({
+            id: item.id,
+            title: item.name,
+            description: [item.size, item.color, item.model, item.notes].filter(Boolean).join(' | '),
+            quantity: item.quantity,
+            rate: item.cost,
+            imageUrl: item.imageUrl
+        }))
+    );
     
     const totalCost = newQuotationItems.reduce((acc, item) => acc + (item.quantity * item.rate), 0);
 

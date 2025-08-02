@@ -106,6 +106,17 @@ export function QuotationPrintLayout({ quotation, companyProfile, currency, appS
                     .text-right {
                         text-align: right;
                     }
+                     .item-cell {
+                        display: flex;
+                        align-items: flex-start;
+                        gap: 10px;
+                     }
+                     .item-image {
+                        width: 60px;
+                        height: 60px;
+                        object-fit: cover;
+                        border-radius: 4px;
+                     }
                     .footer-content {
                         margin-top: auto;
                         padding-top: 20px;
@@ -183,8 +194,15 @@ export function QuotationPrintLayout({ quotation, companyProfile, currency, appS
                             {quotation.items.map(item => (
                                 <tr key={item.id}>
                                     <td>
-                                        <strong>{item.title}</strong>
-                                        <p style={{fontSize: '0.9em', color: '#666', whiteSpace: 'pre-wrap'}}>{item.description}</p>
+                                        <div className="item-cell">
+                                            {item.imageUrl && (
+                                                <img src={item.imageUrl} alt={item.title} className="item-image" />
+                                            )}
+                                            <div>
+                                                <strong>{item.title}</strong>
+                                                <p style={{fontSize: '0.9em', color: '#666', whiteSpace: 'pre-wrap'}}>{item.description}</p>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td className="text-right">{item.quantity}</td>
                                     <td className="text-right">{formatCurrency(item.rate)}</td>

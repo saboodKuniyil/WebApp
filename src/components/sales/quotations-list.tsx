@@ -45,7 +45,7 @@ import type { Product } from '../purchase/products-list';
 import { useModules } from '@/context/modules-context';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import type { Estimation } from './estimations-list';
+import type { Estimation, EstimationItem } from './estimations-list';
 import { Badge } from '../ui/badge';
 import { CreateQuotationDialog } from './create-quotation-dialog';
 
