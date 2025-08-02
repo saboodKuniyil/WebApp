@@ -69,6 +69,11 @@ export function AddEstimationDialog({ products }: AddEstimationDialogProps) {
     const [adhocName, setAdhocName] = React.useState('');
     const [adhocQuantity, setAdhocQuantity] = React.useState(1);
     const [adhocCost, setAdhocCost] = React.useState(0);
+    const [adhocSize, setAdhocSize] = React.useState('');
+    const [adhocColor, setAdhocColor] = React.useState('');
+    const [adhocModel, setAdhocModel] = React.useState('');
+    const [adhocNotes, setAdhocNotes] = React.useState('');
+
 
     // State for adding a new task
     const [newTaskTitle, setNewTaskTitle] = React.useState('');
@@ -95,6 +100,10 @@ export function AddEstimationDialog({ products }: AddEstimationDialogProps) {
         setAdhocName('');
         setAdhocQuantity(1);
         setAdhocCost(0);
+        setAdhocSize('');
+        setAdhocColor('');
+        setAdhocModel('');
+        setAdhocNotes('');
         setNewTaskTitle('');
         setNewTaskDescription('');
     }, []);
@@ -163,10 +172,18 @@ export function AddEstimationDialog({ products }: AddEstimationDialogProps) {
             quantity: adhocQuantity,
             cost: adhocCost,
             type: 'adhoc',
+            size: adhocSize,
+            color: adhocColor,
+            model: adhocModel,
+            notes: adhocNotes,
         });
         setAdhocName('');
         setAdhocQuantity(1);
         setAdhocCost(0);
+        setAdhocSize('');
+        setAdhocColor('');
+        setAdhocModel('');
+        setAdhocNotes('');
     };
     
     const handleRemoveItem = (taskId: string, itemId: string) => {
@@ -275,14 +292,24 @@ export function AddEstimationDialog({ products }: AddEstimationDialogProps) {
                                                     <AccordionContent className="p-2 space-y-4">
                                                         {task.description && <p className="text-sm text-muted-foreground border-b pb-4 mb-4 whitespace-pre-wrap">{task.description}</p>}
                                                          {task.items.map(item => (
-                                                            <div key={item.id} className="grid grid-cols-[1fr_80px_80px_80px_40px] items-center gap-x-4 p-2 border rounded-md text-sm">
-                                                                <span className="truncate" title={item.name}>{item.name}</span>
-                                                                <span className="text-right">{item.quantity}</span>
-                                                                <span className="text-right">{formatCurrency(item.cost)}</span>
-                                                                <span className="text-right font-semibold">{formatCurrency(item.cost * item.quantity)}</span>
-                                                                <Button type="button" variant="ghost" size="icon" className="h-6 w-6 justify-self-end" onClick={() => handleRemoveItem(task.id, item.id)}>
-                                                                    <Trash2 className="h-4 w-4 text-destructive" />
-                                                                </Button>
+                                                            <div key={item.id} className="p-2 border rounded-md">
+                                                                <div className="grid grid-cols-[1fr_80px_80px_80px_40px] items-center gap-x-4 text-sm">
+                                                                    <span className="truncate font-medium" title={item.name}>{item.name}</span>
+                                                                    <span className="text-right">{item.quantity}</span>
+                                                                    <span className="text-right">{formatCurrency(item.cost)}</span>
+                                                                    <span className="text-right font-semibold">{formatCurrency(item.cost * item.quantity)}</span>
+                                                                    <Button type="button" variant="ghost" size="icon" className="h-6 w-6 justify-self-end" onClick={() => handleRemoveItem(task.id, item.id)}>
+                                                                        <Trash2 className="h-4 w-4 text-destructive" />
+                                                                    </Button>
+                                                                </div>
+                                                                {(item.size || item.color || item.model || item.notes) && (
+                                                                     <div className="text-xs text-muted-foreground mt-1 pt-1 border-t">
+                                                                        {item.size && <span>Size: {item.size} &middot; </span>}
+                                                                        {item.color && <span>Color: {item.color} &middot; </span>}
+                                                                        {item.model && <span>Model: {item.model}</span>}
+                                                                        {item.notes && <p className="whitespace-pre-wrap">Notes: {item.notes}</p>}
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                         ))}
                                                         
@@ -302,11 +329,19 @@ export function AddEstimationDialog({ products }: AddEstimationDialogProps) {
                                                                         <Button type="button" onClick={() => handleAddProduct(task.id)}><Plus className="h-4 w-4 mr-2" />Add</Button>
                                                                     </div>
                                                                 </TabsContent>
-                                                                <TabsContent value="adhoc" className="pt-4">
+                                                                <TabsContent value="adhoc" className="pt-4 space-y-2">
                                                                     <div className="flex items-end gap-2">
                                                                         <div className="flex-1 space-y-1"><Label>Item Name</Label><Input value={adhocName} onChange={e => setAdhocName(e.target.value)} /></div>
                                                                         <div className="space-y-1"><Label>Quantity</Label><Input type="number" value={adhocQuantity} onChange={e => setAdhocQuantity(Number(e.target.value))} className="w-24" min="1" /></div>
                                                                         <div className="space-y-1"><Label>Cost per Item</Label><Input type="number" value={adhocCost} onChange={e => setAdhocCost(Number(e.target.value))} className="w-28" /></div>
+                                                                    </div>
+                                                                    <div className="grid grid-cols-3 gap-2">
+                                                                        <div className="space-y-1"><Label>Size</Label><Input value={adhocSize} onChange={e => setAdhocSize(e.target.value)} /></div>
+                                                                        <div className="space-y-1"><Label>Color</Label><Input value={adhocColor} onChange={e => setAdhocColor(e.target.value)} /></div>
+                                                                        <div className="space-y-1"><Label>Model</Label><Input value={adhocModel} onChange={e => setAdhocModel(e.target.value)} /></div>
+                                                                    </div>
+                                                                    <div className="space-y-1"><Label>Notes</Label><Textarea value={adhocNotes} onChange={e => setAdhocNotes(e.target.value)} /></div>
+                                                                    <div className="flex justify-end">
                                                                         <Button type="button" onClick={() => handleAddAdhocItem(task.id)}><Plus className="h-4 w-4 mr-2" />Add</Button>
                                                                     </div>
                                                                 </TabsContent>

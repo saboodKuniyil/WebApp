@@ -57,6 +57,10 @@ export type EstimationItem = {
     quantity: number;
     cost: number;
     type: 'product' | 'adhoc';
+    size?: string;
+    color?: string;
+    model?: string;
+    notes?: string;
 };
 
 export type EstimationTask = {

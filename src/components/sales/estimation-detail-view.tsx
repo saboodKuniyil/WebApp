@@ -1,4 +1,5 @@
 
+
 'use client'
 
 import * as React from 'react';
@@ -168,11 +169,24 @@ export function EstimationDetailView({ estimation, products }: EstimationDetailV
                                         <span className="text-right">Total</span>
                                     </div>
                                     {task.items.map(item => (
-                                        <div key={item.id} className="grid grid-cols-[1fr_80px_80px_80px] items-center gap-x-4 p-2 border rounded-md text-sm">
-                                            <span className="truncate" title={item.name}>{item.name}</span>
-                                            <span className="text-right">{item.quantity}</span>
-                                            <span className="text-right">{formatCurrency(item.cost)}</span>
-                                            <span className="text-right font-semibold">{formatCurrency(item.cost * item.quantity)}</span>
+                                         <div key={item.id} className="p-2 border-b">
+                                            <div className="grid grid-cols-[1fr_80px_80px_80px] items-center gap-x-4 text-sm">
+                                                <span className="truncate font-medium" title={item.name}>{item.name}</span>
+                                                <span className="text-right">{item.quantity}</span>
+                                                <span className="text-right">{formatCurrency(item.cost)}</span>
+                                                <span className="text-right font-semibold">{formatCurrency(item.cost * item.quantity)}</span>
+                                            </div>
+                                            {(item.size || item.color || item.model || item.notes) && (
+                                                <div className="text-xs text-muted-foreground mt-1 pt-1">
+                                                    <p className="font-medium">Details:</p>
+                                                    <div className="pl-2">
+                                                        {item.size && <p><strong>Size:</strong> {item.size}</p>}
+                                                        {item.color && <p><strong>Color:</strong> {item.color}</p>}
+                                                        {item.model && <p><strong>Model:</strong> {item.model}</p>}
+                                                        {item.notes && <p className="whitespace-pre-wrap"><strong>Notes:</strong> {item.notes}</p>}
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     ))}
                                 </AccordionContent>

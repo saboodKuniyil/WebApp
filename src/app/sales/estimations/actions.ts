@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import { z } from 'zod';
@@ -12,6 +13,10 @@ const estimationItemSchema = z.object({
   quantity: z.coerce.number().min(0.001, "Quantity must be positive"),
   cost: z.coerce.number().min(0, "Cost must be a positive number"),
   type: z.enum(['product', 'adhoc']),
+  size: z.string().optional(),
+  color: z.string().optional(),
+  model: z.string().optional(),
+  notes: z.string().optional(),
 });
 
 const estimationTaskSchema = z.object({
