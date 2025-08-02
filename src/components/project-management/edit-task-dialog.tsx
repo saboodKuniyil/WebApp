@@ -234,7 +234,6 @@ export function EditTaskDialog({ task, projects, taskBlueprints, isOpen, setIsOp
                 <SelectValue placeholder="Select a label" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">(default)</SelectItem>
                 <SelectItem value="bug">Bug</SelectItem>
                 <SelectItem value="feature">Feature</SelectItem>
                 <SelectItem value="documentation">Documentation</SelectItem>
@@ -250,7 +249,6 @@ export function EditTaskDialog({ task, projects, taskBlueprints, isOpen, setIsOp
                     <SelectValue placeholder="Select a priority" />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value="">(default)</SelectItem>
                     <SelectItem value="low">Low</SelectItem>
                     <SelectItem value="medium">Medium</SelectItem>
                     <SelectItem value="high">High</SelectItem>
