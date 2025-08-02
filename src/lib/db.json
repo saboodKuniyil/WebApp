@@ -43,6 +43,17 @@
       "endDate": "2025-08-01T19:20:05.809Z",
       "status": "completed",
       "taskBlueprintId": "bp-2"
+    },
+    {
+      "id": "PR_9005",
+      "title": "dfgdfg",
+      "description": "",
+      "manager": "",
+      "customer": "",
+      "startDate": "2025-08-01T19:58:10.388Z",
+      "endDate": "2025-08-01T19:58:10.388Z",
+      "status": "in-progress",
+      "taskBlueprintId": "bp-1"
     }
   ],
   "tasks": [
@@ -226,6 +237,33 @@
       "projectId": "PR_9002",
       "completionPercentage": 0,
       "budgetItems": []
+    },
+    {
+      "id": "TS_9006",
+      "title": "ddd",
+      "description": "dddd",
+      "label": "feature",
+      "status": "backlog",
+      "priority": "low",
+      "assignee": "Unassigned",
+      "projectId": "PR_9001",
+      "completionPercentage": 0,
+      "budgetItems": [
+        {
+          "id": "SRV_CNS_7001",
+          "name": "Financial Consultation",
+          "quantity": 1,
+          "cost": 250,
+          "type": "product"
+        },
+        {
+          "id": "FG_FNT_7002",
+          "name": "TPR Desk 1700*55",
+          "quantity": 1,
+          "cost": 810.99,
+          "type": "product"
+        }
+      ]
     }
   ],
   "issues": [
