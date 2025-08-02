@@ -25,7 +25,7 @@ export function QuotationPrintLayout({ quotation, companyProfile, currency }: Qu
     return (
         <html>
             <head>
-                <title>Quotation - {quotation.id}</title>
+                <title>{`Quotation - ${quotation.id}`}</title>
                 <style>{`
                     @import url('https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap');
                     @page {
