@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import type { Quotation, QuotationItem } from "./quotations-list";
 import { Button } from "../ui/button"
-import { Pencil, Save, Trash2, Plus, Printer } from "lucide-react"
+import { Pencil, Save, Trash2, Plus, Printer, X } from "lucide-react"
 import { useModules } from '@/context/modules-context';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Input } from '../ui/input';
@@ -53,6 +53,8 @@ const adaptQuotationData = (quotation: Quotation): QuotationItem[] => {
 export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
     const [state, dispatch] = useActionState(updateQuotationAction, initialState);
     const { currency, companyProfile } = useModules();
+    const [isEditing, setIsEditing] = React.useState(false);
+    const [originalItems, setOriginalItems] = React.useState<QuotationItem[]>([]);
     const [items, setItems] = React.useState<QuotationItem[]>(adaptQuotationData(quotation));
     const [totalCost, setTotalCost] = React.useState(quotation.totalCost);
     const { toast } = useToast();
@@ -70,6 +72,7 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
                 toast({ variant: 'destructive', title: 'Error', description: state.message });
             } else {
                 toast({ title: 'Success', description: state.message });
+                setIsEditing(false);
             }
         }
     }, [state, toast]);
@@ -117,6 +120,16 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
         }
     };
 
+    const handleEditClick = () => {
+        setOriginalItems(JSON.parse(JSON.stringify(items))); // Deep copy
+        setIsEditing(true);
+    };
+
+    const handleCancelClick = () => {
+        setItems(originalItems);
+        setIsEditing(false);
+    };
+
     return (
         <form ref={formRef} action={dispatch}>
             <input type="hidden" name="id" value={quotation.id} />
@@ -133,14 +146,23 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
                                 <Printer className="mr-2 h-4 w-4" />
                                 Print View
                             </Button>
-                            <Button type="submit">
-                                <Save className="mr-2 h-4 w-4" />
-                                Save Changes
-                            </Button>
-                            <Button variant="destructive" size="icon" disabled>
-                                <Trash2 className="h-4 w-4" />
-                                <span className="sr-only">Delete Quotation</span>
-                            </Button>
+                            {isEditing ? (
+                                <>
+                                <Button type="submit">
+                                    <Save className="mr-2 h-4 w-4" />
+                                    Save
+                                </Button>
+                                <Button type="button" variant="ghost" onClick={handleCancelClick}>
+                                    <X className="mr-2 h-4 w-4" />
+                                    Cancel
+                                </Button>
+                                </>
+                            ) : (
+                                <Button type="button" variant="outline" onClick={handleEditClick}>
+                                    <Pencil className="mr-2 h-4 w-4" />
+                                    Edit
+                                </Button>
+                            )}
                             <Badge variant="outline" className={`capitalize text-lg border-0 ${statusColors[quotation.status]}`}>{quotation.status}</Badge>
                         </div>
                     </div>
@@ -174,60 +196,81 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
                                     <TableHead className="w-[100px] text-right p-3">Qty</TableHead>
                                     <TableHead className="w-[120px] text-right p-3">Rate</TableHead>
                                     <TableHead className="w-[120px] text-right p-3">Amount</TableHead>
-                                    <TableHead className="w-[50px] p-3"></TableHead>
+                                    {isEditing && <TableHead className="w-[50px] p-3"></TableHead>}
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {items.map(item => (
                                     <TableRow key={item.id}>
                                         <TableCell className="p-2 align-top">
-                                            <Input 
-                                                value={item.title}
-                                                onChange={(e) => handleItemChange(item.id, 'title', e.target.value)}
-                                                className="font-medium"
-                                            />
-                                            <Textarea 
-                                                value={item.description}
-                                                onChange={(e) => handleItemChange(item.id, 'description', e.target.value)}
-                                                className="text-xs text-muted-foreground mt-1"
-                                                rows={2}
-                                            />
+                                            {isEditing ? (
+                                                <>
+                                                <Input 
+                                                    value={item.title}
+                                                    onChange={(e) => handleItemChange(item.id, 'title', e.target.value)}
+                                                    className="font-medium"
+                                                />
+                                                <Textarea 
+                                                    value={item.description}
+                                                    onChange={(e) => handleItemChange(item.id, 'description', e.target.value)}
+                                                    className="text-xs text-muted-foreground mt-1"
+                                                    rows={2}
+                                                />
+                                                </>
+                                            ) : (
+                                                <>
+                                                <p className="font-medium">{item.title}</p>
+                                                <p className="text-xs text-muted-foreground mt-1 whitespace-pre-wrap">{item.description}</p>
+                                                </>
+                                            )}
                                         </TableCell>
                                         <TableCell className="p-2 align-top text-right">
-                                            <Input
-                                                type="number"
-                                                value={item.quantity}
-                                                onChange={(e) => handleItemChange(item.id, 'quantity', e.target.value)}
-                                                className="text-right h-8"
-                                            />
+                                            {isEditing ? (
+                                                <Input
+                                                    type="number"
+                                                    value={item.quantity}
+                                                    onChange={(e) => handleItemChange(item.id, 'quantity', e.target.value)}
+                                                    className="text-right h-8"
+                                                />
+                                            ) : (
+                                                item.quantity
+                                            )}
                                         </TableCell>
                                         <TableCell className="p-2 align-top text-right">
-                                            <Input
-                                                type="number"
-                                                step="0.01"
-                                                value={item.rate}
-                                                onChange={(e) => handleItemChange(item.id, 'rate', e.target.value)}
-                                                className="text-right h-8"
-                                            />
+                                            {isEditing ? (
+                                                <Input
+                                                    type="number"
+                                                    step="0.01"
+                                                    value={item.rate}
+                                                    onChange={(e) => handleItemChange(item.id, 'rate', e.target.value)}
+                                                    className="text-right h-8"
+                                                />
+                                            ) : (
+                                                <span>{currency?.symbol} {(item.rate).toFixed(2)}</span>
+                                            )}
                                         </TableCell>
                                         <TableCell className="p-2 align-top text-right font-medium">
                                             {currency?.symbol} { (item.quantity * item.rate).toFixed(2) }
                                         </TableCell>
-                                        <TableCell className="p-2 align-top text-right">
-                                            <Button variant="ghost" size="icon" type="button" onClick={() => handleRemoveItem(item.id)}>
-                                                <Trash2 className="h-4 w-4 text-destructive" />
-                                            </Button>
-                                        </TableCell>
+                                        {isEditing && (
+                                            <TableCell className="p-2 align-top text-right">
+                                                <Button variant="ghost" size="icon" type="button" onClick={() => handleRemoveItem(item.id)}>
+                                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                                </Button>
+                                            </TableCell>
+                                        )}
                                     </TableRow>
                                 ))}
                             </TableBody>
                         </Table>
                     </div>
                     <div className="flex justify-between mt-4">
-                        <Button type="button" variant="outline" onClick={handleAddNewItem}>
-                            <Plus className="h-4 w-4 mr-2"/>
-                            Add Item
-                        </Button>
+                         {isEditing ? (
+                            <Button type="button" variant="outline" onClick={handleAddNewItem}>
+                                <Plus className="h-4 w-4 mr-2"/>
+                                Add Item
+                            </Button>
+                        ) : <div></div>}
                         <div className="w-full md:w-1/3 text-right space-y-2">
                              <div className="flex justify-between items-center border-t pt-2">
                                 <span className="font-semibold text-lg">Grand Total</span>

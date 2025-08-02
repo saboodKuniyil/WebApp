@@ -832,6 +832,56 @@
       "status": "draft",
       "customer": "N/A",
       "createdDate": "2025-08-02"
+    },
+    {
+      "id": "QUO-1003",
+      "title": "estimation 001111",
+      "estimationId": "EST-1001",
+      "items": [
+        {
+          "id": "ET-1001",
+          "title": "Kitchen Cabinet",
+          "description": "",
+          "quantity": 1,
+          "rate": 1248.73
+        }
+      ],
+      "totalCost": 1248.73,
+      "status": "draft",
+      "customer": "N/A",
+      "createdDate": "2025-08-02"
+    },
+    {
+      "id": "QUO-1004",
+      "title": "Batches of costing",
+      "estimationId": "EST-1002",
+      "items": [
+        {
+          "id": "ET-1001",
+          "title": "Tasking bench",
+          "description": "this is apppering cost wise",
+          "quantity": 1,
+          "rate": 1299.9
+        },
+        {
+          "id": "ET-1002",
+          "title": "second batch",
+          "description": "this is s ceoooennnncisdsdfa",
+          "quantity": 1,
+          "rate": 9015.09
+        },
+        {
+          "id": "manual-1754150282623",
+          "title": "New Item",
+          "description": "this is amtticc",
+          "quantity": 3,
+          "rate": 650
+        }
+      ],
+      "totalCost": 12264.99,
+      "status": "draft",
+      "customer": "N/A",
+      "createdDate": "2025-08-02"
     }
   ]
 }
