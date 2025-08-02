@@ -143,37 +143,34 @@ export function EstimationDetailView({ estimation, products }: EstimationDetailV
                                     </AccordionTrigger>
                                     <div className="flex-1" />
                                     <div className="flex items-center gap-4 pl-4">
+                                        <AddTaskDialog 
+                                            projects={projects} 
+                                            taskBlueprints={taskBlueprints}
+                                            defaultTitle={task.title}
+                                            trigger={
+                                                <Button variant="outline" size="sm">
+                                                    <Briefcase className="mr-2 h-3 w-3" />
+                                                    Create Task
+                                                </Button>
+                                            } 
+                                        />
                                         <span className="text-muted-foreground font-medium">{formatCurrency(task.totalCost)}</span>
                                     </div>
                                 </div>
                                 <AccordionContent className="p-2 space-y-2">
                                     {task.description && <p className="text-sm text-muted-foreground border-b pb-2 mb-2 whitespace-pre-wrap">{task.description}</p>}
-                                    <div className="grid grid-cols-[1fr_80px_80px_80px_120px] items-center gap-x-4 px-2 text-xs text-muted-foreground font-medium">
+                                    <div className="grid grid-cols-[1fr_80px_80px_80px] items-center gap-x-4 px-2 text-xs text-muted-foreground font-medium">
                                         <span>Material / Service</span>
                                         <span className="text-right">Qty</span>
                                         <span className="text-right">Rate</span>
                                         <span className="text-right">Total</span>
-                                        <span className="text-right">Actions</span>
                                     </div>
                                     {task.items.map(item => (
-                                        <div key={item.id} className="grid grid-cols-[1fr_80px_80px_80px_120px] items-center gap-x-4 p-2 border rounded-md text-sm">
+                                        <div key={item.id} className="grid grid-cols-[1fr_80px_80px_80px] items-center gap-x-4 p-2 border rounded-md text-sm">
                                             <span className="truncate" title={item.name}>{item.name}</span>
                                             <span className="text-right">{item.quantity}</span>
                                             <span className="text-right">{formatCurrency(item.cost)}</span>
                                             <span className="text-right font-semibold">{formatCurrency(item.cost * item.quantity)}</span>
-                                            <div className="text-right">
-                                                <AddTaskDialog 
-                                                    projects={projects} 
-                                                    taskBlueprints={taskBlueprints}
-                                                    defaultTitle={item.name}
-                                                    trigger={
-                                                        <Button variant="outline" size="sm">
-                                                            <Briefcase className="mr-2 h-3 w-3" />
-                                                            Create Task
-                                                        </Button>
-                                                    } 
-                                                />
-                                            </div>
                                         </div>
                                     ))}
                                 </AccordionContent>
