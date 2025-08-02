@@ -11,7 +11,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
 } from '@/components/ui/sidebar';
-import { Box, Calendar, LayoutDashboard, Briefcase, ShoppingCart, Home, Package, FileText, Landmark, Truck, CheckSquare, AlertTriangle, ClipboardList, Settings, ChevronsRight, CircleDollarSign, Heart, Wallet, User, ClipboardSignature, PenSquare, Building, Users as UsersIcon, ShieldCheck, DollarSign, FileSignature, ShoppingBag, Blocks } from 'lucide-react';
+import { Box, Calendar, LayoutDashboard, Briefcase, ShoppingCart, Home, Package, FileText, Landmark, Truck, CheckSquare, AlertTriangle, ClipboardList, Settings, ChevronsRight, CircleDollarSign, Heart, Wallet, User, ClipboardSignature, PenSquare, Building, Users as UsersIcon, ShieldCheck, DollarSign, FileSignature, ShoppingBag, Blocks, Database } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useModules } from '@/context/modules-context';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -327,7 +327,7 @@ export function DashboardSidebarItems() {
                                         </SidebarMenuItem>
                                         <SidebarMenuItem>
                                             <SidebarMenuSubButton asChild isActive={pathname.startsWith('/settings/user-management/roles')}>
-                                                <Link href="/settings/user-management/roles"><ShieldCheck />Roles &amp; Permissions</Link>
+                                                <Link href="/settings/user-management/roles"><ShieldCheck />Roles & Permissions</Link>
                                             </SidebarMenuSubButton>
                                         </SidebarMenuItem>
                                     </SidebarMenuSub>
@@ -335,6 +335,14 @@ export function DashboardSidebarItems() {
                             </Collapsible>
                           </SidebarMenuItem>
                         )}
+                         <SidebarMenuItem>
+                            <SidebarMenuSubButton asChild isActive={pathname.startsWith('/settings/backup')}>
+                                <Link href="/settings/backup">
+                                    <Database />
+                                    Backup & Restore
+                                </Link>
+                            </SidebarMenuSubButton>
+                        </SidebarMenuItem>
                         <SidebarMenuItem>
                             <Collapsible open={isPreferencesOpen} onOpenChange={setIsPreferencesOpen}>
                                 <CollapsibleTrigger asChild>

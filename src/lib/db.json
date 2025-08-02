@@ -443,6 +443,13 @@
       "payroll": true,
       "user_management": true,
       "sales": true
+    },
+    "quotationSettings": {
+      "termsAndConditions": "1. Payment to be made within 30 days of the invoice date.\r\n2. Any additional work not mentioned in this quotation will be charged separately.\r\n3. This quotation is valid for 15 days from the date of issue.",
+      "bankName": "Default Bank",
+      "accountNumber": "0000-0000-0000-0000",
+      "iban": "AE000000000000000000000",
+      "taxPercentage": 5
     }
   },
   "currencies": [
