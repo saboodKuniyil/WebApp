@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import type { Quotation, QuotationItem } from "./quotations-list";
 import { Button } from "../ui/button"
-import { Pencil, Save, Trash2 } from "lucide-react"
+import { Pencil, Save, Trash2, Plus } from "lucide-react"
 import { useModules } from '@/context/modules-context';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Input } from '../ui/input';
@@ -83,6 +83,21 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
         );
     };
 
+    const handleAddNewItem = () => {
+        const newItem: QuotationItem = {
+            id: `manual-${Date.now()}`,
+            title: 'New Item',
+            description: '',
+            quantity: 1,
+            rate: 0,
+        };
+        setItems(prevItems => [...prevItems, newItem]);
+    };
+
+    const handleRemoveItem = (itemId: string) => {
+        setItems(prevItems => prevItems.filter(item => item.id !== itemId));
+    };
+
     return (
         <form ref={formRef} action={dispatch}>
             <input type="hidden" name="id" value={quotation.id} />
@@ -136,13 +151,18 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
                                     <TableHead className="w-[100px] text-right p-3">Qty</TableHead>
                                     <TableHead className="w-[120px] text-right p-3">Rate</TableHead>
                                     <TableHead className="w-[120px] text-right p-3">Amount</TableHead>
+                                    <TableHead className="w-[50px] p-3"></TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {items.map(item => (
                                     <TableRow key={item.id}>
                                         <TableCell className="p-2 align-top">
-                                            <p className="font-medium">{item.title}</p>
+                                            <Input 
+                                                value={item.title}
+                                                onChange={(e) => handleItemChange(item.id, 'title', e.target.value)}
+                                                className="font-medium"
+                                            />
                                             <Textarea 
                                                 value={item.description}
                                                 onChange={(e) => handleItemChange(item.id, 'description', e.target.value)}
@@ -170,12 +190,21 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
                                         <TableCell className="p-2 align-top text-right font-medium">
                                             {currency?.symbol} { (item.quantity * item.rate).toFixed(2) }
                                         </TableCell>
+                                        <TableCell className="p-2 align-top text-right">
+                                            <Button variant="ghost" size="icon" type="button" onClick={() => handleRemoveItem(item.id)}>
+                                                <Trash2 className="h-4 w-4 text-destructive" />
+                                            </Button>
+                                        </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
                         </Table>
                     </div>
-                    <div className="flex justify-end mt-4">
+                    <div className="flex justify-between mt-4">
+                        <Button type="button" variant="outline" onClick={handleAddNewItem}>
+                            <Plus className="h-4 w-4 mr-2"/>
+                            Add Item
+                        </Button>
                         <div className="w-full md:w-1/3 text-right space-y-2">
                              <div className="flex justify-between items-center border-t pt-2">
                                 <span className="font-semibold text-lg">Grand Total</span>
