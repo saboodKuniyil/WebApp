@@ -59,7 +59,7 @@ export async function createVendorAction(
     };
   }
 
-  const { email } = validatedFields.data;
+  const { id, name, email, phone, address, status } = validatedFields.data;
 
   try {
     if(email) {
@@ -71,10 +71,12 @@ export async function createVendorAction(
     }
     
     await createVendor({
-        ...validatedFields.data,
-        email: validatedFields.data.email || '',
-        phone: validatedFields.data.phone || '',
-        address: validatedFields.data.address || '',
+        id,
+        name,
+        email: email || '',
+        phone: phone || '',
+        address: address || '',
+        status,
     });
 
     revalidatePath('/purchase/vendors');
