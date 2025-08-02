@@ -22,23 +22,10 @@ import {
 } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
 import { LogOut } from 'lucide-react';
-import dynamic from 'next/dynamic';
-import { Skeleton } from '@/components/ui/skeleton';
+import { DashboardSidebarItems } from '@/components/layout/dashboard-sidebar-items';
 import Image from 'next/image';
 
 export function DashboardLayout({ children, companyProfile }: { children: React.ReactNode, companyProfile: any }) {
-  const DashboardSidebarItems = dynamic(() => import('@/components/layout/dashboard-sidebar-items').then(mod => mod.DashboardSidebarItems), {
-    ssr: false,
-    loading: () => (
-       <div className="p-2 space-y-2">
-          <Skeleton className="h-8 w-full" />
-          <Skeleton className="h-8 w-full" />
-          <Skeleton className="h-8 w-full" />
-          <Skeleton className="h-8 w-full" />
-          <Skeleton className="h-8 w-full" />
-       </div>
-    ),
-  });
 
   return (
     <SidebarProvider>
