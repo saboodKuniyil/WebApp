@@ -79,7 +79,6 @@ const productTypes = ["Raw Material", "Service", "Finished Good"];
 
 
 const getColumns = (
-    formatCurrency: (amount: number) => string
 ): ColumnDef<Product>[] => [
   {
     id: 'select',
@@ -205,7 +204,15 @@ const getColumns = (
           <CaretSortIcon className="ml-2 h-4 w-4" />
         </Button>
       ),
-    cell: ({ row }) => <div>{formatCurrency(row.getValue('purchasePrice'))}</div>,
+    cell: ({ row }) => {
+        const { currency } = useModules();
+        const amount = parseFloat(row.getValue('purchasePrice'))
+        const formatted = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: currency?.code ?? 'USD',
+        }).format(amount);
+        return <div>{formatted}</div>
+    },
   },
   {
     accessorKey: 'salesPrice',
@@ -218,7 +225,15 @@ const getColumns = (
           <CaretSortIcon className="ml-2 h-4 w-4" />
         </Button>
       ),
-    cell: ({ row }) => <div>{formatCurrency(row.getValue('salesPrice'))}</div>,
+    cell: ({ row }) => {
+        const { currency } = useModules();
+        const amount = parseFloat(row.getValue('salesPrice'))
+        const formatted = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: currency?.code ?? 'USD',
+        }).format(amount);
+        return <div>{formatted}</div>
+    },
   },
   {
     accessorKey: 'stock',
@@ -286,22 +301,8 @@ export function ProductsList({ data }: ProductsListProps) {
     });
   const [rowSelection, setRowSelection] = React.useState({});
   const [isMounted, setIsMounted] = React.useState(false);
-  const { currency } = useModules();
-
-  const formatCurrency = React.useCallback((amount: number) => {
-    if (!currency) {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-        }).format(amount);
-    }
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: currency.code,
-    }).format(amount);
-  }, [currency]);
   
-  const columns = React.useMemo(() => getColumns(formatCurrency), [formatCurrency]);
+  const columns = React.useMemo(() => getColumns(), []);
 
 
   React.useEffect(() => {
