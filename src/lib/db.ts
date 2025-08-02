@@ -9,10 +9,9 @@ import type { Task } from '@/components/project-management/tasks-list';
 import type { Issue } from '@/components/project-management/issues-list';
 import type { TaskBlueprint } from '@/components/project-management/task-blueprints-list';
 import type { Product } from '@/components/purchase/products-list';
-import type { ProductCategory } from '@/components/settings/product-preferences';
-import type { Unit } from '@/components/settings/units-management';
 import type { Currency } from '@/components/settings/currency-management';
 import type { Estimation, EstimationTask } from '@/components/sales/estimations-list';
+import type { Quotation } from '@/components/sales/quotations-list';
 
 const dbPath = path.join(process.cwd(), 'src', 'lib', 'db.json');
 
@@ -100,8 +99,7 @@ type DbData = {
   issues: Issue[];
   taskBlueprints: TaskBlueprint[];
   products: Product[];
-  productCategories: ProductCategory[];
-  units: Unit[];
+  units: any[];
   currencies: Currency[];
   appSettings: AppSettings;
   employees: Employee[];
@@ -110,6 +108,7 @@ type DbData = {
   users: User[];
   userRoles: UserRole[];
   estimations: Estimation[];
+  quotations: Quotation[];
 };
 
 async function readDb(): Promise<DbData> {
@@ -125,7 +124,6 @@ async function readDb(): Promise<DbData> {
           issues: [], 
           taskBlueprints: [], 
           products: [], 
-          productCategories: [], 
           units: [],
           currencies: [],
           appSettings: { 
@@ -161,6 +159,7 @@ async function readDb(): Promise<DbData> {
           users: [],
           userRoles: [],
           estimations: [],
+          quotations: [],
       };
     }
     throw error;
@@ -309,55 +308,6 @@ export async function createProduct(newProduct: Product): Promise<void> {
     }
     data.products.push(newProduct);
     await writeDb(data);
-}
-
-export async function getProductCategories(): Promise<ProductCategory[]> {
-    const data = await readDb();
-    return data.productCategories || [];
-}
-
-export async function createProductCategory(newCategory: ProductCategory): Promise<void> {
-    const data = await readDb();
-    if (!data.productCategories) {
-        data.productCategories = [];
-    }
-    data.productCategories.push(newCategory);
-    await writeDb(data);
-}
-
-export async function updateProductCategory(originalName: string, updatedCategoryData: Omit<ProductCategory, 'name'> & { name: string }): Promise<void> {
-    const data = await readDb();
-    const categoryIndex = data.productCategories.findIndex(c => c.name.toLowerCase() === originalName.toLowerCase());
-    
-    if (categoryIndex !== -1) {
-        const originalCategory = data.productCategories[categoryIndex];
-        // Create the updated category object by merging
-        const updatedCategory = { ...originalCategory, ...updatedCategoryData };
-        data.productCategories[categoryIndex] = updatedCategory;
-
-        // If the category name itself was changed, update all products using it
-        if (originalName.toLowerCase() !== updatedCategory.name.toLowerCase()) {
-            data.products.forEach(p => {
-                if (p.category.toLowerCase() === originalName.toLowerCase()) {
-                    p.category = updatedCategory.name;
-                }
-            });
-        }
-        await writeDb(data);
-    } else {
-        throw new Error(`Category with name ${originalName} not found.`);
-    }
-}
-
-export async function deleteProductCategory(categoryName: string): Promise<void> {
-    const data = await readDb();
-    const categoryIndex = data.productCategories.findIndex(c => c.name.toLowerCase() === categoryName.toLowerCase());
-    if (categoryIndex !== -1) {
-        data.productCategories.splice(categoryIndex, 1);
-        await writeDb(data);
-    } else {
-        throw new Error(`Category with name ${categoryName} not found.`);
-    }
 }
 
 export async function getUnits(): Promise<Unit[]> {
@@ -593,4 +543,24 @@ export async function deleteEstimation(estimationId: string): Promise<void> {
     } else {
         throw new Error(`Estimation with id ${estimationId} not found.`);
     }
+}
+
+// Quotations Functions
+export async function getQuotations(): Promise<Quotation[]> {
+    const data = await readDb();
+    return data.quotations || [];
+}
+
+export async function getQuotationById(id: string): Promise<Quotation | undefined> {
+    const data = await readDb();
+    return (data.quotations || []).find(q => q.id === id);
+}
+
+export async function createQuotation(newQuotation: Quotation): Promise<void> {
+    const data = await readDb();
+    if (!data.quotations) {
+        data.quotations = [];
+    }
+    data.quotations.push(newQuotation);
+    await writeDb(data);
 }

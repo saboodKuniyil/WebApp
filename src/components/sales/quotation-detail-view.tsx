@@ -5,29 +5,27 @@ import * as React from 'react';
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import type { Product } from "@/components/purchase/products-list";
-import type { Estimation } from "./estimations-list";
+import type { Quotation } from "./quotations-list";
 import { Button } from "../ui/button"
-import { Pencil, Trash2, FileText, GripVertical, FileSignature } from "lucide-react"
+import { Pencil, Trash2, FileText, GripVertical } from "lucide-react"
 import { useModules } from '@/context/modules-context';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
-import { EditEstimationDialog } from './edit-estimation-dialog';
-import { DeleteEstimationDialog } from './delete-estimation-dialog';
-import { createQuotation } from '@/app/sales/quotations/actions';
-import { useToast } from '@/hooks/use-toast';
-import { useRouter } from 'next/navigation';
 
-interface EstimationDetailViewProps {
-    estimation: Estimation;
+interface QuotationDetailViewProps {
+    quotation: Quotation;
     products: Product[];
 }
 
-export function EstimationDetailView({ estimation, products }: EstimationDetailViewProps) {
+const statusColors: Record<Quotation['status'], string> = {
+    draft: 'bg-gray-500/20 text-gray-700 dark:text-gray-300',
+    sent: 'bg-blue-500/20 text-blue-700 dark:text-blue-300',
+    approved: 'bg-green-500/20 text-green-700 dark:text-green-300',
+    rejected: 'bg-red-500/20 text-red-700 dark:text-red-300',
+};
+
+
+export function QuotationDetailView({ quotation, products }: QuotationDetailViewProps) {
     const { currency } = useModules();
-    const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
-    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
-    const [isCreatingQuotation, setIsCreatingQuotation] = React.useState(false);
-    const { toast } = useToast();
-    const router = useRouter();
 
     const formatCurrency = React.useCallback((amount: number) => {
         if (!currency) {
@@ -35,18 +33,6 @@ export function EstimationDetailView({ estimation, products }: EstimationDetailV
         }
         return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency.code }).format(amount);
     }, [currency]);
-
-    const handleCreateQuotation = async () => {
-        setIsCreatingQuotation(true);
-        const result = await createQuotation(estimation.id);
-        if(result.message.includes('success')) {
-            toast({ title: 'Success', description: 'Quotation created successfully.' });
-            router.push(`/sales/quotations/${result.quotationId}`);
-        } else {
-            toast({ variant: 'destructive', title: 'Error', description: result.message });
-        }
-        setIsCreatingQuotation(false);
-    }
     
     return (
         <div className="space-y-6">
@@ -54,22 +40,19 @@ export function EstimationDetailView({ estimation, products }: EstimationDetailV
                 <CardHeader className="p-4">
                     <div className="flex items-start justify-between">
                         <div>
-                            <CardTitle className="text-3xl font-bold font-headline">{estimation.title}</CardTitle>
-                            <CardDescription>{estimation.id}</CardDescription>
+                            <CardTitle className="text-3xl font-bold font-headline">{quotation.title}</CardTitle>
+                            <CardDescription>{quotation.id}</CardDescription>
                         </div>
                         <div className="flex items-center gap-2">
-                             <Button onClick={handleCreateQuotation} disabled={isCreatingQuotation}>
-                                <FileSignature className="mr-2 h-4 w-4" />
-                                {isCreatingQuotation ? 'Creating...' : 'Create Quotation'}
-                             </Button>
-                             <Button variant="outline" size="icon" onClick={() => setIsEditDialogOpen(true)}>
+                             <Button variant="outline" size="icon" disabled>
                                 <Pencil className="h-4 w-4" />
-                                <span className="sr-only">Edit Estimation</span>
+                                <span className="sr-only">Edit Quotation</span>
                             </Button>
-                            <Button variant="destructive" size="icon" onClick={() => setIsDeleteDialogOpen(true)}>
+                            <Button variant="destructive" size="icon" disabled>
                                 <Trash2 className="h-4 w-4" />
-                                <span className="sr-only">Delete Estimation</span>
+                                <span className="sr-only">Delete Quotation</span>
                             </Button>
+                             <Badge variant="outline" className={`capitalize text-lg border-0 ${statusColors[quotation.status]}`}>{quotation.status}</Badge>
                         </div>
                     </div>
                 </CardHeader>
@@ -77,14 +60,22 @@ export function EstimationDetailView({ estimation, products }: EstimationDetailV
                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
                             <p className="font-semibold">Date Created</p>
-                            <p>{estimation.createdDate}</p>
+                            <p>{quotation.createdDate}</p>
+                        </div>
+                         <div>
+                            <p className="font-semibold">Customer</p>
+                            <p>{quotation.customer}</p>
+                        </div>
+                         <div>
+                            <p className="font-semibold">Based on Estimation</p>
+                            <p>{quotation.estimationId}</p>
                         </div>
                     </div>
                      <div className="flex justify-end">
                         <div className="text-right space-y-1 p-4 rounded-md border w-80 bg-background">
                             <div className="flex justify-between items-baseline">
                                 <span className="text-lg text-muted-foreground">Grand Total:</span>
-                                <span className="font-bold text-3xl">{formatCurrency(estimation.totalCost)}</span>
+                                <span className="font-bold text-3xl">{formatCurrency(quotation.totalCost)}</span>
                             </div>
                         </div>
                     </div>
@@ -94,13 +85,13 @@ export function EstimationDetailView({ estimation, products }: EstimationDetailV
             <Card>
                 <CardHeader className="p-4 flex flex-row items-center justify-between">
                     <div>
-                        <CardTitle className="flex items-center"><FileText className="mr-2 h-5 w-5" />Estimation Breakdown</CardTitle>
-                        <CardDescription>A list of tasks and items for this estimation.</CardDescription>
+                        <CardTitle className="flex items-center"><FileText className="mr-2 h-5 w-5" />Quotation Breakdown</CardTitle>
+                        <CardDescription>A list of tasks and items for this quotation.</CardDescription>
                     </div>
                 </CardHeader>
                 <CardContent className="p-4 pt-0">
-                   <Accordion type="multiple" className="w-full space-y-2" defaultValue={estimation.tasks.map(t => t.id)}>
-                        {estimation.tasks.map(task => (
+                   <Accordion type="multiple" className="w-full space-y-2" defaultValue={quotation.tasks.map(t => t.id)}>
+                        {quotation.tasks.map(task => (
                             <AccordionItem key={task.id} value={task.id} className="border bg-background rounded-md px-4">
                                 <div className="flex items-center w-full py-2">
                                 <AccordionTrigger>
@@ -139,17 +130,6 @@ export function EstimationDetailView({ estimation, products }: EstimationDetailV
                     </Accordion>
                 </CardContent>
             </Card>
-            <EditEstimationDialog 
-                isOpen={isEditDialogOpen}
-                setIsOpen={setIsEditDialogOpen}
-                estimation={estimation}
-                products={products}
-            />
-            <DeleteEstimationDialog
-                isOpen={isDeleteDialogOpen}
-                setIsOpen={setIsDeleteDialogOpen}
-                estimation={estimation}
-            />
         </div>
     )
 }
