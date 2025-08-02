@@ -1,6 +1,4 @@
 
-'use client';
-
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import * as React from 'react';
@@ -24,10 +22,11 @@ import {
 } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
 import { LogOut } from 'lucide-react';
-import { ModulesProvider, useModules } from '@/context/modules-context';
+import { ModulesProvider } from '@/context/modules-context';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
+import { getAppSettings, getCompanyProfile, getCurrencies } from '@/lib/db';
 
 const DashboardSidebarItems = dynamic(() => import('@/components/layout/dashboard-sidebar-items').then(mod => mod.DashboardSidebarItems), {
   ssr: false,
@@ -43,9 +42,7 @@ const DashboardSidebarItems = dynamic(() => import('@/components/layout/dashboar
 });
 
 
-function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { companyProfile } = useModules();
-
+function DashboardLayout({ children, companyProfile }: { children: React.ReactNode, companyProfile: any }) {
   return (
     <SidebarProvider>
       <Sidebar>
@@ -106,11 +103,17 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
 }
 
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [appSettings, allCurrencies, companyProfile] = await Promise.all([
+    getAppSettings(),
+    getCurrencies(),
+    getCompanyProfile(),
+  ]);
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -119,8 +122,12 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased" suppressHydrationWarning>
-        <ModulesProvider>
-          <DashboardLayout>
+        <ModulesProvider 
+          serverAppSettings={appSettings} 
+          serverCurrencies={allCurrencies} 
+          serverCompanyProfile={companyProfile}
+        >
+          <DashboardLayout companyProfile={companyProfile}>
             {children}
           </DashboardLayout>
         </ModulesProvider>

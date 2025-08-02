@@ -2,7 +2,6 @@
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { getAppSettings, getCurrencies, getCompanyProfile } from '@/lib/db';
 import type { Currency } from '@/components/settings/currency-management';
 import type { AppSettings, CompanyProfile } from '@/lib/db';
 
@@ -26,35 +25,39 @@ interface ModulesContextType {
 
 const ModulesContext = createContext<ModulesContextType | undefined>(undefined);
 
-export const ModulesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [appSettings, setAppSettings] = useState<AppSettings | null>(null);
-  
-  const [currency, setCurrency] = useState<Currency | null>(null);
-  const [allCurrencies, setAllCurrencies] = useState<Currency[]>([]);
-  const [companyProfile, setCompanyProfile] = useState<CompanyProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
+interface ModulesProviderProps {
+  children: ReactNode;
+  serverAppSettings: AppSettings;
+  serverCurrencies: Currency[];
+  serverCompanyProfile: CompanyProfile;
+}
 
-  useEffect(() => {
-    async function fetchInitialData() {
-      setIsLoading(true);
-      const [settings, currencies, profile] = await Promise.all([
-        getAppSettings(),
-        getCurrencies(),
-        getCompanyProfile(),
-      ]);
-      
-      const currentCurrency = currencies.find(c => c.code === settings.currency) || null;
-      setAllCurrencies(currencies);
-      setCurrency(currentCurrency);
-      setAppSettings(settings);
-      setCompanyProfile(profile);
-      
-      setIsLoading(false);
-      setIsInitialLoad(false);
-    }
-    fetchInitialData();
-  }, []);
+export const ModulesProvider: React.FC<ModulesProviderProps> = ({ 
+  children,
+  serverAppSettings,
+  serverCurrencies,
+  serverCompanyProfile
+}) => {
+  const [appSettings, setAppSettings] = useState<AppSettings | null>(serverAppSettings);
+  const [allCurrencies, setAllCurrencies] = useState<Currency[]>(serverCurrencies);
+  const [companyProfile, setCompanyProfile] = useState<CompanyProfile | null>(serverCompanyProfile);
+  const [currency, setCurrency] = useState<Currency | null>(() => {
+    return serverCurrencies.find(c => c.code === serverAppSettings.currency) || null;
+  });
+  
+  const [isInitialLoad, setIsInitialLoad] = useState(false); // No initial load flicker needed
+
+  const handleSetAppSettings = (settings: AppSettings) => {
+    setAppSettings(settings);
+  };
+  
+  const handleSetCompanyProfile = (profile: CompanyProfile | null) => {
+    setCompanyProfile(profile);
+  };
+
+  const handleSetCurrency = (newCurrency: Currency | null) => {
+    setCurrency(newCurrency);
+  };
 
   const isProjectManagementEnabled = appSettings?.enabled_modules?.project_management ?? false;
   const isPurchaseModuleEnabled = appSettings?.enabled_modules?.purchase ?? false;
@@ -72,13 +75,13 @@ export const ModulesProvider: React.FC<{ children: ReactNode }> = ({ children })
         isUserManagementEnabled,
         isSalesModuleEnabled,
         currency,
-        setCurrency,
+        setCurrency: handleSetCurrency,
         allCurrencies,
         appSettings,
-        setAppSettings,
+        setAppSettings: handleSetAppSettings,
         companyProfile,
-        setCompanyProfile,
-        isLoading,
+        setCompanyProfile: handleSetCompanyProfile,
+        isLoading: false, // Data is pre-loaded
         isInitialLoad
     }}>
       {children}
