@@ -10,10 +10,10 @@ const taskSchema = z.object({
   id: z.string(),
   title: z.string().min(1, 'Title is required'),
   description: z.string().optional(),
-  label: z.enum(['bug', 'feature', 'documentation']),
-  status: z.string().min(1, 'Status is required'),
-  priority: z.enum(['low', 'medium', 'high']),
-  assignee: z.string().min(1, 'Assignee is required'),
+  label: z.enum(['bug', 'feature', 'documentation']).optional(),
+  status: z.string().optional(),
+  priority: z.enum(['low', 'medium', 'high']).optional(),
+  assignee: z.string().optional(),
   projectId: z.string().min(1, 'Project is required'),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
@@ -55,6 +55,22 @@ export async function getNextTaskId(): Promise<string> {
     return `TS_${nextNumber}`;
 }
 
+async function getBlueprintInfo(projectId: string): Promise<{ firstStatus?: string; statuses?: {name: string, completionPercentage: number}[] }> {
+    const projects = await getProjects();
+    const project = projects.find(p => p.id === projectId);
+    if (!project) return {};
+
+    const blueprints = await getTaskBlueprints();
+    const blueprint = blueprints.find(b => b.id === project.taskBlueprintId);
+    if (!blueprint || !blueprint.statuses || blueprint.statuses.length === 0) return {};
+    
+    return {
+      firstStatus: blueprint.statuses[0].name.toLowerCase().replace(/\s/g, '-'),
+      statuses: blueprint.statuses,
+    };
+}
+
+
 async function getCompletionPercentageForStatus(projectId: string, status: string): Promise<number | undefined> {
     const projects = await getProjects();
     const project = projects.find(p => p.id === projectId);
@@ -73,19 +89,27 @@ export async function createTask(
   prevState: TaskFormState,
   formData: FormData
 ): Promise<TaskFormState> {
-  const validatedFields = taskSchema.safeParse({
+  const rawData = {
     id: formData.get('id'),
     title: formData.get('title'),
     description: formData.get('description'),
-    label: formData.get('label'),
-    status: formData.get('status'),
-    priority: formData.get('priority'),
+    label: formData.get('label') || undefined,
+    status: formData.get('status') || undefined,
+    priority: formData.get('priority') || undefined,
     assignee: formData.get('assignee'),
     projectId: formData.get('projectId'),
     startDate: formData.get('startDate') || undefined,
     endDate: formData.get('endDate') || undefined,
     budget: formData.get('budget') || undefined,
-  });
+  };
+
+  // Handle empty strings for optional fields
+  if (rawData.label === '') rawData.label = undefined;
+  if (rawData.status === '') rawData.status = undefined;
+  if (rawData.priority === '') rawData.priority = undefined;
+
+
+  const validatedFields = taskSchema.safeParse(rawData);
 
   if (!validatedFields.success) {
     return {
@@ -94,8 +118,10 @@ export async function createTask(
     };
   }
   
-  const { id, title, description, label, status, priority, assignee, projectId, startDate, endDate, budget } = validatedFields.data;
+  const { id, projectId, ...taskData } = validatedFields.data;
   
+  const blueprintInfo = await getBlueprintInfo(projectId);
+  const status = taskData.status || blueprintInfo?.firstStatus || 'backlog';
   const completionPercentage = await getCompletionPercentageForStatus(projectId, status);
 
 
@@ -109,16 +135,16 @@ export async function createTask(
 
     await createDbTask({
         id,
-        title,
-        description,
-        label,
-        status,
-        priority,
-        assignee,
         projectId,
-        startDate,
-        endDate,
-        budget,
+        title: taskData.title,
+        description: taskData.description,
+        label: taskData.label ?? 'feature',
+        status: status,
+        priority: taskData.priority ?? 'medium',
+        assignee: taskData.assignee || 'Unassigned',
+        startDate: taskData.startDate,
+        endDate: taskData.endDate,
+        budget: taskData.budget,
         completionPercentage: completionPercentage ?? 0,
     });
 
@@ -134,19 +160,25 @@ export async function updateTask(
     prevState: TaskFormState,
     formData: FormData
 ): Promise<TaskFormState> {
-    const validatedFields = taskSchema.safeParse({
+    const rawData = {
         id: formData.get('id'),
         title: formData.get('title'),
         description: formData.get('description'),
-        label: formData.get('label'),
-        status: formData.get('status'),
-        priority: formData.get('priority'),
+        label: formData.get('label') || undefined,
+        status: formData.get('status') || undefined,
+        priority: formData.get('priority') || undefined,
         assignee: formData.get('assignee'),
         projectId: formData.get('projectId'),
         startDate: formData.get('startDate') || undefined,
         endDate: formData.get('endDate') || undefined,
         budget: formData.get('budget') || undefined,
-    });
+    };
+
+    if (rawData.label === '') rawData.label = undefined;
+    if (rawData.status === '') rawData.status = undefined;
+    if (rawData.priority === '') rawData.priority = undefined;
+
+    const validatedFields = taskSchema.safeParse(rawData);
 
     if (!validatedFields.success) {
         return {
@@ -157,14 +189,19 @@ export async function updateTask(
 
     const { id, status, projectId, ...taskData } = validatedFields.data;
     
-    const completionPercentage = await getCompletionPercentageForStatus(projectId, status);
+    const blueprintInfo = await getBlueprintInfo(projectId);
+    const finalStatus = status || blueprintInfo?.firstStatus || 'backlog';
+    const completionPercentage = await getCompletionPercentageForStatus(projectId, finalStatus);
 
     try {
         await updateDbTask({
             id,
-            status,
             projectId,
+            status: finalStatus,
             ...taskData,
+            label: taskData.label ?? 'feature',
+            priority: taskData.priority ?? 'medium',
+            assignee: taskData.assignee || 'Unassigned',
             completionPercentage: completionPercentage ?? 0
         });
 
