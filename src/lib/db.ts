@@ -11,7 +11,7 @@ import type { TaskBlueprint } from '@/components/project-management/task-bluepri
 import type { Product } from '@/components/purchase/products-list';
 import type { Currency } from '@/components/settings/currency-management';
 import type { Estimation, EstimationTask } from '@/components/sales/estimations-list';
-import type { Quotation } from '@/components/sales/quotations-list';
+import type { Quotation, QuotationItem } from '@/components/sales/quotations-list';
 
 const dbPath = path.join(process.cwd(), 'src', 'lib', 'db.json');
 
@@ -310,12 +310,12 @@ export async function createProduct(newProduct: Product): Promise<void> {
     await writeDb(data);
 }
 
-export async function getUnits(): Promise<Unit[]> {
+export async function getUnits(): Promise<any[]> {
     const data = await readDb();
     return data.units || [];
 }
 
-export async function createUnit(newUnit: Unit): Promise<void> {
+export async function createUnit(newUnit: any): Promise<void> {
     const data = await readDb();
     if (!data.units) {
         data.units = [];
@@ -324,7 +324,7 @@ export async function createUnit(newUnit: Unit): Promise<void> {
     await writeDb(data);
 }
 
-export async function updateUnit(originalName: string, updatedUnit: Unit): Promise<void> {
+export async function updateUnit(originalName: string, updatedUnit: any): Promise<void> {
     const data = await readDb();
     const unitIndex = data.units.findIndex(u => u.name === originalName);
     if (unitIndex !== -1) {
@@ -345,6 +345,43 @@ export async function deleteUnit(unitName: string): Promise<void> {
         throw new Error(`Unit with name ${unitName} not found.`);
     }
 }
+
+export async function getProductCategories(): Promise<any[]> {
+    const data = await readDb();
+    return (data as any).productCategories || [];
+}
+
+export async function createProductCategory(newCategory: any): Promise<void> {
+    const data = await readDb() as any;
+    if (!data.productCategories) {
+        data.productCategories = [];
+    }
+    data.productCategories.push(newCategory);
+    await writeDb(data);
+}
+
+export async function updateProductCategory(originalName: string, updatedCategory: any): Promise<void> {
+    const data = await readDb() as any;
+    const categoryIndex = data.productCategories.findIndex((c: any) => c.name === originalName);
+    if (categoryIndex !== -1) {
+        data.productCategories[categoryIndex] = updatedCategory;
+        await writeDb(data);
+    } else {
+        throw new Error(`Category with name ${originalName} not found.`);
+    }
+}
+
+export async function deleteProductCategory(categoryName: string): Promise<void> {
+    const data = await readDb() as any;
+    const categoryIndex = data.productCategories.findIndex((c: any) => c.name === categoryName);
+    if (categoryIndex !== -1) {
+        data.productCategories.splice(categoryIndex, 1);
+        await writeDb(data);
+    } else {
+        throw new Error(`Category with name ${categoryName} not found.`);
+    }
+}
+
 
 export async function getCurrencies(): Promise<Currency[]> {
     const data = await readDb();
@@ -563,4 +600,15 @@ export async function createQuotation(newQuotation: Quotation): Promise<void> {
     }
     data.quotations.push(newQuotation);
     await writeDb(data);
+}
+
+export async function updateQuotation(updatedQuotation: Quotation): Promise<void> {
+    const data = await readDb();
+    const quotationIndex = data.quotations.findIndex(q => q.id === updatedQuotation.id);
+    if (quotationIndex !== -1) {
+        data.quotations[quotationIndex] = updatedQuotation;
+        await writeDb(data);
+    } else {
+        throw new Error(`Quotation with id ${updatedQuotation.id} not found.`);
+    }
 }

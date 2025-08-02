@@ -44,16 +44,23 @@ import type { Product } from '../purchase/products-list';
 import { useModules } from '@/context/modules-context';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import type { Estimation, EstimationTask } from './estimations-list';
+import type { Estimation } from './estimations-list';
 import { Badge } from '../ui/badge';
 import { CreateQuotationDialog } from './create-quotation-dialog';
 
+export type QuotationItem = {
+    id: string; // Corresponds to the EstimationTask ID
+    title: string;
+    description?: string;
+    quantity: number;
+    rate: number; // Corresponds to the EstimationTask totalCost
+};
 
 export type Quotation = {
     id: string;
     title: string;
     estimationId: string;
-    tasks: EstimationTask[];
+    items: QuotationItem[];
     totalCost: number;
     status: 'draft' | 'sent' | 'approved' | 'rejected';
     customer: string;
