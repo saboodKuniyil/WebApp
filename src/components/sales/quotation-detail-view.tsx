@@ -28,10 +28,29 @@ const statusColors: Record<Quotation['status'], string> = {
 
 const initialState = { message: '', errors: {} };
 
+// This function adapts the old data structure (with tasks) to the new one (with items)
+const adaptQuotationData = (quotation: Quotation): QuotationItem[] => {
+    if (quotation.items) {
+        return quotation.items;
+    }
+    // @ts-ignore - Handle old data structure for backward compatibility
+    if (quotation.tasks) {
+         // @ts-ignore
+        return quotation.tasks.map(task => ({
+            id: task.id,
+            title: task.title,
+            description: task.description || '',
+            quantity: 1,
+            rate: task.totalCost,
+        }));
+    }
+    return [];
+}
+
 export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
     const [state, dispatch] = useActionState(updateQuotationAction, initialState);
     const { currency, companyProfile } = useModules();
-    const [items, setItems] = React.useState<QuotationItem[]>(quotation.items);
+    const [items, setItems] = React.useState<QuotationItem[]>(adaptQuotationData(quotation));
     const [totalCost, setTotalCost] = React.useState(quotation.totalCost);
     const { toast } = useToast();
     const formRef = React.useRef<HTMLFormElement>(null);
