@@ -61,7 +61,7 @@ export function DashboardLayout({ children, companyProfile }: { children: React.
                     {companyProfile?.logoUrl ? (
                         <Image src={companyProfile.logoUrl} alt={companyProfile.companyName} width={40} height={40} className="h-10 w-auto object-contain" data-ai-hint="logo company" />
                     ) : (
-                       <Logo className="h-10 w-auto" />
+                       <Logo className="h-10 w-auto" companyName={companyProfile?.companyName} />
                     )}
                    </div>
                 </div>
