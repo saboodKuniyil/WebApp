@@ -92,6 +92,14 @@ export function DashboardSidebarItems() {
                       </Link>
                     </SidebarMenuSubButton>
                   </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/crm/customers'}>
+                      <Link href="/crm/customers">
+                        <UsersIcon />
+                        Customers
+                      </Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
                 </SidebarMenuSub>
               </CollapsibleContent>
             </Collapsible>

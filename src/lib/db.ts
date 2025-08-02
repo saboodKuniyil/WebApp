@@ -124,6 +124,24 @@ export type QuotationItem = {
     imageUrl?: string;
 };
 
+export type Vendor = {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+    status: 'active' | 'inactive';
+};
+
+export type Customer = {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+    status: 'active' | 'inactive';
+};
+
 type DbData = {
   projects: Project[];
   tasks: Task[];
@@ -141,6 +159,8 @@ type DbData = {
   userRoles: UserRole[];
   estimations: Estimation[];
   quotations: Quotation[];
+  vendors: Vendor[];
+  customers: Customer[];
 };
 
 async function readDb(): Promise<DbData> {
@@ -200,6 +220,8 @@ async function readDb(): Promise<DbData> {
           userRoles: [],
           estimations: [],
           quotations: [],
+          vendors: [],
+          customers: [],
       };
     }
     throw error;
@@ -663,4 +685,65 @@ export async function updateQuotation(updatedQuotation: Quotation): Promise<void
     } else {
         throw new Error(`Quotation with id ${updatedQuotation.id} not found.`);
     }
+}
+
+// Vendor Functions
+export async function getVendors(): Promise<Vendor[]> {
+    const data = await readDb();
+    return data.vendors || [];
+}
+
+export async function createVendor(newVendor: Vendor): Promise<void> {
+    const data = await readDb();
+    if (!data.vendors) data.vendors = [];
+    data.vendors.push(newVendor);
+    await writeDb(data);
+}
+
+export async function updateVendor(updatedVendor: Vendor): Promise<void> {
+    const data = await readDb();
+    const vendorIndex = data.vendors.findIndex(v => v.id === updatedVendor.id);
+    if (vendorIndex !== -1) {
+        data.vendors[vendorIndex] = updatedVendor;
+        await writeDb(data);
+    } else {
+        throw new Error(`Vendor with id ${updatedVendor.id} not found.`);
+    }
+}
+
+export async function deleteVendor(vendorId: string): Promise<void> {
+    const data = await readDb();
+    data.vendors = data.vendors.filter(v => v.id !== vendorId);
+    await writeDb(data);
+}
+
+
+// Customer Functions
+export async function getCustomers(): Promise<Customer[]> {
+    const data = await readDb();
+    return data.customers || [];
+}
+
+export async function createCustomer(newCustomer: Customer): Promise<void> {
+    const data = await readDb();
+    if (!data.customers) data.customers = [];
+    data.customers.push(newCustomer);
+    await writeDb(data);
+}
+
+export async function updateCustomer(updatedCustomer: Customer): Promise<void> {
+    const data = await readDb();
+    const customerIndex = data.customers.findIndex(c => c.id === updatedCustomer.id);
+    if (customerIndex !== -1) {
+        data.customers[customerIndex] = updatedCustomer;
+        await writeDb(data);
+    } else {
+        throw new Error(`Customer with id ${updatedCustomer.id} not found.`);
+    }
+}
+
+export async function deleteCustomer(customerId: string): Promise<void> {
+    const data = await readDb();
+    data.customers = data.customers.filter(c => c.id !== customerId);
+    await writeDb(data);
 }
