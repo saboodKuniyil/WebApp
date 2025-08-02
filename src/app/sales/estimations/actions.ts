@@ -2,8 +2,9 @@
 'use server';
 
 import { z } from 'zod';
-import { getEstimations, createEstimation as createDbEstimation } from '@/lib/db';
+import { getEstimations, createEstimation as createDbEstimation, updateEstimation as updateDbEstimation, deleteEstimation as deleteDbEstimation } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 
 const estimationItemSchema = z.object({
   id: z.string(),
@@ -99,4 +100,50 @@ export async function createEstimation(
     console.error('Database Error:', error);
     return { message: 'Failed to create estimation.' };
   }
+}
+
+export async function updateEstimation(
+  prevState: EstimationFormState,
+  formData: FormData
+): Promise<EstimationFormState> {
+  const validatedFields = estimationSchema.safeParse({
+    id: formData.get('id'),
+    title: formData.get('title'),
+    tasks: formData.get('tasks'),
+    totalCost: formData.get('totalCost'),
+    createdDate: formData.get('createdDate'), // Pass existing date
+  });
+
+  if (!validatedFields.success) {
+    const errors = validatedFields.error.flatten().fieldErrors;
+    if(errors.tasks) {
+        return { message: 'Failed to update estimation. Ensure every task has a title and at least one item.', errors }
+    }
+    return {
+      message: 'Failed to update estimation.',
+      errors: validatedFields.error.flatten().fieldErrors,
+    };
+  }
+  
+  try {
+    await updateDbEstimation(validatedFields.data);
+
+    revalidatePath('/sales/estimations');
+    revalidatePath(`/sales/estimations/${validatedFields.data.id}`);
+    return { message: 'Estimation updated successfully.' };
+  } catch (error) {
+    console.error('Database Error:', error);
+    return { message: 'Failed to update estimation.' };
+  }
+}
+
+export async function deleteEstimationAction(estimationId: string): Promise<{ message: string }> {
+    try {
+        await deleteDbEstimation(estimationId);
+    } catch (error) {
+        console.error('Database Error:', error);
+        return { message: 'Failed to delete estimation.' };
+    }
+    revalidatePath('/sales/estimations');
+    redirect('/sales/estimations');
 }

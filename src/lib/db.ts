@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import fs from 'fs/promises';
@@ -558,6 +559,11 @@ export async function getEstimations(): Promise<Estimation[]> {
     return data.estimations || [];
 }
 
+export async function getEstimationById(id: string): Promise<Estimation | undefined> {
+    const data = await readDb();
+    return (data.estimations || []).find(e => e.id === id);
+}
+
 export async function createEstimation(newEstimation: Estimation): Promise<void> {
     const data = await readDb();
     if (!data.estimations) {
@@ -565,4 +571,26 @@ export async function createEstimation(newEstimation: Estimation): Promise<void>
     }
     data.estimations.push(newEstimation);
     await writeDb(data);
+}
+
+export async function updateEstimation(updatedEstimation: Estimation): Promise<void> {
+    const data = await readDb();
+    const estimationIndex = data.estimations.findIndex(e => e.id === updatedEstimation.id);
+    if (estimationIndex !== -1) {
+        data.estimations[estimationIndex] = updatedEstimation;
+        await writeDb(data);
+    } else {
+        throw new Error(`Estimation with id ${updatedEstimation.id} not found.`);
+    }
+}
+
+export async function deleteEstimation(estimationId: string): Promise<void> {
+    const data = await readDb();
+    const estimationIndex = data.estimations.findIndex(e => e.id === estimationId);
+    if (estimationIndex !== -1) {
+        data.estimations.splice(estimationIndex, 1);
+        await writeDb(data);
+    } else {
+        throw new Error(`Estimation with id ${estimationId} not found.`);
+    }
 }

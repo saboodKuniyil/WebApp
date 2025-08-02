@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import * as React from 'react';
@@ -45,6 +46,9 @@ import { AddEstimationDialog } from './add-estimation-dialog';
 import type { Product } from '../purchase/products-list';
 import { useModules } from '@/context/modules-context';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
+import { EditEstimationDialog } from './edit-estimation-dialog';
+import { DeleteEstimationDialog } from './delete-estimation-dialog';
 
 
 export type EstimationItem = {
@@ -71,9 +75,49 @@ export type Estimation = {
     createdDate: string;
 };
 
-const getColumns = (
-    formatCurrency: (amount: number) => string
-): ColumnDef<Estimation>[] => [
+interface EstimationsListProps {
+  data: Estimation[];
+  products: Product[];
+}
+
+
+export function EstimationsList({ data, products }: EstimationsListProps) {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
+
+  const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
+  const [selectedEstimation, setSelectedEstimation] = React.useState<Estimation | null>(null);
+
+  const { currency } = useModules();
+
+  const handleEdit = (estimation: Estimation) => {
+    setSelectedEstimation(estimation);
+    setIsEditDialogOpen(true);
+  };
+  
+  const handleDelete = (estimation: Estimation) => {
+    setSelectedEstimation(estimation);
+    setIsDeleteDialogOpen(true);
+  };
+
+
+  const formatCurrency = React.useCallback((amount: number) => {
+    if (!currency) {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+        }).format(amount);
+    }
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: currency.code,
+    }).format(amount);
+  }, [currency]);
+
+  const columns: ColumnDef<Estimation>[] = React.useMemo(() => [
   {
     id: 'select',
     header: ({ table }) => (
@@ -107,12 +151,20 @@ const getColumns = (
           <CaretSortIcon className="ml-2 h-4 w-4" />
         </Button>
     ),
-    cell: ({ row }) => <div>{row.getValue('id')}</div>,
+    cell: ({ row }) => (
+      <Link href={`/sales/estimations/${row.original.id}`} className="font-medium hover:underline">
+          {row.getValue('id')}
+      </Link>
+    ),
   },
   {
     accessorKey: 'title',
     header: 'Title',
-    cell: ({ row }) => <div className="font-medium">{row.getValue('title')}</div>,
+    cell: ({ row }) => (
+       <Link href={`/sales/estimations/${row.original.id}`} className="font-medium hover:underline">
+          {row.getValue('title')}
+      </Link>
+    ),
   },
   {
     accessorKey: 'totalCost',
@@ -146,44 +198,20 @@ const getColumns = (
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem>View Estimation</DropdownMenuItem>
-            <DropdownMenuItem>Edit Estimation</DropdownMenuItem>
+            <DropdownMenuItem asChild>
+                <Link href={`/sales/estimations/${estimation.id}`}>View Estimation</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleEdit(estimation)}>Edit Estimation</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-red-600">Delete Estimation</DropdownMenuItem>
+            <DropdownMenuItem className="text-red-600" onClick={() => handleDelete(estimation)}>
+                Delete Estimation
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
     },
   },
-];
-
-interface EstimationsListProps {
-  data: Estimation[];
-  products: Product[];
-}
-
-export function EstimationsList({ data, products }: EstimationsListProps) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
-  
-  const { currency } = useModules();
-
-  const formatCurrency = React.useCallback((amount: number) => {
-    if (!currency) {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-        }).format(amount);
-    }
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: currency.code,
-    }).format(amount);
-  }, [currency]);
-
-  const columns = React.useMemo(() => getColumns(formatCurrency), [formatCurrency]);
+], [formatCurrency]);
 
   const table = useReactTable({
     data,
@@ -205,6 +233,7 @@ export function EstimationsList({ data, products }: EstimationsListProps) {
   });
 
   return (
+    <>
     <Card>
       <CardHeader className="p-2">
         <CardTitle>All Estimations</CardTitle>
@@ -292,7 +321,21 @@ export function EstimationsList({ data, products }: EstimationsListProps) {
         </div>
       </CardContent>
     </Card>
+    {selectedEstimation && (
+        <>
+            <EditEstimationDialog 
+                isOpen={isEditDialogOpen}
+                setIsOpen={setIsEditDialogOpen}
+                estimation={selectedEstimation}
+                products={products}
+            />
+            <DeleteEstimationDialog
+                isOpen={isDeleteDialogOpen}
+                setIsOpen={setIsDeleteDialogOpen}
+                estimation={selectedEstimation}
+            />
+        </>
+    )}
+    </>
   );
 }
-
-    
