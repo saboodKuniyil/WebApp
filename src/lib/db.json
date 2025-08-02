@@ -678,6 +678,65 @@
       ],
       "totalCost": 10314.99,
       "createdDate": "2025-08-02"
+    },
+    {
+      "id": "EST-1003",
+      "title": "bED ROMM SETTT",
+      "tasks": [
+        {
+          "id": "ET-1001",
+          "title": "Cabinet",
+          "description": "dfdfd",
+          "items": [
+            {
+              "id": "FG_ELC_7002",
+              "name": "Wireless Mechanical Keyboard",
+              "quantity": 9,
+              "cost": 129.99,
+              "type": "product"
+            },
+            {
+              "id": "adhoc-1754147232263",
+              "name": "labourr",
+              "quantity": 10,
+              "cost": 8,
+              "type": "adhoc"
+            }
+          ],
+          "totalCost": 1249.91
+        },
+        {
+          "id": "ET-1002",
+          "title": "Bed ",
+          "description": "bEd size 120 /200",
+          "items": [
+            {
+              "id": "SRV_LBR_7001",
+              "name": "Skilled Carpentry",
+              "quantity": 4,
+              "cost": 75,
+              "type": "product"
+            },
+            {
+              "id": "FG_FNT_7001",
+              "name": "Ergonomic Office Chair",
+              "quantity": 9,
+              "cost": 349.99,
+              "type": "product"
+            },
+            {
+              "id": "adhoc-1754147317024",
+              "name": "LABOAUR CHARG E",
+              "quantity": 18,
+              "cost": 11.25,
+              "type": "adhoc"
+            }
+          ],
+          "totalCost": 3652.41
+        }
+      ],
+      "totalCost": 4902.32,
+      "createdDate": "2025-08-02"
     }
   ],
   "quotations": [
@@ -736,6 +795,31 @@
           "rate": 2320
         }
       ]
+    },
+    {
+      "id": "QUO-1002",
+      "title": "bED ROMM SETTT",
+      "estimationId": "EST-1003",
+      "items": [
+        {
+          "id": "ET-1001",
+          "title": "Cabinet",
+          "description": "dfdfd",
+          "quantity": 1,
+          "rate": 1249.91
+        },
+        {
+          "id": "ET-1002",
+          "title": "Bed ",
+          "description": "bEd size 120 /200",
+          "quantity": 1,
+          "rate": 3652.41
+        }
+      ],
+      "totalCost": 4902.32,
+      "status": "draft",
+      "customer": "N/A",
+      "createdDate": "2025-08-02"
     }
   ]
 }

@@ -45,10 +45,11 @@ interface AddTaskDialogProps {
     projects: Project[];
     taskBlueprints: TaskBlueprint[];
     defaultProjectId?: string;
+    defaultTitle?: string;
     trigger?: React.ReactNode;
 }
 
-export function AddTaskDialog({ projects, taskBlueprints, defaultProjectId, trigger }: AddTaskDialogProps) {
+export function AddTaskDialog({ projects, taskBlueprints, defaultProjectId, defaultTitle, trigger }: AddTaskDialogProps) {
   const [state, dispatch] = useActionState(createTask, initialState);
   const [isOpen, setIsOpen] = React.useState(false);
   const [nextId, setNextId] = React.useState('');
@@ -127,7 +128,7 @@ export function AddTaskDialog({ projects, taskBlueprints, defaultProjectId, trig
                 <Label htmlFor="title" className="text-right">
                   Title
                 </Label>
-                <Input id="title" name="title" className="col-span-3" />
+                <Input id="title" name="title" className="col-span-3" defaultValue={defaultTitle} />
                 {state.errors?.title && (
                   <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.title[0]}</p>
                 )}

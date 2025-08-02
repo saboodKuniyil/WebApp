@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import type { Product } from "@/components/purchase/products-list";
 import type { Estimation } from "./estimations-list";
 import { Button } from "../ui/button"
-import { Pencil, Trash2, FileText, GripVertical, FileSignature } from "lucide-react"
+import { Pencil, Trash2, FileText, GripVertical, FileSignature, Briefcase } from "lucide-react"
 import { useModules } from '@/context/modules-context';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 import { EditEstimationDialog } from './edit-estimation-dialog';
@@ -15,6 +15,11 @@ import { DeleteEstimationDialog } from './delete-estimation-dialog';
 import { createQuotation } from '@/app/sales/quotations/actions';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import { AddTaskDialog } from '../project-management/add-task-dialog';
+import { getProjects, getTaskBlueprints } from '@/lib/db';
+import type { Project } from '../project-management/projects-list';
+import type { TaskBlueprint } from '../project-management/task-blueprints-list';
+
 
 interface EstimationDetailViewProps {
     estimation: Estimation;
@@ -28,6 +33,25 @@ export function EstimationDetailView({ estimation, products }: EstimationDetailV
     const [isCreatingQuotation, setIsCreatingQuotation] = React.useState(false);
     const { toast } = useToast();
     const router = useRouter();
+    
+    // State for AddTaskDialog
+    const [projects, setProjects] = React.useState<Project[]>([]);
+    const [taskBlueprints, setTaskBlueprints] = React.useState<TaskBlueprint[]>([]);
+    const [isLoadingProjects, setIsLoadingProjects] = React.useState(true);
+
+
+    React.useEffect(() => {
+        async function loadProjectsAndBlueprints() {
+            const [loadedProjects, loadedBlueprints] = await Promise.all([
+                getProjects(),
+                getTaskBlueprints()
+            ]);
+            setProjects(loadedProjects);
+            setTaskBlueprints(loadedBlueprints);
+            setIsLoadingProjects(false);
+        }
+        loadProjectsAndBlueprints();
+    }, []);
 
     const formatCurrency = React.useCallback((amount: number) => {
         if (!currency) {
@@ -124,18 +148,32 @@ export function EstimationDetailView({ estimation, products }: EstimationDetailV
                                 </div>
                                 <AccordionContent className="p-2 space-y-2">
                                     {task.description && <p className="text-sm text-muted-foreground border-b pb-2 mb-2 whitespace-pre-wrap">{task.description}</p>}
-                                    <div className="grid grid-cols-[1fr_80px_80px_80px] items-center gap-x-4 px-2 text-xs text-muted-foreground font-medium">
+                                    <div className="grid grid-cols-[1fr_80px_80px_80px_120px] items-center gap-x-4 px-2 text-xs text-muted-foreground font-medium">
                                         <span>Material / Service</span>
                                         <span className="text-right">Qty</span>
                                         <span className="text-right">Rate</span>
                                         <span className="text-right">Total</span>
+                                        <span className="text-right">Actions</span>
                                     </div>
                                     {task.items.map(item => (
-                                        <div key={item.id} className="grid grid-cols-[1fr_80px_80px_80px] items-center gap-x-4 p-2 border rounded-md text-sm">
+                                        <div key={item.id} className="grid grid-cols-[1fr_80px_80px_80px_120px] items-center gap-x-4 p-2 border rounded-md text-sm">
                                             <span className="truncate" title={item.name}>{item.name}</span>
                                             <span className="text-right">{item.quantity}</span>
                                             <span className="text-right">{formatCurrency(item.cost)}</span>
                                             <span className="text-right font-semibold">{formatCurrency(item.cost * item.quantity)}</span>
+                                            <div className="text-right">
+                                                <AddTaskDialog 
+                                                    projects={projects} 
+                                                    taskBlueprints={taskBlueprints}
+                                                    defaultTitle={item.name}
+                                                    trigger={
+                                                        <Button variant="outline" size="sm">
+                                                            <Briefcase className="mr-2 h-3 w-3" />
+                                                            Create Task
+                                                        </Button>
+                                                    } 
+                                                />
+                                            </div>
                                         </div>
                                     ))}
                                 </AccordionContent>
