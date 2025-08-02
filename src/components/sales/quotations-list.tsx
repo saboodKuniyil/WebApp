@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import * as React from 'react';
@@ -54,6 +55,7 @@ export type QuotationItem = {
     description?: string;
     quantity: number;
     rate: number; // Corresponds to the EstimationTask totalCost
+    imageUrl?: string;
 };
 
 export type Quotation = {

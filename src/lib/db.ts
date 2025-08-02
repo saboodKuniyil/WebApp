@@ -10,7 +10,7 @@ import type { Issue } from '@/components/project-management/issues-list';
 import type { TaskBlueprint } from '@/components/project-management/task-blueprints-list';
 import type { Product } from '@/components/purchase/products-list';
 import type { Currency } from '@/components/settings/currency-management';
-import type { Estimation, EstimationTask } from '@/components/sales/estimations-list';
+import type { Estimation, EstimationItem } from '@/components/sales/estimations-list';
 import type { Quotation, QuotationItem } from '@/components/sales/quotations-list';
 
 const dbPath = path.join(process.cwd(), 'src', 'lib', 'db.json');
@@ -109,6 +109,7 @@ type DbData = {
   taskBlueprints: TaskBlueprint[];
   products: Product[];
   units: any[];
+  productCategories: any[];
   currencies: Currency[];
   appSettings: AppSettings;
   employees: Employee[];
@@ -134,6 +135,7 @@ async function readDb(): Promise<DbData> {
           taskBlueprints: [], 
           products: [], 
           units: [],
+          productCategories: [],
           currencies: [],
           appSettings: { 
             currency: 'USD',
