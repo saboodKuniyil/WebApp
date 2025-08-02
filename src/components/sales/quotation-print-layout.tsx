@@ -1,9 +1,10 @@
 
+
 'use client';
 
 import * as React from 'react';
 import type { Quotation } from "./quotations-list";
-import type { CompanyProfile } from '@/lib/db';
+import type { CompanyProfile, AppSettings } from '@/lib/db';
 import type { Currency } from '../settings/currency-management';
 import Image from 'next/image';
 
@@ -11,10 +12,15 @@ interface QuotationPrintLayoutProps {
     quotation: Quotation;
     companyProfile: CompanyProfile | null;
     currency: Currency | null;
+    appSettings: AppSettings | null;
 }
 
-export function QuotationPrintLayout({ quotation, companyProfile, currency }: QuotationPrintLayoutProps) {
-    const totalCost = quotation.items.reduce((acc, item) => acc + (item.quantity * item.rate), 0);
+export function QuotationPrintLayout({ quotation, companyProfile, currency, appSettings }: QuotationPrintLayoutProps) {
+    const subtotal = quotation.items.reduce((acc, item) => acc + (item.quantity * item.rate), 0);
+    const taxPercentage = appSettings?.quotationSettings?.taxPercentage ?? 0;
+    const taxAmount = subtotal * (taxPercentage / 100);
+    const totalCost = subtotal + taxAmount;
+
     const formatCurrency = (amount: number) => {
         if (!currency) {
             return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
@@ -41,7 +47,7 @@ export function QuotationPrintLayout({ quotation, companyProfile, currency }: Qu
                     }
                     .page {
                         width: 210mm;
-                        height: 297mm;
+                        min-height: 297mm;
                         padding: 20mm;
                         margin: 0 auto;
                         box-sizing: border-box;
@@ -100,15 +106,16 @@ export function QuotationPrintLayout({ quotation, companyProfile, currency }: Qu
                     .text-right {
                         text-align: right;
                     }
-                    .total-section {
+                    .footer-content {
                         margin-top: auto;
                         padding-top: 20px;
+                    }
+                    .total-section {
                         display: flex;
                         justify-content: flex-end;
                     }
                     .total-box {
                         width: 40%;
-                        border-top: 2px solid #EEE;
                         padding-top: 10px;
                     }
                      .total-box div {
@@ -120,13 +127,19 @@ export function QuotationPrintLayout({ quotation, companyProfile, currency }: Qu
                         font-weight: bold;
                         font-size: 1.2em;
                         color: #000;
+                        border-top: 2px solid #333;
+                        padding-top: 5px;
                     }
-                    .terms {
+                    .terms, .bank-details {
                         font-size: 0.8em;
                         color: #666;
                         margin-top: 20px;
                         border-top: 1px solid #EEE;
                         padding-top: 10px;
+                    }
+                    .bank-details p, .terms p {
+                        margin: 0 0 4px 0;
+                        white-space: pre-line;
                     }
                 `}</style>
             </head>
@@ -181,20 +194,35 @@ export function QuotationPrintLayout({ quotation, companyProfile, currency }: Qu
                         </tbody>
                     </table>
 
-                    <div className="total-section">
-                        <div className="total-box">
-                             <div className="grand-total">
-                                <span>Grand Total</span>
-                                <span>{formatCurrency(totalCost)}</span>
+                    <div className="footer-content">
+                        <div className="total-section">
+                            <div className="total-box">
+                                <div>
+                                    <span>Subtotal</span>
+                                    <span>{formatCurrency(subtotal)}</span>
+                                </div>
+                                <div>
+                                    <span>Tax ({taxPercentage}%)</span>
+                                    <span>{formatCurrency(taxAmount)}</span>
+                                </div>
+                                 <div className="grand-total">
+                                    <span>Grand Total</span>
+                                    <span>{formatCurrency(totalCost)}</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div className="terms">
-                        <h3>Terms & Conditions</h3>
-                        <p>1. Payment to be made within 30 days of the invoice date.</p>
-                        <p>2. Any additional work not mentioned in this quotation will be charged separately.</p>
-                        <p>3. This quotation is valid for 15 days from the date of issue.</p>
+                         <div className="bank-details">
+                            <h3>Bank Details</h3>
+                            <p><strong>Bank:</strong> {appSettings?.quotationSettings?.bankName}</p>
+                            <p><strong>Account Number:</strong> {appSettings?.quotationSettings?.accountNumber}</p>
+                            <p><strong>IBAN:</strong> {appSettings?.quotationSettings?.iban}</p>
+                        </div>
+
+                        <div className="terms">
+                            <h3>Terms & Conditions</h3>
+                            <p>{appSettings?.quotationSettings?.termsAndConditions}</p>
+                        </div>
                     </div>
                 </div>
             </body>

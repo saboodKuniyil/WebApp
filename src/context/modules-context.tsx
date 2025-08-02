@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
@@ -58,6 +59,15 @@ export const ModulesProvider: React.FC<ModulesProviderProps> = ({
   const handleSetCurrency = (newCurrency: Currency | null) => {
     setCurrency(newCurrency);
   };
+  
+  // This effect ensures that if appSettings is updated from somewhere else (like preferences pages),
+  // the currency reflects that change.
+  useEffect(() => {
+    if (appSettings) {
+        const newCurrency = allCurrencies.find(c => c.code === appSettings.currency) || null;
+        setCurrency(newCurrency);
+    }
+  }, [appSettings, allCurrencies]);
 
   const isProjectManagementEnabled = appSettings?.enabled_modules?.project_management ?? false;
   const isPurchaseModuleEnabled = appSettings?.enabled_modules?.purchase ?? false;

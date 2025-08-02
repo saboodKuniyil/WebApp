@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import * as React from 'react';
@@ -360,6 +361,11 @@ export function DashboardSidebarItems() {
                                         <SidebarMenuItem>
                                             <SidebarMenuSubButton asChild isActive={pathname === '/settings/preferences/product'}>
                                                 <Link href="/settings/preferences/product"><Blocks />Product</Link>
+                                            </SidebarMenuSubButton>
+                                        </SidebarMenuItem>
+                                        <SidebarMenuItem>
+                                            <SidebarMenuSubButton asChild isActive={pathname === '/settings/preferences/quotation'}>
+                                                <Link href="/settings/preferences/quotation"><ClipboardList />Quotation</Link>
                                             </SidebarMenuSubButton>
                                         </SidebarMenuItem>
                                     </SidebarMenuSub>

@@ -1,4 +1,5 @@
 
+
 'use client'
 
 import * as React from 'react';
@@ -52,21 +53,21 @@ const adaptQuotationData = (quotation: Quotation): QuotationItem[] => {
 
 export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
     const [state, dispatch] = useActionState(updateQuotationAction, initialState);
-    const { currency, companyProfile } = useModules();
+    const { currency, companyProfile, appSettings } = useModules();
     const [isEditing, setIsEditing] = React.useState(false);
     const [originalItems, setOriginalItems] = React.useState<QuotationItem[]>([]);
     const [items, setItems] = React.useState<QuotationItem[]>(adaptQuotationData(quotation));
-    const [totalCost, setTotalCost] = React.useState(quotation.totalCost);
+    
     const { toast } = useToast();
     const formRef = React.useRef<HTMLFormElement>(null);
 
+    const subtotal = items.reduce((acc, item) => acc + item.quantity * item.rate, 0);
+    const taxPercentage = appSettings?.quotationSettings?.taxPercentage ?? 0;
+    const taxAmount = subtotal * (taxPercentage / 100);
+    const totalCost = subtotal + taxAmount;
+
 
     React.useEffect(() => {
-        const newTotal = items.reduce((acc, item) => acc + item.quantity * item.rate, 0);
-        setTotalCost(newTotal);
-    }, [items]);
-    
-     React.useEffect(() => {
         if (state.message) {
             if (state.errors) {
                 toast({ variant: 'destructive', title: 'Error', description: state.message });
@@ -109,9 +110,10 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
         if (printWindow) {
             const printContent = ReactDOMServer.renderToString(
                 <QuotationPrintLayout
-                    quotation={{ ...quotation, items }}
+                    quotation={{ ...quotation, items, totalCost: subtotal }} // Pass subtotal as it was before tax
                     companyProfile={companyProfile}
                     currency={currency}
+                    appSettings={appSettings}
                 />
             );
             printWindow.document.write(printContent);
@@ -272,6 +274,14 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
                             </Button>
                         ) : <div></div>}
                         <div className="w-full md:w-1/3 text-right space-y-2">
+                             <div className="flex justify-between items-center">
+                                <span className="text-muted-foreground">Subtotal</span>
+                                <span>{currency?.symbol} {subtotal.toFixed(2)}</span>
+                            </div>
+                             <div className="flex justify-between items-center">
+                                <span className="text-muted-foreground">Tax ({taxPercentage}%)</span>
+                                <span>{currency?.symbol} {taxAmount.toFixed(2)}</span>
+                            </div>
                              <div className="flex justify-between items-center border-t pt-2">
                                 <span className="font-semibold text-lg">Grand Total</span>
                                 <span className="font-bold text-xl">{currency?.symbol} {totalCost.toFixed(2)}</span>
@@ -280,9 +290,7 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
                     </div>
                      <div className="border-t mt-6 pt-4 text-xs text-muted-foreground">
                         <h4 className="font-semibold text-sm mb-2 text-foreground">Terms & Conditions</h4>
-                        <p>1. Payment to be made within 30 days of the invoice date.</p>
-                        <p>2. Any additional work not mentioned in this quotation will be charged separately.</p>
-                        <p>3. This quotation is valid for 15 days from the date of issue.</p>
+                        <p className="whitespace-pre-line">{appSettings?.quotationSettings?.termsAndConditions}</p>
                     </div>
                 </CardContent>
             </Card>

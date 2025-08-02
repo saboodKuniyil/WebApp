@@ -87,10 +87,19 @@ export type EnabledModules = {
     sales: boolean;
 }
 
+export type QuotationSettings = {
+  termsAndConditions: string;
+  bankName: string;
+  accountNumber: string;
+  iban: string;
+  taxPercentage: number;
+};
+
 export type AppSettings = {
     currency: string;
     dashboard?: DashboardSettings;
     enabled_modules?: EnabledModules;
+    quotationSettings?: QuotationSettings;
 };
 
 type DbData = {
@@ -143,6 +152,13 @@ async function readDb(): Promise<DbData> {
                 payroll: true,
                 user_management: true,
                 sales: true,
+            },
+            quotationSettings: {
+                termsAndConditions: "1. Payment to be made within 30 days of the invoice date.\n2. Any additional work not mentioned in this quotation will be charged separately.\n3. This quotation is valid for 15 days from the date of issue.",
+                bankName: "Default Bank",
+                accountNumber: "0000-0000-0000-0000",
+                iban: "AE000000000000000000000",
+                taxPercentage: 5
             }
           },
           employees: [],
@@ -438,9 +454,21 @@ export async function getAppSettings(): Promise<AppSettings> {
             payroll: true,
             user_management: true,
             sales: true,
+        },
+        quotationSettings: {
+            termsAndConditions: "1. Payment to be made within 30 days of the invoice date.\n2. Any additional work not mentioned in this quotation will be charged separately.\n3. This quotation is valid for 15 days from the date of issue.",
+            bankName: "Default Bank",
+            accountNumber: "0000-0000-0000-0000",
+            iban: "AE000000000000000000000",
+            taxPercentage: 5
         }
     };
-    return { ...defaultSettings, ...data.appSettings, enabled_modules: { ...defaultSettings.enabled_modules, ...data.appSettings?.enabled_modules } };
+    return { 
+        ...defaultSettings, 
+        ...data.appSettings, 
+        enabled_modules: { ...defaultSettings.enabled_modules, ...data.appSettings?.enabled_modules },
+        quotationSettings: { ...defaultSettings.quotationSettings, ...data.appSettings?.quotationSettings }
+    };
 }
 
 export async function updateAppSettings(newSettings: Partial<AppSettings>): Promise<{ message: string; }> {
