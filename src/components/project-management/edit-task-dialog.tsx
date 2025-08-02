@@ -33,6 +33,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Calendar } from '../ui/calendar';
 import { format, parseISO } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { useModules } from '@/context/modules-context';
 
 const initialState = { message: '', errors: {} };
 
@@ -58,6 +59,7 @@ export function EditTaskDialog({ task, projects, taskBlueprints, isOpen, setIsOp
     task.endDate ? parseISO(task.endDate) : undefined
   );
   const [selectedProjectId, setSelectedProjectId] = React.useState<string>(task.projectId);
+  const { currency } = useModules();
   
   const selectedProject = projects.find(p => p.id === selectedProjectId);
   const selectedBlueprint = taskBlueprints.find(b => b.id === selectedProject?.taskBlueprintId);
@@ -122,6 +124,12 @@ export function EditTaskDialog({ task, projects, taskBlueprints, isOpen, setIsOp
             </Label>
             <Textarea id="description" name="description" className="col-span-3" defaultValue={task.description} />
           </div>
+           <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="budget" className="text-right">
+                  Budget ({currency?.symbol})
+                </Label>
+                <Input id="budget" name="budget" type="number" step="0.01" className="col-span-3" defaultValue={task.budget} />
+              </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="projectId" className="text-right">
                 Project

@@ -34,6 +34,7 @@ import { Calendar } from '../ui/calendar';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '../ui/scroll-area';
+import { useModules } from '@/context/modules-context';
 
 const initialState = { message: '', errors: {} };
 
@@ -46,16 +47,27 @@ interface AddTaskDialogProps {
     taskBlueprints: TaskBlueprint[];
     defaultProjectId?: string;
     defaultTitle?: string;
+    defaultDescription?: string;
+    defaultBudget?: number;
     trigger?: React.ReactNode;
 }
 
-export function AddTaskDialog({ projects, taskBlueprints, defaultProjectId, defaultTitle, trigger }: AddTaskDialogProps) {
+export function AddTaskDialog({ 
+    projects, 
+    taskBlueprints, 
+    defaultProjectId, 
+    defaultTitle,
+    defaultDescription,
+    defaultBudget,
+    trigger 
+}: AddTaskDialogProps) {
   const [state, dispatch] = useActionState(createTask, initialState);
   const [isOpen, setIsOpen] = React.useState(false);
   const [nextId, setNextId] = React.useState('');
   const [startDate, setStartDate] = React.useState<Date>();
   const [endDate, setEndDate] = React.useState<Date>();
   const [selectedProjectId, setSelectedProjectId] = React.useState<string>(defaultProjectId || '');
+  const { currency } = useModules();
 
   const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
@@ -137,7 +149,13 @@ export function AddTaskDialog({ projects, taskBlueprints, defaultProjectId, defa
                 <Label htmlFor="description" className="text-right pt-2">
                   Description
                 </Label>
-                <Textarea id="description" name="description" className="col-span-3" />
+                <Textarea id="description" name="description" className="col-span-3" defaultValue={defaultDescription} />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="budget" className="text-right">
+                  Budget ({currency?.symbol})
+                </Label>
+                <Input id="budget" name="budget" type="number" step="0.01" className="col-span-3" defaultValue={defaultBudget} />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="projectId" className="text-right">

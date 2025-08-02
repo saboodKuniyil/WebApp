@@ -64,6 +64,7 @@ export type Task = {
   startDate?: string;
   endDate?: string;
   completionPercentage?: number;
+  budget?: number;
 };
 
 

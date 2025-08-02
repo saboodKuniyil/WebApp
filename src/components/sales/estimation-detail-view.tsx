@@ -147,6 +147,8 @@ export function EstimationDetailView({ estimation, products }: EstimationDetailV
                                             projects={projects} 
                                             taskBlueprints={taskBlueprints}
                                             defaultTitle={task.title}
+                                            defaultDescription={task.description}
+                                            defaultBudget={task.totalCost}
                                             trigger={
                                                 <Button variant="outline" size="sm">
                                                     <Briefcase className="mr-2 h-3 w-3" />
