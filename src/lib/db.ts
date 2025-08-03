@@ -13,8 +13,6 @@ import type { Currency } from '@/components/settings/currency-management';
 import type { Estimation } from '@/components/sales/estimations-list';
 import type { Quotation } from '@/components/sales/quotations-list';
 
-const dbPath = path.join(process.cwd(), 'src', 'lib', 'db.json');
-
 // Define types for the new Payroll module
 export type Employee = {
   id: string;
@@ -142,347 +140,315 @@ export type Customer = {
     status: 'active' | 'inactive';
 };
 
-type DbData = {
-  projects: Project[];
-  tasks: Task[];
-  issues: Issue[];
-  taskBlueprints: TaskBlueprint[];
-  products: Product[];
-  units: any[];
-  productCategories: any[];
-  currencies: Currency[];
-  appSettings: AppSettings;
-  employees: Employee[];
-  positions: Position[];
-  companyProfile: CompanyProfile;
-  users: User[];
-  userRoles: UserRole[];
-  estimations: Estimation[];
-  quotations: Quotation[];
-  vendors: Vendor[];
-  customers: Customer[];
+// Define paths for the new database files
+const dbDirectory = path.join(process.cwd(), 'src', 'lib');
+const pmDbPath = path.join(dbDirectory, 'project-management.json');
+const purchaseDbPath = path.join(dbDirectory, 'purchase.json');
+const salesDbPath = path.join(dbDirectory, 'sales.json');
+const crmDbPath = path.join(dbDirectory, 'crm.json');
+const payrollDbPath = path.join(dbDirectory, 'payroll.json');
+const settingsDbPath = path.join(dbDirectory, 'settings.json');
+
+
+// Generic function to read a JSON file
+async function readDbFile<T>(filePath: string, defaultValue: T): Promise<T> {
+    try {
+        const data = await fs.readFile(filePath, 'utf-8');
+        return JSON.parse(data) as T;
+    } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+            return defaultValue;
+        }
+        throw error;
+    }
+}
+
+// Generic function to write to a JSON file
+async function writeDbFile<T>(filePath: string, data: T): Promise<void> {
+    await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
+}
+
+
+// Project Management Data
+type ProjectManagementDb = {
+    projects: Project[];
+    tasks: Task[];
+    issues: Issue[];
+    taskBlueprints: TaskBlueprint[];
 };
 
-async function readDb(): Promise<DbData> {
-  try {
-    const data = await fs.readFile(dbPath, 'utf-8');
-    return JSON.parse(data) as DbData;
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-      // If the file doesn't exist, return a default structure
-      return { 
-          projects: [], 
-          tasks: [], 
-          issues: [], 
-          taskBlueprints: [], 
-          products: [], 
-          units: [],
-          productCategories: [],
-          currencies: [],
-          appSettings: { 
-            currency: 'USD',
-            dashboard: {
-                showFinancialStats: true,
-                showRevenueChart: true,
-                showSalesAnalysis: true,
-                showProjectManagementStats: true,
-                showCrmStats: true,
-                showPurchaseStats: true,
-            },
-            enabled_modules: {
-                project_management: true,
-                purchase: true,
-                crm: true,
-                payroll: true,
-                user_management: true,
-                sales: true,
-            },
-            quotationSettings: {
-                termsAndConditions: "1. Payment to be made within 30 days of the invoice date.\n2. Any additional work not mentioned in this quotation will be charged separately.\n3. This quotation is valid for 15 days from the date of issue.",
-                bankName: "Default Bank",
-                accountNumber: "0000-0000-0000-0000",
-                iban: "AE000000000000000000000",
-                taxPercentage: 5
-            }
-          },
-          employees: [],
-          positions: [],
-          companyProfile: {
-            companyName: "",
-            trnNumber: "",
-            logoUrl: "",
-            address: "",
-            bankName: "",
-            accountNumber: "",
-            iban: ""
-          },
-          users: [],
-          userRoles: [],
-          estimations: [],
-          quotations: [],
-          vendors: [],
-          customers: [],
-      };
-    }
-    throw error;
-  }
-}
-
-async function writeDb(data: DbData): Promise<void> {
-  await fs.writeFile(dbPath, JSON.stringify(data, null, 2), 'utf-8');
-}
-
 export async function getProjects(): Promise<Project[]>{
-    const data = await readDb();
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
     return data.projects || [];
 }
 
 export async function getProjectById(id: string): Promise<Project | undefined> {
-    const data = await readDb();
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
     return data.projects.find(p => p.id === id);
 }
 
 export async function createProject(newProject: Project): Promise<void> {
-    const data = await readDb();
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
     data.projects.push(newProject);
-    await writeDb(data);
+    await writeDbFile(pmDbPath, data);
 }
 
 export async function updateProject(updatedProject: Project): Promise<void> {
-    const data = await readDb();
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
     const projectIndex = data.projects.findIndex(p => p.id === updatedProject.id);
     if (projectIndex !== -1) {
       data.projects[projectIndex] = updatedProject;
-      await writeDb(data);
+      await writeDbFile(pmDbPath, data);
     } else {
       throw new Error(`Project with id ${updatedProject.id} not found.`);
     }
 }
 
 export async function deleteProject(projectId: string): Promise<void> {
-    const data = await readDb();
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
     const projectIndex = data.projects.findIndex(p => p.id === projectId);
     if (projectIndex !== -1) {
       data.projects.splice(projectIndex, 1);
-      // Optional: also delete tasks associated with this project
       data.tasks = data.tasks.filter(t => t.projectId !== projectId);
-      await writeDb(data);
+      await writeDbFile(pmDbPath, data);
     } else {
       throw new Error(`Project with id ${projectId} not found.`);
     }
 }
 
 export async function getTasks(): Promise<Task[]> {
-    const data = await readDb();
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
     return data.tasks || [];
 }
 
 export async function getTaskById(id: string): Promise<Task | undefined> {
-    const data = await readDb();
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
     return (data.tasks || []).find(t => t.id === id);
 }
 
 export async function getTasksByProjectId(projectId: string): Promise<Task[]> {
-    const data = await readDb();
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
     return (data.tasks || []).filter(t => t.projectId === projectId);
 }
 
 export async function createTask(newTask: Task): Promise<void> {
-    const data = await readDb();
-    if (!data.tasks) {
-        data.tasks = [];
-    }
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
     data.tasks.push(newTask);
-    await writeDb(data);
+    await writeDbFile(pmDbPath, data);
 }
 
 export async function updateTask(updatedTask: Partial<Task> & { id: string }): Promise<void> {
-    const data = await readDb();
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
     const taskIndex = data.tasks.findIndex(t => t.id === updatedTask.id);
     if (taskIndex !== -1) {
       data.tasks[taskIndex] = { ...data.tasks[taskIndex], ...updatedTask };
-      await writeDb(data);
+      await writeDbFile(pmDbPath, data);
     } else {
       throw new Error(`Task with id ${updatedTask.id} not found.`);
     }
 }
 
 export async function deleteTask(taskId: string): Promise<void> {
-    const data = await readDb();
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
     const taskIndex = data.tasks.findIndex(t => t.id === taskId);
     if (taskIndex !== -1) {
       data.tasks.splice(taskIndex, 1);
-      // Optional: also delete issues associated with this task
       data.issues = data.issues.filter(i => i.taskId !== taskId);
-      await writeDb(data);
+      await writeDbFile(pmDbPath, data);
     } else {
       throw new Error(`Task with id ${taskId} not found.`);
     }
 }
 
 export async function getIssues(): Promise<Issue[]> {
-    const data = await readDb();
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
     return data.issues || [];
 }
 
 export async function getIssueById(id: string): Promise<Issue | undefined> {
-    const data = await readDb();
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
     return (data.issues || []).find(i => i.id === id);
 }
 
 export async function getIssuesByTaskId(taskId: string): Promise<Issue[]> {
-    const data = await readDb();
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
     return (data.issues || []).filter(i => i.taskId === taskId);
 }
 
 export async function createIssue(newIssue: Issue): Promise<void> {
-    const data = await readDb();
-    if (!data.issues) {
-      data.issues = [];
-    }
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
     data.issues.push(newIssue);
-    await writeDb(data);
+    await writeDbFile(pmDbPath, data);
 }
 
 export async function getTaskBlueprints(): Promise<TaskBlueprint[]> {
-    const data = await readDb();
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
     return data.taskBlueprints || [];
 }
 
 export async function createTaskBlueprint(newBlueprint: TaskBlueprint): Promise<void> {
-    const data = await readDb();
-    if (!data.taskBlueprints) {
-      data.taskBlueprints = [];
-    }
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
     data.taskBlueprints.push(newBlueprint);
-    await writeDb(data);
+    await writeDbFile(pmDbPath, data);
 }
 
+// Purchase Data
+type PurchaseDb = {
+    products: Product[];
+    units: any[];
+    productCategories: any[];
+    vendors: Vendor[];
+};
+
 export async function getProducts(): Promise<Product[]> {
-    const data = await readDb();
+    const data = await readDbFile<PurchaseDb>(purchaseDbPath, { products: [], units: [], productCategories: [], vendors: [] });
     return data.products || [];
 }
 
 export async function createProduct(newProduct: Product): Promise<void> {
-    const data = await readDb();
-    if (!data.products) {
-      data.products = [];
-    }
+    const data = await readDbFile<PurchaseDb>(purchaseDbPath, { products: [], units: [], productCategories: [], vendors: [] });
     data.products.push(newProduct);
-    await writeDb(data);
+    await writeDbFile(purchaseDbPath, data);
 }
 
 export async function getUnits(): Promise<any[]> {
-    const data = await readDb();
+    const data = await readDbFile<PurchaseDb>(purchaseDbPath, { products: [], units: [], productCategories: [], vendors: [] });
     return data.units || [];
 }
 
 export async function createUnit(newUnit: any): Promise<void> {
-    const data = await readDb();
-    if (!data.units) {
-        data.units = [];
-    }
+    const data = await readDbFile<PurchaseDb>(purchaseDbPath, { products: [], units: [], productCategories: [], vendors: [] });
     data.units.push(newUnit);
-    await writeDb(data);
+    await writeDbFile(purchaseDbPath, data);
 }
 
 export async function updateUnit(originalName: string, updatedUnit: any): Promise<void> {
-    const data = await readDb();
+    const data = await readDbFile<PurchaseDb>(purchaseDbPath, { products: [], units: [], productCategories: [], vendors: [] });
     const unitIndex = data.units.findIndex(u => u.name === originalName);
     if (unitIndex !== -1) {
         data.units[unitIndex] = updatedUnit;
-        await writeDb(data);
+        await writeDbFile(purchaseDbPath, data);
     } else {
         throw new Error(`Unit with name ${originalName} not found.`);
     }
 }
 
 export async function deleteUnit(unitName: string): Promise<void> {
-    const data = await readDb();
+    const data = await readDbFile<PurchaseDb>(purchaseDbPath, { products: [], units: [], productCategories: [], vendors: [] });
     const unitIndex = data.units.findIndex(u => u.name === unitName);
     if (unitIndex !== -1) {
         data.units.splice(unitIndex, 1);
-        await writeDb(data);
+        await writeDbFile(purchaseDbPath, data);
     } else {
         throw new Error(`Unit with name ${unitName} not found.`);
     }
 }
 
 export async function getProductCategories(): Promise<any[]> {
-    const data = await readDb();
-    return (data as any).productCategories || [];
+    const data = await readDbFile<PurchaseDb>(purchaseDbPath, { products: [], units: [], productCategories: [], vendors: [] });
+    return data.productCategories || [];
 }
 
 export async function createProductCategory(newCategory: any): Promise<void> {
-    const data = await readDb() as any;
-    if (!data.productCategories) {
-        data.productCategories = [];
-    }
+    const data = await readDbFile<PurchaseDb>(purchaseDbPath, { products: [], units: [], productCategories: [], vendors: [] });
     data.productCategories.push(newCategory);
-    await writeDb(data);
+    await writeDbFile(purchaseDbPath, data);
 }
 
 export async function updateProductCategory(originalName: string, updatedCategory: any): Promise<void> {
-    const data = await readDb() as any;
+    const data = await readDbFile<PurchaseDb>(purchaseDbPath, { products: [], units: [], productCategories: [], vendors: [] });
     const categoryIndex = data.productCategories.findIndex((c: any) => c.name === originalName);
     if (categoryIndex !== -1) {
         data.productCategories[categoryIndex] = updatedCategory;
-        await writeDb(data);
+        await writeDbFile(purchaseDbPath, data);
     } else {
         throw new Error(`Category with name ${originalName} not found.`);
     }
 }
 
 export async function deleteProductCategory(categoryName: string): Promise<void> {
-    const data = await readDb() as any;
+    const data = await readDbFile<PurchaseDb>(purchaseDbPath, { products: [], units: [], productCategories: [], vendors: [] });
     const categoryIndex = data.productCategories.findIndex((c: any) => c.name === categoryName);
     if (categoryIndex !== -1) {
         data.productCategories.splice(categoryIndex, 1);
-        await writeDb(data);
+        await writeDbFile(purchaseDbPath, data);
     } else {
         throw new Error(`Category with name ${categoryName} not found.`);
     }
 }
 
+export async function getVendors(): Promise<Vendor[]> {
+    const data = await readDbFile<PurchaseDb>(purchaseDbPath, { products: [], units: [], productCategories: [], vendors: [] });
+    return data.vendors || [];
+}
+
+export async function createVendor(newVendor: Vendor): Promise<void> {
+    const data = await readDbFile<PurchaseDb>(purchaseDbPath, { products: [], units: [], productCategories: [], vendors: [] });
+    data.vendors.push(newVendor);
+    await writeDbFile(purchaseDbPath, data);
+}
+
+export async function updateVendor(updatedVendor: Vendor): Promise<void> {
+    const data = await readDbFile<PurchaseDb>(purchaseDbPath, { products: [], units: [], productCategories: [], vendors: [] });
+    const vendorIndex = data.vendors.findIndex(v => v.id === updatedVendor.id);
+    if (vendorIndex !== -1) {
+        data.vendors[vendorIndex] = updatedVendor;
+        await writeDbFile(purchaseDbPath, data);
+    } else {
+        throw new Error(`Vendor with id ${updatedVendor.id} not found.`);
+    }
+}
+
+export async function deleteVendor(vendorId: string): Promise<void> {
+    const data = await readDbFile<PurchaseDb>(purchaseDbPath, { products: [], units: [], productCategories: [], vendors: [] });
+    data.vendors = data.vendors.filter(v => v.id !== vendorId);
+    await writeDbFile(purchaseDbPath, data);
+}
+
+// Settings Data
+type SettingsDb = {
+    appSettings: AppSettings;
+    currencies: Currency[];
+    companyProfile: CompanyProfile;
+    users: User[];
+    userRoles: UserRole[];
+};
 
 export async function getCurrencies(): Promise<Currency[]> {
-    const data = await readDb();
+    const data = await readDbFile<SettingsDb>(settingsDbPath, { appSettings: {} as AppSettings, currencies: [], companyProfile: {} as CompanyProfile, users: [], userRoles: [] });
     return data.currencies || [];
 }
 
 export async function createCurrency(newCurrency: Currency): Promise<void> {
-    const data = await readDb();
-    if (!data.currencies) {
-        data.currencies = [];
-    }
+    const data = await readDbFile<SettingsDb>(settingsDbPath, { appSettings: {} as AppSettings, currencies: [], companyProfile: {} as CompanyProfile, users: [], userRoles: [] });
     data.currencies.push(newCurrency);
-    await writeDb(data);
+    await writeDbFile(settingsDbPath, data);
 }
 
 export async function updateCurrency(originalCode: string, updatedCurrency: Currency): Promise<void> {
-    const data = await readDb();
+    const data = await readDbFile<SettingsDb>(settingsDbPath, { appSettings: {} as AppSettings, currencies: [], companyProfile: {} as CompanyProfile, users: [], userRoles: [] });
     const currencyIndex = data.currencies.findIndex(c => c.code === originalCode);
     if (currencyIndex !== -1) {
         data.currencies[currencyIndex] = updatedCurrency;
-        await writeDb(data);
+        await writeDbFile(settingsDbPath, data);
     } else {
         throw new Error(`Currency with code ${originalCode} not found.`);
     }
 }
 
 export async function deleteCurrency(currencyCode: string): Promise<void> {
-    const data = await readDb();
+    const data = await readDbFile<SettingsDb>(settingsDbPath, { appSettings: {} as AppSettings, currencies: [], companyProfile: {} as CompanyProfile, users: [], userRoles: [] });
     const currencyIndex = data.currencies.findIndex(c => c.code === currencyCode);
     if (currencyIndex !== -1) {
         data.currencies.splice(currencyIndex, 1);
-        await writeDb(data);
+        await writeDbFile(settingsDbPath, data);
     } else {
         throw new Error(`Currency with code ${currencyCode} not found.`);
     }
 }
 
 export async function getAppSettings(): Promise<AppSettings> {
-    const data = await readDb();
+    const data = await readDbFile<SettingsDb>(settingsDbPath, { appSettings: {} as AppSettings, currencies: [], companyProfile: {} as CompanyProfile, users: [], userRoles: [] });
     const defaultSettings: AppSettings = {
         currency: 'USD',
         dashboard: {
@@ -519,9 +485,9 @@ export async function getAppSettings(): Promise<AppSettings> {
 
 export async function updateAppSettings(newSettings: Partial<AppSettings>): Promise<{ message: string; }> {
     try {
-        const data = await readDb();
+        const data = await readDbFile<SettingsDb>(settingsDbPath, { appSettings: {} as AppSettings, currencies: [], companyProfile: {} as CompanyProfile, users: [], userRoles: [] });
         data.appSettings = { ...data.appSettings, ...newSettings };
-        await writeDb(data);
+        await writeDbFile(settingsDbPath, data);
         return { message: 'Settings updated successfully.' };
     } catch (error) {
         console.error('Database error:', error);
@@ -529,21 +495,8 @@ export async function updateAppSettings(newSettings: Partial<AppSettings>): Prom
     }
 }
 
-
-// Payroll functions
-export async function getEmployees(): Promise<Employee[]> {
-  const data = await readDb();
-  return data.employees || [];
-}
-
-export async function getPositions(): Promise<Position[]> {
-  const data = await readDb();
-  return data.positions || [];
-}
-
-// Company Profile functions
 export async function getCompanyProfile(): Promise<CompanyProfile> {
-  const data = await readDb();
+  const data = await readDbFile<SettingsDb>(settingsDbPath, { appSettings: {} as AppSettings, currencies: [], companyProfile: {} as CompanyProfile, users: [], userRoles: [] });
   return data.companyProfile || {
     companyName: "",
     trnNumber: "",
@@ -556,194 +509,198 @@ export async function getCompanyProfile(): Promise<CompanyProfile> {
 }
 
 export async function updateCompanyProfile(newProfileData: Partial<CompanyProfile>): Promise<void> {
-    const data = await readDb();
+    const data = await readDbFile<SettingsDb>(settingsDbPath, { appSettings: {} as AppSettings, currencies: [], companyProfile: {} as CompanyProfile, users: [], userRoles: [] });
     data.companyProfile = { ...(data.companyProfile || {}), ...newProfileData };
-    await writeDb(data);
+    await writeDbFile(settingsDbPath, data);
 }
 
-// User Management functions
 export async function getUsers(): Promise<User[]> {
-  const data = await readDb();
+  const data = await readDbFile<SettingsDb>(settingsDbPath, { appSettings: {} as AppSettings, currencies: [], companyProfile: {} as CompanyProfile, users: [], userRoles: [] });
   return data.users || [];
 }
 
 export async function createUser(newUser: User): Promise<void> {
-  const data = await readDb();
-  if (!data.users) {
-    data.users = [];
-  }
+  const data = await readDbFile<SettingsDb>(settingsDbPath, { appSettings: {} as AppSettings, currencies: [], companyProfile: {} as CompanyProfile, users: [], userRoles: [] });
   data.users.push(newUser);
-  await writeDb(data);
+  await writeDbFile(settingsDbPath, data);
 }
 
 export async function updateUser(updatedUser: User): Promise<void> {
-  const data = await readDb();
+  const data = await readDbFile<SettingsDb>(settingsDbPath, { appSettings: {} as AppSettings, currencies: [], companyProfile: {} as CompanyProfile, users: [], userRoles: [] });
   const userIndex = data.users.findIndex(u => u.id === updatedUser.id);
   if (userIndex !== -1) {
     data.users[userIndex] = updatedUser;
-    await writeDb(data);
+    await writeDbFile(settingsDbPath, data);
   } else {
     throw new Error(`User with id ${updatedUser.id} not found.`);
   }
 }
 
 export async function deleteUser(userId: string): Promise<void> {
-  const data = await readDb();
-  const userIndex = data.users.findIndex(u => u.id === userId);
-  if (userIndex !== -1) {
-    data.users.splice(userIndex, 1);
-    await writeDb(data);
-  } else {
-    throw new Error(`User with id ${userId} not found.`);
-  }
+  const data = await readDbFile<SettingsDb>(settingsDbPath, { appSettings: {} as AppSettings, currencies: [], companyProfile: {} as CompanyProfile, users: [], userRoles: [] });
+  data.users = data.users.filter(u => u.id !== userId);
+  await writeDbFile(settingsDbPath, data);
 }
 
 export async function getUserRoles(): Promise<UserRole[]> {
-    const data = await readDb();
+    const data = await readDbFile<SettingsDb>(settingsDbPath, { appSettings: {} as AppSettings, currencies: [], companyProfile: {} as CompanyProfile, users: [], userRoles: [] });
     return data.userRoles || [];
 }
 
 export async function updateUserRole(updatedRole: Omit<UserRole, 'id'> & { id: string }): Promise<void> {
-  const data = await readDb();
+  const data = await readDbFile<SettingsDb>(settingsDbPath, { appSettings: {} as AppSettings, currencies: [], companyProfile: {} as CompanyProfile, users: [], userRoles: [] });
   const roleIndex = data.userRoles.findIndex(r => r.id === updatedRole.id);
   if (roleIndex !== -1) {
     data.userRoles[roleIndex] = { ...data.userRoles[roleIndex], ...updatedRole };
-    await writeDb(data);
+    await writeDbFile(settingsDbPath, data);
   } else {
     throw new Error(`Role with id ${updatedRole.id} not found.`);
   }
 }
 
-// Estimations Functions
-export async function getEstimations(): Promise<Estimation[]> {
-    const data = await readDb();
-    return data.estimations || [];
+// Payroll Data
+type PayrollDb = {
+    employees: Employee[];
+    positions: Position[];
+};
+
+export async function getEmployees(): Promise<Employee[]> {
+  const data = await readDbFile<PayrollDb>(payrollDbPath, { employees: [], positions: [] });
+  return data.employees || [];
 }
 
-export async function getEstimationById(id: string): Promise<Estimation | undefined> {
-    const data = await readDb();
-    return (data.estimations || []).find(e => e.id === id);
+export async function getPositions(): Promise<Position[]> {
+  const data = await readDbFile<PayrollDb>(payrollDbPath, { employees: [], positions: [] });
+  return data.positions || [];
 }
 
-export async function createEstimation(newEstimation: Estimation): Promise<void> {
-    const data = await readDb();
-    if (!data.estimations) {
-        data.estimations = [];
-    }
-    data.estimations.push(newEstimation);
-    await writeDb(data);
-}
+// CRM Data
+type CrmDb = {
+    customers: Customer[];
+};
 
-export async function updateEstimation(updatedEstimation: Estimation): Promise<void> {
-    const data = await readDb();
-    const estimationIndex = data.estimations.findIndex(e => e.id === updatedEstimation.id);
-    if (estimationIndex !== -1) {
-        data.estimations[estimationIndex] = updatedEstimation;
-        await writeDb(data);
-    } else {
-        throw new Error(`Estimation with id ${updatedEstimation.id} not found.`);
-    }
-}
-
-export async function deleteEstimation(estimationId: string): Promise<void> {
-    const data = await readDb();
-    const estimationIndex = data.estimations.findIndex(e => e.id === estimationId);
-    if (estimationIndex !== -1) {
-        data.estimations.splice(estimationIndex, 1);
-        await writeDb(data);
-    } else {
-        throw new Error(`Estimation with id ${estimationId} not found.`);
-    }
-}
-
-// Quotations Functions
-export async function getQuotations(): Promise<Quotation[]> {
-    const data = await readDb();
-    return data.quotations || [];
-}
-
-export async function getQuotationById(id: string): Promise<Quotation | undefined> {
-    const data = await readDb();
-    return (data.quotations || []).find(q => q.id === id);
-}
-
-export async function createQuotation(newQuotation: Quotation): Promise<void> {
-    const data = await readDb();
-    if (!data.quotations) {
-        data.quotations = [];
-    }
-    data.quotations.push(newQuotation);
-    await writeDb(data);
-}
-
-export async function updateQuotation(updatedQuotation: Quotation): Promise<void> {
-    const data = await readDb();
-    const quotationIndex = data.quotations.findIndex(q => q.id === updatedQuotation.id);
-    if (quotationIndex !== -1) {
-        data.quotations[quotationIndex] = updatedQuotation;
-        await writeDb(data);
-    } else {
-        throw new Error(`Quotation with id ${updatedQuotation.id} not found.`);
-    }
-}
-
-// Vendor Functions
-export async function getVendors(): Promise<Vendor[]> {
-    const data = await readDb();
-    return data.vendors || [];
-}
-
-export async function createVendor(newVendor: Vendor): Promise<void> {
-    const data = await readDb();
-    if (!data.vendors) data.vendors = [];
-    data.vendors.push(newVendor);
-    await writeDb(data);
-}
-
-export async function updateVendor(updatedVendor: Vendor): Promise<void> {
-    const data = await readDb();
-    const vendorIndex = data.vendors.findIndex(v => v.id === updatedVendor.id);
-    if (vendorIndex !== -1) {
-        data.vendors[vendorIndex] = updatedVendor;
-        await writeDb(data);
-    } else {
-        throw new Error(`Vendor with id ${updatedVendor.id} not found.`);
-    }
-}
-
-export async function deleteVendor(vendorId: string): Promise<void> {
-    const data = await readDb();
-    data.vendors = data.vendors.filter(v => v.id !== vendorId);
-    await writeDb(data);
-}
-
-
-// Customer Functions
 export async function getCustomers(): Promise<Customer[]> {
-    const data = await readDb();
+    const data = await readDbFile<CrmDb>(crmDbPath, { customers: [] });
     return data.customers || [];
 }
 
 export async function createCustomer(newCustomer: Customer): Promise<void> {
-    const data = await readDb();
-    if (!data.customers) data.customers = [];
+    const data = await readDbFile<CrmDb>(crmDbPath, { customers: [] });
     data.customers.push(newCustomer);
-    await writeDb(data);
+    await writeDbFile(crmDbPath, data);
 }
 
 export async function updateCustomer(updatedCustomer: Customer): Promise<void> {
-    const data = await readDb();
+    const data = await readDbFile<CrmDb>(crmDbPath, { customers: [] });
     const customerIndex = data.customers.findIndex(c => c.id === updatedCustomer.id);
     if (customerIndex !== -1) {
         data.customers[customerIndex] = updatedCustomer;
-        await writeDb(data);
+        await writeDbFile(crmDbPath, data);
     } else {
         throw new Error(`Customer with id ${updatedCustomer.id} not found.`);
     }
 }
 
 export async function deleteCustomer(customerId: string): Promise<void> {
-    const data = await readDb();
+    const data = await readDbFile<CrmDb>(crmDbPath, { customers: [] });
     data.customers = data.customers.filter(c => c.id !== customerId);
-    await writeDb(data);
+    await writeDbFile(crmDbPath, data);
+}
+
+// Sales Data
+type SalesDb = {
+    estimations: Estimation[];
+    quotations: Quotation[];
+};
+
+export async function getEstimations(): Promise<Estimation[]> {
+    const data = await readDbFile<SalesDb>(salesDbPath, { estimations: [], quotations: [] });
+    return data.estimations || [];
+}
+
+export async function getEstimationById(id: string): Promise<Estimation | undefined> {
+    const data = await readDbFile<SalesDb>(salesDbPath, { estimations: [], quotations: [] });
+    return (data.estimations || []).find(e => e.id === id);
+}
+
+export async function createEstimation(newEstimation: Estimation): Promise<void> {
+    const data = await readDbFile<SalesDb>(salesDbPath, { estimations: [], quotations: [] });
+    data.estimations.push(newEstimation);
+    await writeDbFile(salesDbPath, data);
+}
+
+export async function updateEstimation(updatedEstimation: Estimation): Promise<void> {
+    const data = await readDbFile<SalesDb>(salesDbPath, { estimations: [], quotations: [] });
+    const estimationIndex = data.estimations.findIndex(e => e.id === updatedEstimation.id);
+    if (estimationIndex !== -1) {
+        data.estimations[estimationIndex] = updatedEstimation;
+        await writeDbFile(salesDbPath, data);
+    } else {
+        throw new Error(`Estimation with id ${updatedEstimation.id} not found.`);
+    }
+}
+
+export async function deleteEstimation(estimationId: string): Promise<void> {
+    const data = await readDbFile<SalesDb>(salesDbPath, { estimations: [], quotations: [] });
+    const estimationIndex = data.estimations.findIndex(e => e.id === estimationId);
+    if (estimationIndex !== -1) {
+        data.estimations.splice(estimationIndex, 1);
+        await writeDbFile(salesDbPath, data);
+    } else {
+        throw new Error(`Estimation with id ${estimationId} not found.`);
+    }
+}
+
+export async function getQuotations(): Promise<Quotation[]> {
+    const data = await readDbFile<SalesDb>(salesDbPath, { estimations: [], quotations: [] });
+    return data.quotations || [];
+}
+
+export async function getQuotationById(id: string): Promise<Quotation | undefined> {
+    const data = await readDbFile<SalesDb>(salesDbPath, { estimations: [], quotations: [] });
+    return (data.quotations || []).find(q => q.id === id);
+}
+
+export async function createQuotation(newQuotation: Quotation): Promise<void> {
+    const data = await readDbFile<SalesDb>(salesDbPath, { estimations: [], quotations: [] });
+    data.quotations.push(newQuotation);
+    await writeDbFile(salesDbPath, data);
+}
+
+export async function updateQuotation(updatedQuotation: Quotation): Promise<void> {
+    const data = await readDbFile<SalesDb>(salesDbPath, { estimations: [], quotations: [] });
+    const quotationIndex = data.quotations.findIndex(q => q.id === updatedQuotation.id);
+    if (quotationIndex !== -1) {
+        data.quotations[quotationIndex] = updatedQuotation;
+        await writeDbFile(salesDbPath, data);
+    } else {
+        throw new Error(`Quotation with id ${updatedQuotation.id} not found.`);
+    }
+}
+
+export async function getDbJsonContent(): Promise<{ content: string | null; error?: string }> {
+  try {
+    const settings = await fs.readFile(settingsDbPath, 'utf-8');
+    // In the future you might want to back up all the files
+    return { content: settings };
+  } catch (error) {
+    console.error('Database read error:', error);
+    return { content: null, error: 'Failed to read database file.' };
+  }
+}
+
+export async function restoreDbFromJsonContent(content: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    // Basic validation to ensure it's a JSON string
+    JSON.parse(content);
+    // In the future you might want to restore all the files
+    await fs.writeFile(settingsDbPath, content, 'utf-8');
+    return { success: true };
+  } catch (error: any) {
+    console.error('Database restore error:', error);
+    if (error instanceof SyntaxError) {
+      return { success: false, error: 'Invalid JSON file format.' };
+    }
+    return { success: false, error: 'Failed to restore database file.' };
+  }
 }

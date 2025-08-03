@@ -1,967 +1,704 @@
-{
-  "projects": [
-    {
-      "id": "PR_9001",
-      "title": "Website Redesign for Sabood Kuniyil",
-      "description": "Complete overhaul of the corporate website.",
-      "manager": "Alice Johnson",
-      "customer": "Innovate Inc.",
-      "startDate": "2024-05-01T00:00:00.000Z",
-      "endDate": "2024-09-30T00:00:00.000Z",
-      "status": "in-progress",
-      "taskBlueprintId": "bp-1"
-    },
-    {
-      "id": "PR_9002",
-      "title": "Mobile App Development",
-      "description": "Create a new mobile app for iOS and Android.",
-      "status": "on-hold",
-      "manager": "Bob Smith",
-      "customer": "Quantum Solutions",
-      "startDate": "2024-06-15",
-      "endDate": "2024-12-31",
-      "taskBlueprintId": "bp-2"
-    },
-    {
-      "id": "PR_9003",
-      "title": "Re Design rooms",
-      "description": "roos",
-      "manager": "manager",
-      "customer": "Quantum Solutions",
-      "startDate": "2025-07-30T20:00:00.000Z",
-      "endDate": "2025-08-03T20:00:00.000Z",
-      "status": "in-progress",
-      "taskBlueprintId": "bp-3"
-    }
-  ],
-  "tasks": [
-    {
-      "id": "TS_72001",
-      "title": "this is normal task",
-      "description": "Detailed analysis of the pixel compression algorithm is needed.",
-      "status": "in-progress",
-      "label": "documentation",
-      "priority": "medium",
-      "assignee": "Alice",
-      "projectId": "PR_9001",
-      "startDate": "2024-06-30T20:00:00.000Z",
-      "endDate": "2024-07-29T20:00:00.000Z",
-      "completionPercentage": 50
-    },
-    {
-      "id": "TS_72002",
-      "title": "Try to calculate the EXE feed, maybe it will index the multi-byte pixel!",
-      "description": "Implement the core logic for the EXE feed calculation.",
-      "status": "backlog",
-      "label": "feature",
-      "priority": "medium",
-      "assignee": "Bob",
-      "projectId": "PR_9001",
-      "startDate": "2024-08-01",
-      "endDate": "2024-08-15",
-      "completionPercentage": 0
-    },
-    {
-      "id": "TS_72003",
-      "title": "We need to bypass the neural TCP card!",
-      "description": "Critical bug in the TCP card is blocking deployment.",
-      "status": "todo",
-      "label": "bug",
-      "priority": "high",
-      "assignee": "Charlie",
-      "projectId": "PR_9002",
-      "startDate": "2024-07-25",
-      "endDate": "2024-08-10",
-      "completionPercentage": 10
-    },
-    {
-      "id": "TS_72004",
-      "title": "The SAS interface is down, navigate the annual interface without connecting the backup RAM!",
-      "description": "The SAS interface has been deprecated.",
-      "status": "canceled",
-      "label": "bug",
-      "priority": "low",
-      "assignee": "David",
-      "projectId": "PR_9003",
-      "startDate": "2024-06-01",
-      "endDate": "2024-06-10",
-      "completionPercentage": 0
-    },
-    {
-      "id": "TS_72005",
-      "title": "I'll parse the wireless SSL protocol, that should driver the API panel!",
-      "description": "Develop the new wireless SSL protocol for the API.",
-      "status": "to-do",
-      "label": "feature",
-      "priority": "medium",
-      "assignee": "Eve",
-      "projectId": "PR_9001",
-      "startDate": "2024-07-09T20:00:00.000Z",
-      "endDate": "2024-08-31T20:00:00.000Z",
-      "completionPercentage": 10
-    },
-    {
-      "id": "TS_72006",
-      "title": "Redesing",
-      "description": "dd",
-      "label": "bug",
-      "status": "backlog",
-      "priority": "low",
-      "assignee": "John Doe",
-      "projectId": "PR_9001",
-      "startDate": "2025-07-30T20:00:00.000Z",
-      "endDate": "2025-08-01T20:00:00.000Z",
-      "completionPercentage": 0
-    },
-    {
-      "id": "TS_72007",
-      "title": "task",
-      "description": "dd",
-      "label": "feature",
-      "status": "carpentry",
-      "priority": "medium",
-      "assignee": "Alice",
-      "projectId": "PR_9003",
-      "startDate": "2025-07-23T20:00:00.000Z",
-      "endDate": "2025-07-29T20:00:00.000Z",
-      "completionPercentage": 60
-    },
-    {
-      "id": "TS_72008",
-      "projectId": "PR_9002",
-      "title": "Cabinet",
-      "description": "dfdfd",
-      "label": "feature",
-      "status": "backlog",
-      "priority": "medium",
-      "assignee": "Unassigned",
-      "budget": 1249.91,
-      "completionPercentage": 0
-    }
-  ],
-  "issues": [
-    {
-      "id": "ISSUE-282",
-      "title": "Login button not working on Safari",
-      "status": "open",
-      "type": "bug",
-      "priority": "high",
-      "created": "2024-07-20",
-      "taskId": "TS_72003"
-    },
-    {
-      "id": "ISSUE-281",
-      "title": "Add dark mode support",
-      "status": "in-progress",
-      "type": "feature-request",
-      "priority": "medium",
-      "created": "2024-07-18",
-      "taskId": "TS_72005"
-    },
-    {
-      "id": "ISSUE-279",
-      "title": "API rate limit exceeded",
-      "status": "closed",
-      "type": "bug",
-      "priority": "high",
-      "created": "2024-07-15",
-      "taskId": "TS_72004"
-    },
-    {
-      "id": "ISSUE-278",
-      "title": "Update documentation for new endpoint",
-      "status": "open",
-      "type": "documentation",
-      "priority": "low",
-      "created": "2024-07-21",
-      "taskId": "TS_72001"
-    },
-    {
-      "id": "ISSUE-283",
-      "title": "Performance degradation on dashboard",
-      "status": "open",
-      "type": "bug",
-      "priority": "high",
-      "created": "2024-07-22",
-      "taskId": "TS_72003"
-    },
-    {
-      "id": "ISSUE-284",
-      "title": "lloopp",
-      "type": "bug",
-      "status": "open",
-      "priority": "low",
-      "taskId": "TS_72001",
-      "created": "2025-07-31"
-    },
-    {
-      "id": "ISSUE-285",
-      "title": "Taskks",
-      "type": "bug",
-      "status": "open",
-      "priority": "low",
-      "taskId": "TS_72001",
-      "created": "2025-07-31"
-    },
-    {
-      "id": "ISSUE-286",
-      "title": "ths is the issue",
-      "type": "bug",
-      "status": "open",
-      "priority": "low",
-      "taskId": "TS_72006",
-      "created": "2025-07-31"
-    }
-  ],
-  "taskBlueprints": [
-    {
-      "id": "bp-1",
-      "name": "Default Blueprint",
-      "statuses": [
-        {
-          "name": "Backlog",
-          "completionPercentage": 0
-        },
-        {
-          "name": "To Do",
-          "completionPercentage": 10
-        },
-        {
-          "name": "In Progress",
-          "completionPercentage": 50
-        },
-        {
-          "name": "Done",
-          "completionPercentage": 100
-        },
-        {
-          "name": "Canceled",
-          "completionPercentage": 0
+'use server';
+
+import fs from 'fs/promises';
+import path from 'path';
+import type { Project } from '@/components/project-management/projects-list';
+import type { Task } from '@/components/project-management/tasks-list';
+import type { Issue } from '@/components/project-management/issues-list';
+import type { TaskBlueprint } from '@/components/project-management/task-blueprints-list';
+import type { Product } from '@/components/purchase/products-list';
+import type { Currency } from '@/components/settings/currency-management';
+import type { Estimation } from '@/components/sales/estimations-list';
+import type { Quotation } from '@/components/sales/quotations-list';
+
+// Define types for the new Payroll module
+export type Employee = {
+  id: string;
+  name: string;
+  positionId: string;
+  email: string;
+  phone: string;
+  hireDate: string;
+};
+
+export type Position = {
+  id: string;
+  title: string;
+  department: string;
+  baseSalary: number;
+};
+
+export type User = {
+    id: string;
+    name: string;
+    email: string;
+    role: 'Admin' | 'Manager' | 'User';
+    status: 'active' | 'inactive';
+}
+
+export type Permissions = {
+  view_dashboard: boolean;
+  manage_projects: boolean;
+  manage_tasks: boolean;
+  manage_purchase_module: boolean;
+  manage_crm_module: boolean;
+  manage_payroll_module: boolean;
+  manage_settings: boolean;
+  manage_users: boolean;
+};
+
+export type UserRole = {
+  id: string;
+  name: string;
+  description: string;
+  permissions: Permissions;
+};
+
+
+export type DashboardSettings = {
+  showFinancialStats: boolean;
+  showRevenueChart: boolean;
+  showSalesAnalysis: boolean;
+  showProjectManagementStats?: boolean;
+  showCrmStats?: boolean;
+  showPurchaseStats?: boolean;
+};
+
+export type CompanyProfile = {
+  companyName: string;
+  trnNumber: string;
+  logoUrl: string;
+  address: string;
+  bankName: string;
+  accountNumber: string;
+  iban: string;
+};
+
+export type EnabledModules = {
+    project_management: boolean;
+    purchase: boolean;
+    crm: boolean;
+    payroll: boolean;
+    user_management: boolean;
+    sales: boolean;
+}
+
+export type QuotationSettings = {
+  termsAndConditions: string;
+  bankName: string;
+  accountNumber: string;
+  iban: string;
+  taxPercentage: number;
+};
+
+export type AppSettings = {
+    currency: string;
+    dashboard?: DashboardSettings;
+    enabled_modules?: EnabledModules;
+    quotationSettings?: QuotationSettings;
+};
+
+export type EstimationItem = {
+    id: string; // Can be product ID or a generated ID for adhoc items
+    name: string;
+    quantity: number;
+    cost: number;
+    type: 'product' | 'adhoc';
+    size?: string;
+    color?: string;
+    model?: string;
+    notes?: string;
+    imageUrl?: string;
+};
+
+export type QuotationItem = {
+    id: string; // Corresponds to the EstimationTask ID
+    title: string;
+    description?: string;
+    quantity: number;
+    rate: number; // Corresponds to the EstimationTask totalCost
+    imageUrl?: string;
+};
+
+export type Vendor = {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+    status: 'active' | 'inactive';
+};
+
+export type Customer = {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+    status: 'active' | 'inactive';
+};
+
+// Define paths for the new database files
+const dbDirectory = path.join(process.cwd(), 'src', 'lib');
+const pmDbPath = path.join(dbDirectory, 'project-management.json');
+const purchaseDbPath = path.join(dbDirectory, 'purchase.json');
+const salesDbPath = path.join(dbDirectory, 'sales.json');
+const crmDbPath = path.join(dbDirectory, 'crm.json');
+const payrollDbPath = path.join(dbDirectory, 'payroll.json');
+const settingsDbPath = path.join(dbDirectory, 'settings.json');
+
+
+// Generic function to read a JSON file
+async function readDbFile<T>(filePath: string, defaultValue: T): Promise<T> {
+    try {
+        const data = await fs.readFile(filePath, 'utf-8');
+        return JSON.parse(data) as T;
+    } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+            return defaultValue;
         }
-      ]
-    },
-    {
-      "id": "bp-2",
-      "name": "Agile Blueprint",
-      "statuses": [
-        {
-          "name": "Backlog",
-          "completionPercentage": 0
-        },
-        {
-          "name": "In Development",
-          "completionPercentage": 25
-        },
-        {
-          "name": "In Review",
-          "completionPercentage": 75
-        },
-        {
-          "name": "Merged",
-          "completionPercentage": 90
-        },
-        {
-          "name": "Done",
-          "completionPercentage": 100
-        }
-      ]
-    },
-    {
-      "id": "bp-3",
-      "name": "Sab001",
-      "statuses": [
-        {
-          "name": "Drawing",
-          "completionPercentage": 15
-        },
-        {
-          "name": "Approval",
-          "completionPercentage": 30
-        },
-        {
-          "name": "Carpentry",
-          "completionPercentage": 60
-        },
-        {
-          "name": "Sight",
-          "completionPercentage": 80
-        },
-        {
-          "name": "Delivered",
-          "completionPercentage": 95
-        },
-        {
-          "name": "Completed",
-          "completionPercentage": 100
-        }
-      ]
+        throw error;
     }
-  ],
-  "products": [
-    {
-      "id": "RM_MDF_7001",
-      "name": "18mm MDF Board",
-      "description": "Standard Medium-Density Fibreboard",
-      "type": "Raw Material",
-      "category": "MDF",
-      "subcategory": "Plain",
-      "purchasePrice": 25.5,
-      "salesPrice": 35,
-      "stock": 500,
-      "unit": "Piece",
-      "imageUrl": "https://placehold.co/400x400.png"
-    },
-    {
-      "id": "RM_MDF_7002",
-      "name": "Oak Veneer",
-      "description": "Thin layer of oak for pressing onto boards.",
-      "type": "Raw Material",
-      "category": "MDF",
-      "subcategory": "Vineer Pressed",
-      "purchasePrice": 15,
-      "salesPrice": 22,
-      "stock": 1000,
-      "unit": "Meter",
-      "imageUrl": "https://placehold.co/400x400.png"
-    },
-    {
-      "id": "FG_FNT_7001",
-      "name": "Ergonomic Office Chair",
-      "description": "Comfortable chair for long working hours.",
-      "type": "Finished Good",
-      "category": "Furniture",
-      "subcategory": "Chairs",
-      "purchasePrice": 244.99,
-      "salesPrice": 349.99,
-      "stock": 120,
-      "unit": "Piece",
-      "billOfMaterials": [],
-      "billOfServices": [],
-      "imageUrl": "https://placehold.co/400x400.png"
-    },
-    {
-      "id": "FG_ELC_7002",
-      "name": "Wireless Mechanical Keyboard",
-      "description": "A tactile and responsive keyboard for coders and writers.",
-      "type": "Finished Good",
-      "category": "Electronics",
-      "subcategory": "Keyboards",
-      "purchasePrice": 90.99,
-      "salesPrice": 129.99,
-      "stock": 200,
-      "unit": "Piece",
-      "billOfMaterials": [],
-      "billOfServices": [],
-      "imageUrl": "https://placehold.co/400x400.png"
-    },
-    {
-      "id": "SRV_CNS_7001",
-      "name": "Financial Consultation",
-      "description": "One hour of financial consultation service.",
-      "type": "Service",
-      "category": "Consulting",
-      "subcategory": "Financial",
-      "purchasePrice": 150,
-      "salesPrice": 250,
-      "stock": 9999,
-      "unit": "Hour"
-    },
-    {
-      "id": "FG_FNT_7002",
-      "name": "TPR Desk 1700*55",
-      "description": "this is ",
-      "type": "Finished Good",
-      "category": "Furniture",
-      "subcategory": "Desks",
-      "purchasePrice": 175.5,
-      "salesPrice": 810.99,
-      "stock": 0,
-      "unit": "Piece",
-      "billOfMaterials": [
-        {
-          "productId": "RM_MDF_7001",
-          "quantity": 1
-        }
-      ],
-      "billOfServices": [
-        {
-          "productId": "SRV_CNS_7001",
-          "quantity": 1
-        }
-      ],
-      "imageUrl": "https://placehold.co/400x400.png"
-    },
-    {
-      "id": "SRV_LBR_7001",
-      "name": "Skilled Carpentry",
-      "description": "One hour of skilled carpentry work.",
-      "type": "Service",
-      "category": "Labour",
-      "subcategory": "Carpentry",
-      "purchasePrice": 50,
-      "salesPrice": 75,
-      "stock": 9999,
-      "unit": "Hour"
+}
+
+// Generic function to write to a JSON file
+async function writeDbFile<T>(filePath: string, data: T): Promise<void> {
+    await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
+}
+
+
+// Project Management Data
+type ProjectManagementDb = {
+    projects: Project[];
+    tasks: Task[];
+    issues: Issue[];
+    taskBlueprints: TaskBlueprint[];
+};
+
+export async function getProjects(): Promise<Project[]>{
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
+    return data.projects || [];
+}
+
+export async function getProjectById(id: string): Promise<Project | undefined> {
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
+    return data.projects.find(p => p.id === id);
+}
+
+export async function createProject(newProject: Project): Promise<void> {
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
+    data.projects.push(newProject);
+    await writeDbFile(pmDbPath, data);
+}
+
+export async function updateProject(updatedProject: Project): Promise<void> {
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
+    const projectIndex = data.projects.findIndex(p => p.id === updatedProject.id);
+    if (projectIndex !== -1) {
+      data.projects[projectIndex] = updatedProject;
+      await writeDbFile(pmDbPath, data);
+    } else {
+      throw new Error(`Project with id ${updatedProject.id} not found.`);
     }
-  ],
-  "units": [
-    {
-      "name": "Kilogram",
-      "abbreviation": "kg"
-    },
-    {
-      "name": "Piece",
-      "abbreviation": "pcs"
-    },
-    {
-      "name": "Meter",
-      "abbreviation": "m"
-    },
-    {
-      "name": "Liter",
-      "abbreviation": "L"
-    },
-    {
-      "name": "Hour",
-      "abbreviation": "hr"
+}
+
+export async function deleteProject(projectId: string): Promise<void> {
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
+    const projectIndex = data.projects.findIndex(p => p.id === projectId);
+    if (projectIndex !== -1) {
+      data.projects.splice(projectIndex, 1);
+      data.tasks = data.tasks.filter(t => t.projectId !== projectId);
+      await writeDbFile(pmDbPath, data);
+    } else {
+      throw new Error(`Project with id ${projectId} not found.`);
     }
-  ],
-  "appSettings": {
-    "currency": "AED",
-    "dashboard": {
-      "showFinancialStats": false,
-      "showRevenueChart": false,
-      "showSalesAnalysis": false,
-      "showProjectManagementStats": false,
-      "showCrmStats": false,
-      "showPurchaseStats": true
-    },
-    "enabled_modules": {
-      "project_management": true,
-      "purchase": true,
-      "crm": false,
-      "payroll": true,
-      "user_management": true,
-      "sales": true
-    },
-    "quotationSettings": {
-      "termsAndConditions": "1. Payment to be made within 30 days of the invoice date.\r\n2. Any additional work not mentioned in this quotation will be charged separately.\r\n3. This quotation is valid for 15 days from the date of issue.",
-      "bankName": "Default Bank",
-      "accountNumber": "0000-0000-0000-0000",
-      "iban": "AE000000000000000000000",
-      "taxPercentage": 5
+}
+
+export async function getTasks(): Promise<Task[]> {
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
+    return data.tasks || [];
+}
+
+export async function getTaskById(id: string): Promise<Task | undefined> {
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
+    return (data.tasks || []).find(t => t.id === id);
+}
+
+export async function getTasksByProjectId(projectId: string): Promise<Task[]> {
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
+    return (data.tasks || []).filter(t => t.projectId === projectId);
+}
+
+export async function createTask(newTask: Task): Promise<void> {
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
+    data.tasks.push(newTask);
+    await writeDbFile(pmDbPath, data);
+}
+
+export async function updateTask(updatedTask: Partial<Task> & { id: string }): Promise<void> {
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
+    const taskIndex = data.tasks.findIndex(t => t.id === updatedTask.id);
+    if (taskIndex !== -1) {
+      data.tasks[taskIndex] = { ...data.tasks[taskIndex], ...updatedTask };
+      await writeDbFile(pmDbPath, data);
+    } else {
+      throw new Error(`Task with id ${updatedTask.id} not found.`);
     }
-  },
-  "currencies": [
-    {
-      "name": "United States Dollar",
-      "code": "USD",
-      "symbol": "$"
-    },
-    {
-      "name": "Euro",
-      "code": "EUR",
-      "symbol": "€"
-    },
-    {
-      "name": "Japanese Yen",
-      "code": "JPY",
-      "symbol": "¥"
-    },
-    {
-      "name": "British Pound",
-      "code": "GBP",
-      "symbol": "£"
-    },
-    {
-      "name": "UAE Dirham",
-      "code": "AED",
-      "symbol": "د.إ"
-    },
-    {
-      "name": "Saudi Riyal",
-      "code": "SAR",
-      "symbol": "SAR"
-    },
-    {
-      "name": "Qatari Riyal",
-      "code": "QAR",
-      "symbol": "QAR"
-    },
-    {
-      "name": "Bahraini Dinar",
-      "code": "BHD",
-      "symbol": "BHD"
-    },
-    {
-      "name": "Kuwaiti Dinar",
-      "code": "KWD",
-      "symbol": "KWD"
-    },
-    {
-      "name": "Omani Rial",
-      "code": "OMR",
-      "symbol": "OMR"
+}
+
+export async function deleteTask(taskId: string): Promise<void> {
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
+    const taskIndex = data.tasks.findIndex(t => t.id === taskId);
+    if (taskIndex !== -1) {
+      data.tasks.splice(taskIndex, 1);
+      data.issues = data.issues.filter(i => i.taskId !== taskId);
+      await writeDbFile(pmDbPath, data);
+    } else {
+      throw new Error(`Task with id ${taskId} not found.`);
     }
-  ],
-  "employees": [
-    {
-      "id": "EMP-001",
-      "name": "John Doe",
-      "positionId": "POS-001",
-      "email": "john.doe@example.com",
-      "phone": "123-456-7890",
-      "hireDate": "2023-01-15"
-    },
-    {
-      "id": "EMP-002",
-      "name": "Jane Smith",
-      "positionId": "POS-002",
-      "email": "jane.smith@example.com",
-      "phone": "098-765-4321",
-      "hireDate": "2022-11-20"
+}
+
+export async function getIssues(): Promise<Issue[]> {
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
+    return data.issues || [];
+}
+
+export async function getIssueById(id: string): Promise<Issue | undefined> {
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
+    return (data.issues || []).find(i => i.id === id);
+}
+
+export async function getIssuesByTaskId(taskId: string): Promise<Issue[]> {
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
+    return (data.issues || []).filter(i => i.taskId === taskId);
+}
+
+export async function createIssue(newIssue: Issue): Promise<void> {
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
+    data.issues.push(newIssue);
+    await writeDbFile(pmDbPath, data);
+}
+
+export async function getTaskBlueprints(): Promise<TaskBlueprint[]> {
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
+    return data.taskBlueprints || [];
+}
+
+export async function createTaskBlueprint(newBlueprint: TaskBlueprint): Promise<void> {
+    const data = await readDbFile<ProjectManagementDb>(pmDbPath, { projects: [], tasks: [], issues: [], taskBlueprints: [] });
+    data.taskBlueprints.push(newBlueprint);
+    await writeDbFile(pmDbPath, data);
+}
+
+// Purchase Data
+type PurchaseDb = {
+    products: Product[];
+    units: any[];
+    productCategories: any[];
+    vendors: Vendor[];
+};
+
+export async function getProducts(): Promise<Product[]> {
+    const data = await readDbFile<PurchaseDb>(purchaseDbPath, { products: [], units: [], productCategories: [], vendors: [] });
+    return data.products || [];
+}
+
+export async function createProduct(newProduct: Product): Promise<void> {
+    const data = await readDbFile<PurchaseDb>(purchaseDbPath, { products: [], units: [], productCategories: [], vendors: [] });
+    data.products.push(newProduct);
+    await writeDbFile(purchaseDbPath, data);
+}
+
+export async function getUnits(): Promise<any[]> {
+    const data = await readDbFile<PurchaseDb>(purchaseDbPath, { products: [], units: [], productCategories: [], vendors: [] });
+    return data.units || [];
+}
+
+export async function createUnit(newUnit: any): Promise<void> {
+    const data = await readDbFile<PurchaseDb>(purchaseDbPath, { products: [], units: [], productCategories: [], vendors: [] });
+    data.units.push(newUnit);
+    await writeDbFile(purchaseDbPath, data);
+}
+
+export async function updateUnit(originalName: string, updatedUnit: any): Promise<void> {
+    const data = await readDbFile<PurchaseDb>(purchaseDbPath, { products: [], units: [], productCategories: [], vendors: [] });
+    const unitIndex = data.units.findIndex(u => u.name === originalName);
+    if (unitIndex !== -1) {
+        data.units[unitIndex] = updatedUnit;
+        await writeDbFile(purchaseDbPath, data);
+    } else {
+        throw new Error(`Unit with name ${originalName} not found.`);
     }
-  ],
-  "positions": [
-    {
-      "id": "POS-001",
-      "title": "Software Engineer",
-      "department": "Technology",
-      "baseSalary": 80000
-    },
-    {
-      "id": "POS-002",
-      "title": "Project Manager",
-      "department": "Management",
-      "baseSalary": 95000
+}
+
+export async function deleteUnit(unitName: string): Promise<void> {
+    const data = await readDbFile<PurchaseDb>(purchaseDbPath, { products: [], units: [], productCategories: [], vendors: [] });
+    const unitIndex = data.units.findIndex(u => u.name === unitName);
+    if (unitIndex !== -1) {
+        data.units.splice(unitIndex, 1);
+        await writeDbFile(purchaseDbPath, data);
+    } else {
+        throw new Error(`Unit with name ${unitName} not found.`);
     }
-  ],
-  "companyProfile": {
-    "companyName": "SAFARI FURNITURE LLC",
-    "trnNumber": "123456789012345",
-    "logoUrl": "data:image/png;base64,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",
-    "address": "Dubai, UAE",
-    "bankName": "",
-    "accountNumber": "",
-    "iban": ""
-  },
-  "users": [
-    {
-      "id": "USR-001",
-      "name": "Admin User",
-      "email": "admin@example.com",
-      "role": "Admin",
-      "status": "active"
-    },
-    {
-      "id": "USR-002",
-      "name": "Manager User",
-      "email": "manager@example.com",
-      "role": "Manager",
-      "status": "active"
-    },
-    {
-      "id": "USR-003",
-      "name": "Standard User",
-      "email": "user@example.com",
-      "role": "User",
-      "status": "inactive"
+}
+
+export async function getProductCategories(): Promise<any[]> {
+    const data = await readDbFile<PurchaseDb>(purchaseDbPath, { products: [], units: [], productCategories: [], vendors: [] });
+    return data.productCategories || [];
+}
+
+export async function createProductCategory(newCategory: any): Promise<void> {
+    const data = await readDbFile<PurchaseDb>(purchaseDbPath, { products: [], units: [], productCategories: [], vendors: [] });
+    data.productCategories.push(newCategory);
+    await writeDbFile(purchaseDbPath, data);
+}
+
+export async function updateProductCategory(originalName: string, updatedCategory: any): Promise<void> {
+    const data = await readDbFile<PurchaseDb>(purchaseDbPath, { products: [], units: [], productCategories: [], vendors: [] });
+    const categoryIndex = data.productCategories.findIndex((c: any) => c.name === originalName);
+    if (categoryIndex !== -1) {
+        data.productCategories[categoryIndex] = updatedCategory;
+        await writeDbFile(purchaseDbPath, data);
+    } else {
+        throw new Error(`Category with name ${originalName} not found.`);
     }
-  ],
-  "userRoles": [
-    {
-      "id": "ROLE-001",
-      "name": "Admin",
-      "description": "Full access to all modules and settings.",
-      "permissions": {
-        "view_dashboard": true,
-        "manage_projects": true,
-        "manage_tasks": true,
-        "manage_purchase_module": true,
-        "manage_crm_module": true,
-        "manage_payroll_module": true,
-        "manage_settings": true,
-        "manage_users": true
-      }
-    },
-    {
-      "id": "ROLE-002",
-      "name": "Manager",
-      "description": "Access to operational modules but not settings.",
-      "permissions": {
-        "view_dashboard": true,
-        "manage_projects": true,
-        "manage_tasks": true,
-        "manage_purchase_module": true,
-        "manage_crm_module": true,
-        "manage_payroll_module": true,
-        "manage_settings": false,
-        "manage_users": false
-      }
-    },
-    {
-      "id": "ROLE-003",
-      "name": "User",
-      "description": "Limited access for daily operations.",
-      "permissions": {
-        "view_dashboard": true,
-        "manage_projects": false,
-        "manage_tasks": true,
-        "manage_purchase_module": false,
-        "manage_crm_module": true,
-        "manage_payroll_module": false,
-        "manage_settings": false,
-        "manage_users": false
-      }
+}
+
+export async function deleteProductCategory(categoryName: string): Promise<void> {
+    const data = await readDbFile<PurchaseDb>(purchaseDbPath, { products: [], units: [], productCategories: [], vendors: [] });
+    const categoryIndex = data.productCategories.findIndex((c: any) => c.name === categoryName);
+    if (categoryIndex !== -1) {
+        data.productCategories.splice(categoryIndex, 1);
+        await writeDbFile(purchaseDbPath, data);
+    } else {
+        throw new Error(`Category with name ${categoryName} not found.`);
     }
-  ],
-  "estimations": [
-    {
-      "id": "EST-1001",
-      "title": "estimation 001111",
-      "tasks": [
-        {
-          "id": "ET-1001",
-          "title": "Kitchen Cabinet",
-          "description": "",
-          "items": [
-            {
-              "id": "FG_FNT_7001",
-              "name": "Ergonomic Office Chair",
-              "quantity": 1,
-              "cost": 349.99,
-              "type": "product"
-            },
-            {
-              "id": "adhoc-1754059951753",
-              "name": "labour charges",
-              "quantity": 15,
-              "cost": 5.85,
-              "type": "adhoc"
-            },
-            {
-              "id": "FG_FNT_7002",
-              "name": "TPR Desk 1700*55",
-              "quantity": 1,
-              "cost": 810.99,
-              "type": "product"
-            }
-          ],
-          "totalCost": 1248.73
-        }
-      ],
-      "totalCost": 1248.73,
-      "createdDate": "2025-08-01"
-    },
-    {
-      "id": "EST-1002",
-      "title": "Batches of costing",
-      "tasks": [
-        {
-          "id": "ET-1001",
-          "title": "Tasking bench",
-          "description": "this is apppering cost wise",
-          "items": [
-            {
-              "id": "FG_ELC_7002",
-              "name": "Wireless Mechanical Keyboard",
-              "quantity": 10,
-              "cost": 129.99,
-              "type": "product"
-            }
-          ],
-          "totalCost": 1299.9
+}
+
+export async function getVendors(): Promise<Vendor[]> {
+    const data = await readDbFile<PurchaseDb>(purchaseDbPath, { products: [], units: [], productCategories: [], vendors: [] });
+    return data.vendors || [];
+}
+
+export async function createVendor(newVendor: Vendor): Promise<void> {
+    const data = await readDbFile<PurchaseDb>(purchaseDbPath, { products: [], units: [], productCategories: [], vendors: [] });
+    data.vendors.push(newVendor);
+    await writeDbFile(purchaseDbPath, data);
+}
+
+export async function updateVendor(updatedVendor: Vendor): Promise<void> {
+    const data = await readDbFile<PurchaseDb>(purchaseDbPath, { products: [], units: [], productCategories: [], vendors: [] });
+    const vendorIndex = data.vendors.findIndex(v => v.id === updatedVendor.id);
+    if (vendorIndex !== -1) {
+        data.vendors[vendorIndex] = updatedVendor;
+        await writeDbFile(purchaseDbPath, data);
+    } else {
+        throw new Error(`Vendor with id ${updatedVendor.id} not found.`);
+    }
+}
+
+export async function deleteVendor(vendorId: string): Promise<void> {
+    const data = await readDbFile<PurchaseDb>(purchaseDbPath, { products: [], units: [], productCategories: [], vendors: [] });
+    data.vendors = data.vendors.filter(v => v.id !== vendorId);
+    await writeDbFile(purchaseDbPath, data);
+}
+
+// Settings Data
+type SettingsDb = {
+    appSettings: AppSettings;
+    currencies: Currency[];
+    companyProfile: CompanyProfile;
+    users: User[];
+    userRoles: UserRole[];
+};
+
+export async function getCurrencies(): Promise<Currency[]> {
+    const data = await readDbFile<SettingsDb>(settingsDbPath, { appSettings: {} as AppSettings, currencies: [], companyProfile: {} as CompanyProfile, users: [], userRoles: [] });
+    return data.currencies || [];
+}
+
+export async function createCurrency(newCurrency: Currency): Promise<void> {
+    const data = await readDbFile<SettingsDb>(settingsDbPath, { appSettings: {} as AppSettings, currencies: [], companyProfile: {} as CompanyProfile, users: [], userRoles: [] });
+    data.currencies.push(newCurrency);
+    await writeDbFile(settingsDbPath, data);
+}
+
+export async function updateCurrency(originalCode: string, updatedCurrency: Currency): Promise<void> {
+    const data = await readDbFile<SettingsDb>(settingsDbPath, { appSettings: {} as AppSettings, currencies: [], companyProfile: {} as CompanyProfile, users: [], userRoles: [] });
+    const currencyIndex = data.currencies.findIndex(c => c.code === originalCode);
+    if (currencyIndex !== -1) {
+        data.currencies[currencyIndex] = updatedCurrency;
+        await writeDbFile(settingsDbPath, data);
+    } else {
+        throw new Error(`Currency with code ${originalCode} not found.`);
+    }
+}
+
+export async function deleteCurrency(currencyCode: string): Promise<void> {
+    const data = await readDbFile<SettingsDb>(settingsDbPath, { appSettings: {} as AppSettings, currencies: [], companyProfile: {} as CompanyProfile, users: [], userRoles: [] });
+    const currencyIndex = data.currencies.findIndex(c => c.code === currencyCode);
+    if (currencyIndex !== -1) {
+        data.currencies.splice(currencyIndex, 1);
+        await writeDbFile(settingsDbPath, data);
+    } else {
+        throw new Error(`Currency with code ${currencyCode} not found.`);
+    }
+}
+
+export async function getAppSettings(): Promise<AppSettings> {
+    const data = await readDbFile<SettingsDb>(settingsDbPath, { appSettings: {} as AppSettings, currencies: [], companyProfile: {} as CompanyProfile, users: [], userRoles: [] });
+    const defaultSettings: AppSettings = {
+        currency: 'USD',
+        dashboard: {
+            showFinancialStats: true,
+            showRevenueChart: true,
+            showSalesAnalysis: true,
+            showProjectManagementStats: true,
+            showCrmStats: true,
+            showPurchaseStats: true,
         },
-        {
-          "id": "ET-1002",
-          "title": "second batch",
-          "description": "this is s ceoooennnncisdsdfa",
-          "items": [
-            {
-              "id": "adhoc-1754141733215",
-              "name": "labour chasrges ofr militory",
-              "quantity": 12,
-              "cost": 7.85,
-              "type": "adhoc"
-            },
-            {
-              "id": "FG_FNT_7002",
-              "name": "TPR Desk 1700*55",
-              "quantity": 11,
-              "cost": 810.99,
-              "type": "product"
-            }
-          ],
-          "totalCost": 9015.09
-        }
-      ],
-      "totalCost": 10314.99,
-      "createdDate": "2025-08-02"
-    },
-    {
-      "id": "EST-1003",
-      "title": "bED ROMM SETTT",
-      "tasks": [
-        {
-          "id": "ET-1001",
-          "title": "Cabinet",
-          "description": "dfdfd",
-          "items": [
-            {
-              "id": "FG_ELC_7002",
-              "name": "Wireless Mechanical Keyboard",
-              "quantity": 9,
-              "cost": 129.99,
-              "type": "product"
-            },
-            {
-              "id": "adhoc-1754147232263",
-              "name": "labourr",
-              "quantity": 10,
-              "cost": 8,
-              "type": "adhoc"
-            }
-          ],
-          "totalCost": 1249.91
+        enabled_modules: {
+            project_management: true,
+            purchase: true,
+            crm: true,
+            payroll: true,
+            user_management: true,
+            sales: true,
         },
-        {
-          "id": "ET-1002",
-          "title": "Bed ",
-          "description": "bEd size 120 /200",
-          "items": [
-            {
-              "id": "SRV_LBR_7001",
-              "name": "Skilled Carpentry",
-              "quantity": 4,
-              "cost": 75,
-              "type": "product"
-            },
-            {
-              "id": "FG_FNT_7001",
-              "name": "Ergonomic Office Chair",
-              "quantity": 9,
-              "cost": 349.99,
-              "type": "product"
-            },
-            {
-              "id": "adhoc-1754147317024",
-              "name": "LABOAUR CHARG E",
-              "quantity": 18,
-              "cost": 11.25,
-              "type": "adhoc"
-            }
-          ],
-          "totalCost": 3652.41
+        quotationSettings: {
+            termsAndConditions: "1. Payment to be made within 30 days of the invoice date.\n2. Any additional work not mentioned in this quotation will be charged separately.\n3. This quotation is valid for 15 days from the date of issue.",
+            bankName: "Default Bank",
+            accountNumber: "0000-0000-0000-0000",
+            iban: "AE000000000000000000000",
+            taxPercentage: 5
         }
-      ],
-      "totalCost": 4902.32,
-      "createdDate": "2025-08-02"
-    },
-    {
-      "id": "EST-1004",
-      "title": "this is estimation 00222222",
-      "customerId": "CS_4003",
-      "customerName": "sabood kuniyil",
-      "tasks": [
-        {
-          "id": "ET-1001",
-          "title": "Deskkinggnnngn",
-          "description": "ssss",
-          "items": [
-            {
-              "id": "SRV_CNS_7001",
-              "name": "Financial Consultation",
-              "quantity": 1,
-              "cost": 250,
-              "type": "product"
-            }
-          ],
-          "totalCost": 250
-        }
-      ],
-      "totalCost": 250,
-      "createdDate": "2025-08-03"
+    };
+    return { 
+        ...defaultSettings, 
+        ...data.appSettings, 
+        enabled_modules: { ...defaultSettings.enabled_modules, ...data.appSettings?.enabled_modules },
+        quotationSettings: { ...defaultSettings.quotationSettings, ...data.appSettings?.quotationSettings }
+    };
+}
+
+export async function updateAppSettings(newSettings: Partial<AppSettings>): Promise<{ message: string; }> {
+    try {
+        const data = await readDbFile<SettingsDb>(settingsDbPath, { appSettings: {} as AppSettings, currencies: [], companyProfile: {} as CompanyProfile, users: [], userRoles: [] });
+        data.appSettings = { ...data.appSettings, ...newSettings };
+        await writeDbFile(settingsDbPath, data);
+        return { message: 'Settings updated successfully.' };
+    } catch (error) {
+        console.error('Database error:', error);
+        return { message: 'Failed to update settings.' };
     }
-  ],
-  "quotations": [
-    {
-      "id": "QUO-1001",
-      "title": "estimation 001111",
-      "estimationId": "EST-1001",
-      "tasks": [
-        {
-          "id": "ET-1001",
-          "title": "Kitchen Cabinet",
-          "description": "",
-          "items": [
-            {
-              "id": "FG_FNT_7001",
-              "name": "Ergonomic Office Chair",
-              "quantity": 1,
-              "cost": 349.99,
-              "type": "product"
-            },
-            {
-              "id": "adhoc-1754059951753",
-              "name": "labour charges",
-              "quantity": 15,
-              "cost": 5.85,
-              "type": "adhoc"
-            },
-            {
-              "id": "FG_FNT_7002",
-              "name": "TPR Desk 1700*55",
-              "quantity": 1,
-              "cost": 810.99,
-              "type": "product"
-            }
-          ],
-          "totalCost": 1248.73
-        }
-      ],
-      "totalCost": 12848.73,
-      "status": "draft",
-      "customer": "N/A",
-      "createdDate": "2025-08-02",
-      "items": [
-        {
-          "id": "ET-1001",
-          "title": "Kitchen Cabinet",
-          "description": "",
-          "quantity": 1,
-          "rate": 1248.73
-        },
-        {
-          "id": "manual-1754146536663",
-          "title": "this is manual one",
-          "description": "Color 012",
-          "quantity": 5,
-          "rate": 2320
-        }
-      ]
-    },
-    {
-      "id": "QUO-1002",
-      "title": "bED ROMM SETTT",
-      "estimationId": "EST-1003",
-      "items": [
-        {
-          "id": "ET-1001",
-          "title": "Cabinet",
-          "description": "dfdfd",
-          "quantity": 1,
-          "rate": 1249.91
-        },
-        {
-          "id": "ET-1002",
-          "title": "Bed ",
-          "description": "bEd size 120 /200\nthat isbew \nthis is new",
-          "quantity": 1,
-          "rate": 3652.41
-        }
-      ],
-      "totalCost": 4902.32,
-      "status": "draft",
-      "customer": "N/A",
-      "createdDate": "2025-08-02"
-    },
-    {
-      "id": "QUO-1003",
-      "title": "estimation 001111",
-      "estimationId": "EST-1001",
-      "items": [
-        {
-          "id": "ET-1001",
-          "title": "Kitchen Cabinet",
-          "description": "",
-          "quantity": 1,
-          "rate": 1248.73
-        }
-      ],
-      "totalCost": 1248.73,
-      "status": "draft",
-      "customer": "N/A",
-      "createdDate": "2025-08-02"
-    },
-    {
-      "id": "QUO-1004",
-      "title": "Batches of costing",
-      "estimationId": "EST-1002",
-      "items": [
-        {
-          "id": "ET-1001",
-          "title": "Tasking bench",
-          "description": "this is apppering cost wise",
-          "quantity": 1,
-          "rate": 1299.9
-        },
-        {
-          "id": "ET-1002",
-          "title": "second batch",
-          "description": "this is s ceoooennnncisdsdfa",
-          "quantity": 1,
-          "rate": 9015.09
-        },
-        {
-          "id": "manual-1754150282623",
-          "title": "New Item",
-          "description": "this is amtticc",
-          "quantity": 3,
-          "rate": 650
-        }
-      ]
+}
+
+export async function getCompanyProfile(): Promise<CompanyProfile> {
+  const data = await readDbFile<SettingsDb>(settingsDbPath, { appSettings: {} as AppSettings, currencies: [], companyProfile: {} as CompanyProfile, users: [], userRoles: [] });
+  return data.companyProfile || {
+    companyName: "",
+    trnNumber: "",
+    logoUrl: "",
+    address: "",
+    bankName: "",
+    accountNumber: "",
+    iban: ""
+  };
+}
+
+export async function updateCompanyProfile(newProfileData: Partial<CompanyProfile>): Promise<void> {
+    const data = await readDbFile<SettingsDb>(settingsDbPath, { appSettings: {} as AppSettings, currencies: [], companyProfile: {} as CompanyProfile, users: [], userRoles: [] });
+    data.companyProfile = { ...(data.companyProfile || {}), ...newProfileData };
+    await writeDbFile(settingsDbPath, data);
+}
+
+export async function getUsers(): Promise<User[]> {
+  const data = await readDbFile<SettingsDb>(settingsDbPath, { appSettings: {} as AppSettings, currencies: [], companyProfile: {} as CompanyProfile, users: [], userRoles: [] });
+  return data.users || [];
+}
+
+export async function createUser(newUser: User): Promise<void> {
+  const data = await readDbFile<SettingsDb>(settingsDbPath, { appSettings: {} as AppSettings, currencies: [], companyProfile: {} as CompanyProfile, users: [], userRoles: [] });
+  data.users.push(newUser);
+  await writeDbFile(settingsDbPath, data);
+}
+
+export async function updateUser(updatedUser: User): Promise<void> {
+  const data = await readDbFile<SettingsDb>(settingsDbPath, { appSettings: {} as AppSettings, currencies: [], companyProfile: {} as CompanyProfile, users: [], userRoles: [] });
+  const userIndex = data.users.findIndex(u => u.id === updatedUser.id);
+  if (userIndex !== -1) {
+    data.users[userIndex] = updatedUser;
+    await writeDbFile(settingsDbPath, data);
+  } else {
+    throw new Error(`User with id ${updatedUser.id} not found.`);
+  }
+}
+
+export async function deleteUser(userId: string): Promise<void> {
+  const data = await readDbFile<SettingsDb>(settingsDbPath, { appSettings: {} as AppSettings, currencies: [], companyProfile: {} as CompanyProfile, users: [], userRoles: [] });
+  data.users = data.users.filter(u => u.id !== userId);
+  await writeDbFile(settingsDbPath, data);
+}
+
+export async function getUserRoles(): Promise<UserRole[]> {
+    const data = await readDbFile<SettingsDb>(settingsDbPath, { appSettings: {} as AppSettings, currencies: [], companyProfile: {} as CompanyProfile, users: [], userRoles: [] });
+    return data.userRoles || [];
+}
+
+export async function updateUserRole(updatedRole: Omit<UserRole, 'id'> & { id: string }): Promise<void> {
+  const data = await readDbFile<SettingsDb>(settingsDbPath, { appSettings: {} as AppSettings, currencies: [], companyProfile: {} as CompanyProfile, users: [], userRoles: [] });
+  const roleIndex = data.userRoles.findIndex(r => r.id === updatedRole.id);
+  if (roleIndex !== -1) {
+    data.userRoles[roleIndex] = { ...data.userRoles[roleIndex], ...updatedRole };
+    await writeDbFile(settingsDbPath, data);
+  } else {
+    throw new Error(`Role with id ${updatedRole.id} not found.`);
+  }
+}
+
+// Payroll Data
+type PayrollDb = {
+    employees: Employee[];
+    positions: Position[];
+};
+
+export async function getEmployees(): Promise<Employee[]> {
+  const data = await readDbFile<PayrollDb>(payrollDbPath, { employees: [], positions: [] });
+  return data.employees || [];
+}
+
+export async function getPositions(): Promise<Position[]> {
+  const data = await readDbFile<PayrollDb>(payrollDbPath, { employees: [], positions: [] });
+  return data.positions || [];
+}
+
+// CRM Data
+type CrmDb = {
+    customers: Customer[];
+};
+
+export async function getCustomers(): Promise<Customer[]> {
+    const data = await readDbFile<CrmDb>(crmDbPath, { customers: [] });
+    return data.customers || [];
+}
+
+export async function createCustomer(newCustomer: Customer): Promise<void> {
+    const data = await readDbFile<CrmDb>(crmDbPath, { customers: [] });
+    data.customers.push(newCustomer);
+    await writeDbFile(crmDbPath, data);
+}
+
+export async function updateCustomer(updatedCustomer: Customer): Promise<void> {
+    const data = await readDbFile<CrmDb>(crmDbPath, { customers: [] });
+    const customerIndex = data.customers.findIndex(c => c.id === updatedCustomer.id);
+    if (customerIndex !== -1) {
+        data.customers[customerIndex] = updatedCustomer;
+        await writeDbFile(crmDbPath, data);
+    } else {
+        throw new Error(`Customer with id ${updatedCustomer.id} not found.`);
     }
-  ],
-  "vendors": [
-    {
-      "id": "VND-001",
-      "name": "jogaram",
-      "email": "",
-      "phone": "",
-      "address": "",
-      "status": "active"
-    },
-    {
-      "id": "VND-002",
-      "name": "sdsdf",
-      "email": "",
-      "phone": "",
-      "address": "",
-      "status": "active"
-    },
-    {
-      "id": "VND-003",
-      "name": "zxczxczxc",
-      "email": "",
-      "phone": "",
-      "address": "",
-      "status": "active"
+}
+
+export async function deleteCustomer(customerId: string): Promise<void> {
+    const data = await readDbFile<CrmDb>(crmDbPath, { customers: [] });
+    data.customers = data.customers.filter(c => c.id !== customerId);
+    await writeDbFile(crmDbPath, data);
+}
+
+// Sales Data
+type SalesDb = {
+    estimations: Estimation[];
+    quotations: Quotation[];
+};
+
+export async function getEstimations(): Promise<Estimation[]> {
+    const data = await readDbFile<SalesDb>(salesDbPath, { estimations: [], quotations: [] });
+    return data.estimations || [];
+}
+
+export async function getEstimationById(id: string): Promise<Estimation | undefined> {
+    const data = await readDbFile<SalesDb>(salesDbPath, { estimations: [], quotations: [] });
+    return (data.estimations || []).find(e => e.id === id);
+}
+
+export async function createEstimation(newEstimation: Estimation): Promise<void> {
+    const data = await readDbFile<SalesDb>(salesDbPath, { estimations: [], quotations: [] });
+    data.estimations.push(newEstimation);
+    await writeDbFile(salesDbPath, data);
+}
+
+export async function updateEstimation(updatedEstimation: Estimation): Promise<void> {
+    const data = await readDbFile<SalesDb>(salesDbPath, { estimations: [], quotations: [] });
+    const estimationIndex = data.estimations.findIndex(e => e.id === updatedEstimation.id);
+    if (estimationIndex !== -1) {
+        data.estimations[estimationIndex] = updatedEstimation;
+        await writeDbFile(salesDbPath, data);
+    } else {
+        throw new Error(`Estimation with id ${updatedEstimation.id} not found.`);
     }
-  ],
-  "customers": [
-    {
-      "id": "CS_4001",
-      "name": "James Battual",
-      "email": "",
-      "phone": "",
-      "address": "",
-      "status": "active"
-    },
-    {
-      "id": "CS_4002",
-      "name": "Drakkulllan",
-      "email": "",
-      "phone": "",
-      "address": "",
-      "status": "active"
-    },
-    {
-      "id": "CS_4003",
-      "name": "sabood kuniyil",
-      "email": "",
-      "phone": "",
-      "address": "",
-      "status": "active"
+}
+
+export async function deleteEstimation(estimationId: string): Promise<void> {
+    const data = await readDbFile<SalesDb>(salesDbPath, { estimations: [], quotations: [] });
+    const estimationIndex = data.estimations.findIndex(e => e.id === estimationId);
+    if (estimationIndex !== -1) {
+        data.estimations.splice(estimationIndex, 1);
+        await writeDbFile(salesDbPath, data);
+    } else {
+        throw new Error(`Estimation with id ${estimationId} not found.`);
     }
-  ]
+}
+
+export async function getQuotations(): Promise<Quotation[]> {
+    const data = await readDbFile<SalesDb>(salesDbPath, { estimations: [], quotations: [] });
+    return data.quotations || [];
+}
+
+export async function getQuotationById(id: string): Promise<Quotation | undefined> {
+    const data = await readDbFile<SalesDb>(salesDbPath, { estimations: [], quotations: [] });
+    return (data.quotations || []).find(q => q.id === id);
+}
+
+export async function createQuotation(newQuotation: Quotation): Promise<void> {
+    const data = await readDbFile<SalesDb>(salesDbPath, { estimations: [], quotations: [] });
+    data.quotations.push(newQuotation);
+    await writeDbFile(salesDbPath, data);
+}
+
+export async function updateQuotation(updatedQuotation: Quotation): Promise<void> {
+    const data = await readDbFile<SalesDb>(salesDbPath, { estimations: [], quotations: [] });
+    const quotationIndex = data.quotations.findIndex(q => q.id === updatedQuotation.id);
+    if (quotationIndex !== -1) {
+        data.quotations[quotationIndex] = updatedQuotation;
+        await writeDbFile(salesDbPath, data);
+    } else {
+        throw new Error(`Quotation with id ${updatedQuotation.id} not found.`);
+    }
+}
+
+export async function getDbJsonContent(): Promise<{ content: string | null; error?: string }> {
+  try {
+    const settings = await fs.readFile(settingsDbPath, 'utf-8');
+    // In the future you might want to back up all the files
+    return { content: settings };
+  } catch (error) {
+    console.error('Database read error:', error);
+    return { content: null, error: 'Failed to read database file.' };
+  }
+}
+
+export async function restoreDbFromJsonContent(content: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    // Basic validation to ensure it's a JSON string
+    JSON.parse(content);
+    // In the future you might want to restore all the files
+    await fs.writeFile(settingsDbPath, content, 'utf-8');
+    return { success: true };
+  } catch (error: any) {
+    console.error('Database restore error:', error);
+    if (error instanceof SyntaxError) {
+      return { success: false, error: 'Invalid JSON file format.' };
+    }
+    return { success: false, error: 'Failed to restore database file.' };
+  }
 }
