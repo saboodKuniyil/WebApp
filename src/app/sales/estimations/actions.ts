@@ -17,6 +17,7 @@ const estimationItemSchema = z.object({
   color: z.string().optional(),
   model: z.string().optional(),
   notes: z.string().optional(),
+  imageUrl: z.string().optional(),
 });
 
 const estimationTaskSchema = z.object({
@@ -30,6 +31,8 @@ const estimationTaskSchema = z.object({
 const estimationSchema = z.object({
   id: z.string(),
   title: z.string().min(1, 'Title is required'),
+  customerId: z.string().optional(),
+  customerName: z.string().optional(),
   tasks: z.string()
     .min(1, 'At least one task is required')
     .transform(val => JSON.parse(val))
@@ -43,6 +46,7 @@ export type EstimationFormState = {
   errors?: {
     id?: string[];
     title?: string[];
+    customerId?: string[];
     tasks?: string[];
   };
 };
@@ -71,6 +75,8 @@ export async function createEstimation(
   const validatedFields = estimationSchema.safeParse({
     id: formData.get('id'),
     title: formData.get('title'),
+    customerId: formData.get('customerId'),
+    customerName: formData.get('customerName'),
     tasks: formData.get('tasks'),
     totalCost: formData.get('totalCost'),
     createdDate: new Date().toISOString().split('T')[0],
@@ -88,12 +94,14 @@ export async function createEstimation(
     };
   }
 
-  const { id, title, tasks, totalCost, createdDate } = validatedFields.data;
+  const { id, title, customerId, customerName, tasks, totalCost, createdDate } = validatedFields.data;
 
   try {
     await createDbEstimation({
       id,
       title,
+      customerId,
+      customerName,
       tasks,
       totalCost,
       createdDate
@@ -114,6 +122,8 @@ export async function updateEstimation(
   const validatedFields = estimationSchema.safeParse({
     id: formData.get('id'),
     title: formData.get('title'),
+    customerId: formData.get('customerId'),
+    customerName: formData.get('customerName'),
     tasks: formData.get('tasks'),
     totalCost: formData.get('totalCost'),
     createdDate: formData.get('createdDate'), // Pass existing date

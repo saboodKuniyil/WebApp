@@ -49,7 +49,7 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { EditEstimationDialog } from './edit-estimation-dialog';
 import { DeleteEstimationDialog } from './delete-estimation-dialog';
-import type { EstimationItem } from '@/lib/db';
+import type { EstimationItem, Customer } from '@/lib/db';
 
 
 export type EstimationTask = {
@@ -73,10 +73,11 @@ export type Estimation = {
 interface EstimationsListProps {
   data: Estimation[];
   products: Product[];
+  customers: Customer[];
 }
 
 
-export function EstimationsList({ data, products }: EstimationsListProps) {
+export function EstimationsList({ data, products, customers }: EstimationsListProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -248,7 +249,7 @@ export function EstimationsList({ data, products }: EstimationsListProps) {
               className="max-w-sm h-8"
             />
             <div className="flex space-x-2">
-              <AddEstimationDialog products={products} />
+              <AddEstimationDialog products={products} customers={customers} />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="ml-auto h-8">
@@ -327,6 +328,7 @@ export function EstimationsList({ data, products }: EstimationsListProps) {
                 setIsOpen={setIsEditDialogOpen}
                 estimation={selectedEstimation}
                 products={products}
+                customers={customers}
             />
             <DeleteEstimationDialog
                 isOpen={isDeleteDialogOpen}

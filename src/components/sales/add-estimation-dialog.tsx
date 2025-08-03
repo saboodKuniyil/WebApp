@@ -29,6 +29,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Card } from '../ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger as AccordionTriggerPrimitive } from '../ui/accordion';
 import { Textarea } from '../ui/textarea';
+import type { Customer } from '@/lib/db';
 
 const AccordionTrigger = React.forwardRef<
   React.ElementRef<typeof AccordionTriggerPrimitive>,
@@ -48,18 +49,20 @@ const initialState = { message: '', errors: {} };
 
 interface AddEstimationDialogProps {
     products: Product[];
+    customers: Customer[];
 }
 
 function SubmitButton() {
     return <Button type="submit">Create Estimation</Button>;
 }
 
-export function AddEstimationDialog({ products }: AddEstimationDialogProps) {
+export function AddEstimationDialog({ products, customers }: AddEstimationDialogProps) {
     const [state, dispatch] = useActionState(createEstimation, initialState);
     const [isOpen, setIsOpen] = React.useState(false);
     const [nextId, setNextId] = React.useState('');
     const [tasks, setTasks] = React.useState<EstimationTask[]>([]);
     const [totalCost, setTotalCost] = React.useState(0);
+    const [selectedCustomer, setSelectedCustomer] = React.useState<{id: string, name: string} | null>(null);
     
     // State for adding a product item
     const [selectedProduct, setSelectedProduct] = React.useState<string>('');
@@ -95,6 +98,7 @@ export function AddEstimationDialog({ products }: AddEstimationDialogProps) {
         formRef.current?.reset();
         setTasks([]);
         setTotalCost(0);
+        setSelectedCustomer(null);
         setSelectedProduct('');
         setProductQuantity(1);
         setAdhocName('');
@@ -216,6 +220,13 @@ export function AddEstimationDialog({ products }: AddEstimationDialogProps) {
         updateTaskCosts(updatedTasks);
     };
 
+    const handleCustomerSelect = (customerId: string) => {
+        const customer = customers.find(c => c.id === customerId);
+        if (customer) {
+            setSelectedCustomer({id: customer.id, name: customer.name});
+        }
+    }
+
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
@@ -233,16 +244,35 @@ export function AddEstimationDialog({ products }: AddEstimationDialogProps) {
                     <input type="hidden" name="id" value={nextId} />
                     <input type="hidden" name="tasks" value={JSON.stringify(tasks)} />
                     <input type="hidden" name="totalCost" value={totalCost} />
+                    <input type="hidden" name="customerId" value={selectedCustomer?.id || ''} />
+                    <input type="hidden" name="customerName" value={selectedCustomer?.name || ''} />
                     <ScrollArea className="h-[70vh] pr-4">
                         <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="id-display" className="text-right">Estimation ID</Label>
-                                <Input id="id-display" value={nextId} readOnly className="col-span-3 font-mono bg-muted" />
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="id-display">Estimation ID</Label>
+                                    <Input id="id-display" value={nextId} readOnly className="font-mono bg-muted" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="title">Title</Label>
+                                    <Input id="title" name="title" />
+                                    {state.errors?.title && <p className="text-red-500 text-xs text-right">{state.errors.title[0]}</p>}
+                                </div>
                             </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="title" className="text-right">Title</Label>
-                                <Input id="title" name="title" className="col-span-3" />
-                                {state.errors?.title && <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.title[0]}</p>}
+                            <div className="space-y-2">
+                                <Label htmlFor="customer">Customer</Label>
+                                <Select onValueChange={handleCustomerSelect}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select a customer" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {customers.map((customer) => (
+                                            <SelectItem key={customer.id} value={customer.id}>
+                                                {customer.name} ({customer.id})
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </div>
 
                             <Card className="p-4 space-y-2">
