@@ -294,6 +294,31 @@
           "rate": 650
         }
       ]
+    },
+    {
+      "id": "QUO-1005",
+      "title": "Bed room set",
+      "estimationId": "N/A",
+      "items": [
+        {
+          "id": "item-1754210988991",
+          "title": "Bed",
+          "description": "",
+          "quantity": 1,
+          "rate": 1523
+        },
+        {
+          "id": "item-1754211002648",
+          "title": "Table",
+          "description": "",
+          "quantity": 3,
+          "rate": 256
+        }
+      ],
+      "totalCost": 2291,
+      "status": "draft",
+      "customer": "sabood kuniyil",
+      "createdDate": "2025-08-03"
     }
   ]
 }
