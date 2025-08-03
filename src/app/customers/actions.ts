@@ -28,15 +28,22 @@ export type CustomerFormState = {
 
 export async function getNextCustomerId(): Promise<string> {
     const customers = await getCustomers();
+    const prefix = 'CS_';
+    const startNumber = 4001;
     if (customers.length === 0) {
-        return 'CUS-001';
+        return `${prefix}${startNumber}`;
     }
-    const customerIds = customers.map(u => parseInt(u.id.replace('CUS-', ''), 10)).filter(num => !isNaN(num));
+    const customerIds = customers
+      .map(u => u.id)
+      .filter(id => id.startsWith(prefix))
+      .map(id => parseInt(id.replace(prefix, ''), 10))
+      .filter(num => !isNaN(num));
+      
     if(customerIds.length === 0) {
-      return 'CUS-001';
+      return `${prefix}${startNumber}`;
     }
     const lastIdNumber = Math.max(...customerIds);
-    return `CUS-${(lastIdNumber + 1).toString().padStart(3, '0')}`;
+    return `${prefix}${lastIdNumber + 1}`;
 }
 
 export async function createCustomerAction(
