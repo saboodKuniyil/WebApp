@@ -756,6 +756,31 @@
       ],
       "totalCost": 4902.32,
       "createdDate": "2025-08-02"
+    },
+    {
+      "id": "EST-1004",
+      "title": "this is estimation 00222222",
+      "customerId": "CS_4003",
+      "customerName": "sabood kuniyil",
+      "tasks": [
+        {
+          "id": "ET-1001",
+          "title": "Deskkinggnnngn",
+          "description": "ssss",
+          "items": [
+            {
+              "id": "SRV_CNS_7001",
+              "name": "Financial Consultation",
+              "quantity": 1,
+              "cost": 250,
+              "type": "product"
+            }
+          ],
+          "totalCost": 250
+        }
+      ],
+      "totalCost": 250,
+      "createdDate": "2025-08-03"
     }
   ],
   "quotations": [
@@ -925,6 +950,14 @@
     {
       "id": "CS_4002",
       "name": "Drakkulllan",
+      "email": "",
+      "phone": "",
+      "address": "",
+      "status": "active"
+    },
+    {
+      "id": "CS_4003",
+      "name": "sabood kuniyil",
       "email": "",
       "phone": "",
       "address": "",
