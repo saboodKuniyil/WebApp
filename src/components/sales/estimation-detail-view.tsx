@@ -6,20 +6,21 @@ import * as React from 'react';
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import type { Product } from "@/components/purchase/products-list";
-import type { Estimation } from "./estimations-list";
+import type { Estimation, EstimationTask } from "./estimations-list";
 import { Button } from "../ui/button"
 import { Pencil, Trash2, FileText, GripVertical, FileSignature, Briefcase, User } from "lucide-react"
 import { useModules } from '@/context/modules-context';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 import { EditEstimationDialog } from './edit-estimation-dialog';
 import { DeleteEstimationDialog } from './delete-estimation-dialog';
-import { createQuotation } from '@/app/sales/quotations/actions';
+import { createQuotationFromEstimation } from '@/app/sales/quotations/actions';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { AddTaskDialog } from '../project-management/add-task-dialog';
-import { getProjects, getTaskBlueprints } from '@/lib/db';
+import { getProjects, getTaskBlueprints, getEstimations } from '@/lib/db';
 import type { Project } from '../project-management/projects-list';
 import type { TaskBlueprint } from '../project-management/task-blueprints-list';
+import { CreateQuotationDialog } from './create-quotation-dialog';
 
 
 interface EstimationDetailViewProps {
@@ -31,9 +32,6 @@ export function EstimationDetailView({ estimation, products }: EstimationDetailV
     const { currency } = useModules();
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
-    const [isCreatingQuotation, setIsCreatingQuotation] = React.useState(false);
-    const { toast } = useToast();
-    const router = useRouter();
     
     // State for AddTaskDialog
     const [projects, setProjects] = React.useState<Project[]>([]);
@@ -60,23 +58,6 @@ export function EstimationDetailView({ estimation, products }: EstimationDetailV
         }
         return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency.code }).format(amount);
     }, [currency]);
-
-    const handleCreateQuotation = async () => {
-        setIsCreatingQuotation(true);
-        const formData = new FormData();
-        formData.append('estimationId', estimation.id);
-        const result = await createQuotation({ message: '', errors: {} }, formData);
-
-        if(result.message.includes('success')) {
-            toast({ title: 'Success', description: 'Quotation created successfully.' });
-            if (result.quotationId) {
-                router.push(`/sales/quotations/${result.quotationId}`);
-            }
-        } else {
-            toast({ variant: 'destructive', title: 'Error', description: result.message });
-        }
-        setIsCreatingQuotation(false);
-    }
     
     return (
         <div className="space-y-6">
@@ -88,10 +69,15 @@ export function EstimationDetailView({ estimation, products }: EstimationDetailV
                             <CardDescription>{estimation.id}</CardDescription>
                         </div>
                         <div className="flex items-center gap-2">
-                             <Button onClick={handleCreateQuotation} disabled={isCreatingQuotation}>
-                                <FileSignature className="mr-2 h-4 w-4" />
-                                {isCreatingQuotation ? 'Creating...' : 'Create Quotation'}
-                             </Button>
+                             <CreateQuotationDialog 
+                                estimations={[estimation]}
+                                trigger={
+                                    <Button>
+                                        <FileSignature className="mr-2 h-4 w-4" />
+                                        Create Quotation
+                                    </Button>
+                                }
+                             />
                              <Button variant="outline" size="icon" onClick={() => setIsEditDialogOpen(true)}>
                                 <Pencil className="h-4 w-4" />
                                 <span className="sr-only">Edit Estimation</span>

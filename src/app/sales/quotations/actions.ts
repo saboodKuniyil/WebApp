@@ -24,16 +24,81 @@ export async function getNextQuotationId(): Promise<string> {
     return `QUO-${nextNumber}`;
 }
 
-const createQuotationSchema = z.object({
+const quotationItemSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string().optional(),
+  quantity: z.coerce.number().min(0.001, "Quantity must be positive"),
+  rate: z.coerce.number().min(0, "Cost must be a positive number"),
+  imageUrl: z.string().optional(),
+});
+
+const createQuotationFromScratchSchema = z.object({
+  id: z.string(),
+  title: z.string().min(1, 'Title is required'),
+  customer: z.string().min(1, 'Customer is required'),
+  items: z.string()
+    .min(1, 'At least one item is required')
+    .transform(val => JSON.parse(val))
+    .pipe(z.array(quotationItemSchema).min(1, 'At least one item is required')),
+  totalCost: z.coerce.number(),
+  createdDate: z.string(),
+});
+
+export async function createQuotationFromScratch(
+    prevState: { message: string; errors?: any },
+    formData: FormData
+): Promise<{ message: string; quotationId?: string; errors?: any }> {
+    const validatedFields = createQuotationFromScratchSchema.safeParse({
+        id: formData.get('id'),
+        title: formData.get('title'),
+        customer: formData.get('customer'),
+        items: formData.get('items'),
+        totalCost: formData.get('totalCost'),
+        createdDate: new Date().toISOString().split('T')[0],
+    });
+
+    if (!validatedFields.success) {
+        const errors = validatedFields.error.flatten().fieldErrors;
+        return { message: 'Failed to create quotation.', errors };
+    }
+
+    const { id, title, customer, items, totalCost, createdDate } = validatedFields.data;
+
+    try {
+        const newQuotation = {
+            id,
+            title,
+            estimationId: 'N/A', // No estimation linked
+            items,
+            totalCost,
+            status: 'draft' as const,
+            customer,
+            createdDate,
+        };
+
+        await createDbQuotation(newQuotation);
+        
+    } catch (error) {
+        console.error('Database Error:', error);
+        return { message: 'Failed to create quotation.' };
+    }
+
+    revalidatePath('/sales/quotations');
+    redirect(`/sales/quotations/${validatedFields.data.id}`);
+}
+
+
+const createQuotationFromEstSchema = z.object({
   estimationId: z.string().min(1, { message: 'Please select an estimation.' }),
 });
 
-export async function createQuotation(
+export async function createQuotationFromEstimation(
   prevState: { message: string; quotationId?: string; errors?: any },
   formData: FormData
 ): Promise<{ message: string; quotationId?: string; errors?: any }> {
   
-  const validatedFields = createQuotationSchema.safeParse({
+  const validatedFields = createQuotationFromEstSchema.safeParse({
     estimationId: formData.get('estimationId'),
   });
 
@@ -74,7 +139,7 @@ export async function createQuotation(
         items: newQuotationItems,
         totalCost: totalCost,
         status: 'draft' as const,
-        customer: 'N/A', // Placeholder, ideally this would come from estimation or be selectable
+        customer: estimation.customerName || 'N/A',
         createdDate: new Date().toISOString().split('T')[0],
     };
 

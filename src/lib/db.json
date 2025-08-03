@@ -439,7 +439,7 @@
     "enabled_modules": {
       "project_management": true,
       "purchase": true,
-      "crm": true,
+      "crm": false,
       "payroll": true,
       "user_management": true,
       "sales": true
@@ -917,6 +917,14 @@
     {
       "id": "CS_4001",
       "name": "James Battual",
+      "email": "",
+      "phone": "",
+      "address": "",
+      "status": "active"
+    },
+    {
+      "id": "CS_4002",
+      "name": "Drakkulllan",
       "email": "",
       "phone": "",
       "address": "",

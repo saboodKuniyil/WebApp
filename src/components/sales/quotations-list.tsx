@@ -48,6 +48,7 @@ import Link from 'next/link';
 import type { Estimation, EstimationItem } from './estimations-list';
 import { Badge } from '../ui/badge';
 import { CreateQuotationDialog } from './create-quotation-dialog';
+import { PlusCircle } from 'lucide-react';
 
 export type QuotationItem = {
     id: string; // Corresponds to the EstimationTask ID
@@ -222,7 +223,12 @@ export function QuotationsList({ data, estimations, products }: QuotationsListPr
               className="max-w-sm h-8"
             />
             <div className="flex space-x-2">
-              <CreateQuotationDialog estimations={estimations} />
+                <Button asChild>
+                    <Link href="/sales/quotations/new">
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Create Quotation
+                    </Link>
+                </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="ml-auto h-8">

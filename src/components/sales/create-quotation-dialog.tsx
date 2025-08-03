@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import * as React from 'react';
@@ -23,7 +24,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { PlusCircle, FileSignature } from 'lucide-react';
-import { createQuotation } from '@/app/sales/quotations/actions';
+import { createQuotationFromEstimation } from '@/app/sales/quotations/actions';
 import { useToast } from '@/hooks/use-toast';
 import type { Estimation } from './estimations-list';
 import { useRouter } from 'next/navigation';
@@ -36,10 +37,11 @@ function SubmitButton() {
 
 interface CreateQuotationDialogProps {
     estimations: Estimation[];
+    trigger: React.ReactNode;
 }
 
-export function CreateQuotationDialog({ estimations }: CreateQuotationDialogProps) {
-  const [state, dispatch] = useActionState(createQuotation, initialState);
+export function CreateQuotationDialog({ estimations, trigger }: CreateQuotationDialogProps) {
+  const [state, dispatch] = useActionState(createQuotationFromEstimation, initialState);
   const [isOpen, setIsOpen] = React.useState(false);
   const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
@@ -71,10 +73,7 @@ export function CreateQuotationDialog({ estimations }: CreateQuotationDialogProp
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Create Quotation
-        </Button>
+        {trigger}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
