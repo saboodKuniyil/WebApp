@@ -17,8 +17,9 @@ import { Textarea } from '../ui/textarea';
 import Link from 'next/link';
 import { Customer } from '@/lib/db';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+import { useRouter } from 'next/navigation';
 
-const initialState = { message: '', errors: {} };
+const initialState = { message: '', errors: {}, quotationId: '' };
 
 function SubmitButton() {
     return <Button type="submit">Create Quotation</Button>;
@@ -37,6 +38,7 @@ export function CreateQuotationForm({ customers }: CreateQuotationFormProps) {
     const { toast } = useToast();
     const formRef = React.useRef<HTMLFormElement>(null);
     const { currency } = useModules();
+    const router = useRouter();
 
     const formatCurrency = React.useCallback((amount: number) => {
         if (!currency) {
@@ -48,8 +50,13 @@ export function CreateQuotationForm({ customers }: CreateQuotationFormProps) {
     React.useEffect(() => {
         if (state.message && state.errors) {
             toast({ variant: 'destructive', title: 'Error', description: state.message });
+        } else if (state.message) {
+            toast({ title: 'Success', description: state.message });
+            if (state.quotationId) {
+                router.push(`/sales/quotations/${state.quotationId}`);
+            }
         }
-    }, [state, toast]);
+    }, [state, toast, router]);
 
     React.useEffect(() => {
         getNextQuotationId().then(setNextId);
@@ -105,9 +112,9 @@ export function CreateQuotationForm({ customers }: CreateQuotationFormProps) {
                             <Input id="id-display" value={nextId} readOnly className="font-mono bg-muted" />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="title">Title</Label>
-                            <Input id="title" name="title" />
-                            {state.errors?.title && <p className="text-red-500 text-xs text-right">{state.errors.title[0]}</p>}
+                            <Label htmlFor="projectName">Project Name</Label>
+                            <Input id="projectName" name="projectName" />
+                            {state.errors?.projectName && <p className="text-red-500 text-xs text-right">{state.errors.projectName[0]}</p>}
                         </div>
                     </div>
                      <div className="space-y-2">

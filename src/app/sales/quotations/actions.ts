@@ -35,7 +35,7 @@ const quotationItemSchema = z.object({
 
 const createQuotationFromScratchSchema = z.object({
   id: z.string(),
-  title: z.string().min(1, 'Title is required'),
+  projectName: z.string().min(1, 'Project Name is required'),
   customer: z.string().min(1, 'Customer is required'),
   items: z.string()
     .min(1, 'At least one item is required')
@@ -46,12 +46,12 @@ const createQuotationFromScratchSchema = z.object({
 });
 
 export async function createQuotationFromScratch(
-    prevState: { message: string; errors?: any },
+    prevState: { message: string; errors?: any, quotationId?: string },
     formData: FormData
 ): Promise<{ message: string; quotationId?: string; errors?: any }> {
     const validatedFields = createQuotationFromScratchSchema.safeParse({
         id: formData.get('id'),
-        title: formData.get('title'),
+        projectName: formData.get('projectName'),
         customer: formData.get('customer'),
         items: formData.get('items'),
         totalCost: formData.get('totalCost'),
@@ -63,12 +63,12 @@ export async function createQuotationFromScratch(
         return { message: 'Failed to create quotation.', errors };
     }
 
-    const { id, title, customer, items, totalCost, createdDate } = validatedFields.data;
+    const { id, projectName, customer, items, totalCost, createdDate } = validatedFields.data;
 
     try {
         const newQuotation = {
             id,
-            title,
+            title: projectName,
             estimationId: 'N/A', // No estimation linked
             items,
             totalCost,
@@ -85,7 +85,9 @@ export async function createQuotationFromScratch(
     }
 
     revalidatePath('/sales/quotations');
-    redirect(`/sales/quotations/${validatedFields.data.id}`);
+    // We can't redirect from here because the toast message won't be shown.
+    // Instead, we will return the ID and redirect from the client component.
+    return { message: 'Quotation created successfully.', quotationId: validatedFields.data.id, errors: {} };
 }
 
 
