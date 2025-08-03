@@ -96,6 +96,11 @@ export function DashboardSidebarItems() {
                     </SidebarMenuSubButton>
                   </SidebarMenuItem>
                    <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/sales/customers'}>
+                      <Link href="/sales/customers"><UsersIcon />Customers</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                   <SidebarMenuItem>
                     <SidebarMenuSubButton asChild isActive={pathname === '/sales/estimations'}>
                       <Link href="/sales/estimations"><FileSignature />Estimations</Link>
                     </SidebarMenuSubButton>
