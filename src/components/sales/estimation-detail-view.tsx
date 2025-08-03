@@ -21,14 +21,16 @@ import { getProjects, getTaskBlueprints, getEstimations } from '@/lib/db';
 import type { Project } from '../project-management/projects-list';
 import type { TaskBlueprint } from '../project-management/task-blueprints-list';
 import { CreateQuotationDialog } from './create-quotation-dialog';
+import type { Customer } from '@/lib/db';
 
 
 interface EstimationDetailViewProps {
     estimation: Estimation;
     products: Product[];
+    customers: Customer[];
 }
 
-export function EstimationDetailView({ estimation, products }: EstimationDetailViewProps) {
+export function EstimationDetailView({ estimation, products, customers }: EstimationDetailViewProps) {
     const { currency } = useModules();
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
@@ -192,6 +194,7 @@ export function EstimationDetailView({ estimation, products }: EstimationDetailV
                 setIsOpen={setIsEditDialogOpen}
                 estimation={estimation}
                 products={products}
+                customers={customers}
             />
             <DeleteEstimationDialog
                 isOpen={isDeleteDialogOpen}

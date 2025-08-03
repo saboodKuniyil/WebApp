@@ -1,7 +1,8 @@
 
-import { getEstimationById, getProducts } from '@/lib/db';
+import { getEstimationById, getProducts, getCustomers } from '@/lib/db';
 import type { Estimation } from "@/components/sales/estimations-list";
 import type { Product } from "@/components/purchase/products-list";
+import type { Customer } from "@/lib/db";
 import { notFound } from 'next/navigation';
 import { EstimationDetailView } from '@/components/sales/estimation-detail-view';
 import Link from 'next/link';
@@ -16,15 +17,20 @@ async function fetchProducts(): Promise<Product[]> {
     return getProducts();
 }
 
+async function fetchCustomers(): Promise<Customer[]> {
+    return getCustomers();
+}
 
 export default async function EstimationDetailPage({ params }: { params: { id: string } }) {
-  const estimation = await getEstimation(params.id);
+  const [estimation, products, customers] = await Promise.all([
+    getEstimation(params.id),
+    fetchProducts(),
+    fetchCustomers()
+  ]);
   
   if (!estimation) {
     notFound();
   }
-  
-  const products = await fetchProducts();
 
   return (
     <main className="flex-1 space-y-4 p-2 md:p-4 pt-4">
@@ -36,7 +42,7 @@ export default async function EstimationDetailPage({ params }: { params: { id: s
             </Link>
         </Button>
       </div>
-      <EstimationDetailView estimation={estimation} products={products} />
+      <EstimationDetailView estimation={estimation} products={products} customers={customers} />
     </main>
   );
 }
