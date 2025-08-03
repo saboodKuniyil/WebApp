@@ -6,19 +6,17 @@ import { useActionState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Plus, Trash2, GripVertical } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import { createQuotationFromScratch, getNextQuotationId } from '@/app/sales/quotations/actions';
 import { useToast } from '@/hooks/use-toast';
-import { ScrollArea } from '../ui/scroll-area';
 import { useModules } from '@/context/modules-context';
-import type { Product } from '../purchase/products-list';
 import type { QuotationItem } from './quotations-list';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../ui/card';
 import { Textarea } from '../ui/textarea';
 import Link from 'next/link';
 import { Customer } from '@/lib/db';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 
 const initialState = { message: '', errors: {} };
 
@@ -27,25 +25,14 @@ function SubmitButton() {
 }
 
 interface CreateQuotationFormProps {
-    products: Product[];
     customers: Customer[];
 }
 
-export function CreateQuotationForm({ products, customers }: CreateQuotationFormProps) {
+export function CreateQuotationForm({ customers }: CreateQuotationFormProps) {
     const [state, dispatch] = useActionState(createQuotationFromScratch, initialState);
     const [nextId, setNextId] = React.useState('');
     const [items, setItems] = React.useState<QuotationItem[]>([]);
     const [totalCost, setTotalCost] = React.useState(0);
-    
-    // State for adding a product item
-    const [selectedProduct, setSelectedProduct] = React.useState<string>('');
-    const [productQuantity, setProductQuantity] = React.useState(1);
-    
-    // State for adding an ad-hoc item
-    const [adhocName, setAdhocName] = React.useState('');
-    const [adhocQuantity, setAdhocQuantity] = React.useState(1);
-    const [adhocRate, setAdhocRate] = React.useState(0);
-    const [adhocDescription, setAdhocDescription] = React.useState('');
     
     const { toast } = useToast();
     const formRef = React.useRef<HTMLFormElement>(null);
@@ -72,40 +59,28 @@ export function CreateQuotationForm({ products, customers }: CreateQuotationForm
         const newTotalCost = items.reduce((acc, item) => acc + (item.quantity * item.rate), 0);
         setTotalCost(newTotalCost);
     }, [items]);
-
-    const handleAddItem = (item: QuotationItem) => {
-        setItems(prev => [...prev, item]);
-    };
     
-    const handleAddProduct = () => {
-        const product = products.find(p => p.id === selectedProduct);
-        if (!product || !selectedProduct) return;
-        
-        handleAddItem({
-            id: product.id,
-            title: product.name,
-            description: product.description,
-            quantity: productQuantity,
-            rate: product.salesPrice,
-            imageUrl: product.imageUrl
-        });
-        setSelectedProduct('');
-        setProductQuantity(1);
+    const handleItemChange = (itemId: string, field: keyof QuotationItem, value: string | number) => {
+        setItems(prevItems =>
+            prevItems.map(item => {
+                if (item.id === itemId) {
+                    const updatedValue = typeof value === 'string' && (field === 'quantity' || field === 'rate') ? parseFloat(value) || 0 : value;
+                    return { ...item, [field]: updatedValue };
+                }
+                return item;
+            })
+        );
     };
 
-    const handleAddAdhocItem = () => {
-        if (!adhocName || adhocQuantity <= 0 || adhocRate < 0) return;
-        handleAddItem({
-            id: `adhoc-${Date.now()}`,
-            title: adhocName,
-            description: adhocDescription,
-            quantity: adhocQuantity,
-            rate: adhocRate,
-        });
-        setAdhocName('');
-        setAdhocQuantity(1);
-        setAdhocRate(0);
-        setAdhocDescription('');
+    const handleAddItem = () => {
+        const newItem: QuotationItem = {
+            id: `item-${Date.now()}`,
+            title: '',
+            description: '',
+            quantity: 1,
+            rate: 0,
+        };
+        setItems(prev => [...prev, newItem]);
     };
     
     const handleRemoveItem = (itemId: string) => {
@@ -117,7 +92,7 @@ export function CreateQuotationForm({ products, customers }: CreateQuotationForm
             <Card>
                 <CardHeader>
                     <CardTitle>New Quotation</CardTitle>
-                    <CardDescription>Build a quotation by adding products or ad-hoc items.</CardDescription>
+                    <CardDescription>Build a quotation by adding custom line items.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                     <input type="hidden" name="id" value={nextId} />
@@ -154,64 +129,79 @@ export function CreateQuotationForm({ products, customers }: CreateQuotationForm
 
                     <div className="space-y-2">
                         <Label>Quotation Items</Label>
-                        <div className="border rounded-lg p-2 space-y-2">
-                            {items.length > 0 ? (
-                                <>
-                                 <div className="grid grid-cols-[1fr_80px_80px_80px_40px] items-center gap-x-4 px-2 text-xs text-muted-foreground font-medium">
-                                    <span>Material / Service</span>
-                                    <span className="text-right">Qty</span>
-                                    <span className="text-right">Rate</span>
-                                    <span className="text-right">Total</span>
-                                    <span></span>
-                                </div>
-                                {items.map(item => (
-                                    <div key={item.id} className="grid grid-cols-[1fr_80px_80px_80px_40px] items-center gap-x-4 p-2 border rounded-md text-sm">
-                                        <span className="truncate font-medium" title={item.title}>{item.title}</span>
-                                        <span className="text-right">{item.quantity}</span>
-                                        <span className="text-right">{formatCurrency(item.rate)}</span>
-                                        <span className="text-right font-semibold">{formatCurrency(item.rate * item.quantity)}</span>
-                                        <Button type="button" variant="ghost" size="icon" className="h-6 w-6 justify-self-end" onClick={() => handleRemoveItem(item.id)}>
-                                            <Trash2 className="h-4 w-4 text-destructive" />
-                                        </Button>
-                                    </div>
-                                ))}
-                                </>
-                            ) : (
-                                <div className="text-center text-muted-foreground py-8">No items added yet.</div>
-                            )}
+                        <div className="rounded-md border">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="w-2/5">Item</TableHead>
+                                        <TableHead className="w-[100px] text-right">Qty</TableHead>
+                                        <TableHead className="w-[120px] text-right">Rate</TableHead>
+                                        <TableHead className="w-[120px] text-right">Amount</TableHead>
+                                        <TableHead className="w-[50px]"></TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {items.length > 0 ? (
+                                        items.map(item => (
+                                            <TableRow key={item.id}>
+                                                <TableCell className="p-2 align-top">
+                                                    <Input 
+                                                        placeholder="Item Name"
+                                                        value={item.title}
+                                                        onChange={(e) => handleItemChange(item.id, 'title', e.target.value)}
+                                                        className="font-medium mb-1 h-8"
+                                                    />
+                                                    <Textarea 
+                                                        placeholder="Description"
+                                                        value={item.description}
+                                                        onChange={(e) => handleItemChange(item.id, 'description', e.target.value)}
+                                                        className="text-xs"
+                                                        rows={1}
+                                                    />
+                                                </TableCell>
+                                                <TableCell className="p-2 align-top text-right">
+                                                    <Input
+                                                        type="number"
+                                                        value={item.quantity}
+                                                        onChange={(e) => handleItemChange(item.id, 'quantity', e.target.value)}
+                                                        className="text-right h-8"
+                                                    />
+                                                </TableCell>
+                                                <TableCell className="p-2 align-top text-right">
+                                                    <Input
+                                                        type="number"
+                                                        step="0.01"
+                                                        value={item.rate}
+                                                        onChange={(e) => handleItemChange(item.id, 'rate', e.target.value)}
+                                                        className="text-right h-8"
+                                                    />
+                                                </TableCell>
+                                                 <TableCell className="p-2 align-top text-right font-medium">
+                                                    {formatCurrency(item.quantity * item.rate)}
+                                                </TableCell>
+                                                <TableCell className="p-2 align-top text-right">
+                                                    <Button variant="ghost" size="icon" type="button" onClick={() => handleRemoveItem(item.id)}>
+                                                        <Trash2 className="h-4 w-4 text-destructive" />
+                                                    </Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                    ) : (
+                                        <TableRow>
+                                            <TableCell colSpan={5} className="text-center h-24 text-muted-foreground">
+                                                No items added yet.
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </div>
+                        <div className="flex justify-start mt-2">
+                            <Button type="button" variant="outline" onClick={handleAddItem}><Plus className="h-4 w-4 mr-2"/>Add Item</Button>
                         </div>
                          {state.errors?.items && <p className="text-red-500 text-xs text-right">{state.errors.items[0]}</p>}
                     </div>
-                     <Card className="p-4 mt-4">
-                        <Tabs defaultValue="product">
-                            <TabsList className="grid w-full grid-cols-2">
-                                <TabsTrigger value="product">Add Product</TabsTrigger>
-                                <TabsTrigger value="adhoc">Add Ad-hoc Item</TabsTrigger>
-                            </TabsList>
-                            <TabsContent value="product" className="pt-4">
-                                <div className="flex items-end gap-2">
-                                    <div className="flex-1 space-y-1">
-                                        <Label>Product</Label>
-                                        <Select onValueChange={setSelectedProduct}><SelectTrigger><SelectValue placeholder="Select a product" /></SelectTrigger><SelectContent>{products.map(p => <SelectItem key={p.id} value={p.id}>{p.name} ({p.id})</SelectItem>)}</SelectContent></Select>
-                                    </div>
-                                    <div className="space-y-1"><Label>Quantity</Label><Input type="number" value={productQuantity} onChange={e => setProductQuantity(Number(e.target.value))} className="w-24" min="1" /></div>
-                                    <Button type="button" onClick={handleAddProduct}><Plus className="h-4 w-4 mr-2" />Add</Button>
-                                </div>
-                            </TabsContent>
-                            <TabsContent value="adhoc" className="pt-4 space-y-2">
-                                <div className="flex items-end gap-2">
-                                    <div className="flex-1 space-y-1"><Label>Item Name</Label><Input value={adhocName} onChange={e => setAdhocName(e.target.value)} /></div>
-                                    <div className="space-y-1"><Label>Quantity</Label><Input type="number" value={adhocQuantity} onChange={e => setAdhocQuantity(Number(e.target.value))} className="w-24" min="1" /></div>
-                                    <div className="space-y-1"><Label>Rate per Item</Label><Input type="number" value={adhocRate} onChange={e => setAdhocRate(Number(e.target.value))} className="w-28" /></div>
-                                </div>
-                                <div className="space-y-1"><Label>Description</Label><Textarea value={adhocDescription} onChange={e => setAdhocDescription(e.target.value)} /></div>
-                                <div className="flex justify-end">
-                                    <Button type="button" onClick={handleAddAdhocItem}><Plus className="h-4 w-4 mr-2" />Add</Button>
-                                </div>
-                            </TabsContent>
-                        </Tabs>
-                    </Card>
-
+                    
                     <div className="flex justify-end">
                         <div className="text-right space-y-1 p-4 rounded-md border w-64 bg-background">
                             <div className="flex justify-between">
