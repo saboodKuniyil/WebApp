@@ -20,14 +20,15 @@ export function DashboardSidebarItems() {
   const pathname = usePathname();
   const { isProjectManagementEnabled, isPurchaseModuleEnabled, isCrmEnabled, isPayrollEnabled, isUserManagementEnabled, isSalesModuleEnabled } = useModules();
   
-  const isCrmOpen = pathname.startsWith('/crm');
-  const isSalesOpen = pathname.startsWith('/sales');
-  const isProjectManagementOpen = pathname.startsWith('/project-management');
-  const isPurchaseOpen = pathname.startsWith('/purchase');
-  const isPayrollOpen = pathname.startsWith('/payroll');
-  const isSettingsOpen = pathname.startsWith('/settings') || pathname.startsWith('/modules');
-  const isUserManagementOpen = pathname.startsWith('/settings/user-management');
-  const isPreferencesOpen = pathname.startsWith('/settings/preferences');
+  const [isCrmOpen, setIsCrmOpen] = React.useState(pathname.startsWith('/crm'));
+  const [isSalesOpen, setIsSalesOpen] = React.useState(pathname.startsWith('/sales'));
+  const [isProjectManagementOpen, setIsProjectManagementOpen] = React.useState(pathname.startsWith('/project-management'));
+  const [isPurchaseOpen, setIsPurchaseOpen] = React.useState(pathname.startsWith('/purchase'));
+  const [isPayrollOpen, setIsPayrollOpen] = React.useState(pathname.startsWith('/payroll'));
+  const [isSettingsOpen, setIsSettingsOpen] = React.useState(pathname.startsWith('/settings') || pathname.startsWith('/modules'));
+  const [isUserManagementOpen, setIsUserManagementOpen] = React.useState(pathname.startsWith('/settings/user-management'));
+  const [isPreferencesOpen, setIsPreferencesOpen] = React.useState(pathname.startsWith('/settings/preferences'));
+
 
   return (
     <SidebarMenu>
@@ -42,7 +43,7 @@ export function DashboardSidebarItems() {
       
       {isCrmEnabled && (
          <SidebarMenuItem>
-            <Collapsible defaultOpen={isCrmOpen}>
+            <Collapsible open={isCrmOpen} onOpenChange={setIsCrmOpen}>
               <CollapsibleTrigger asChild>
                   <SidebarMenuButton className="w-full justify-between">
                       <div className="flex items-center gap-2">
@@ -78,7 +79,7 @@ export function DashboardSidebarItems() {
 
       {isSalesModuleEnabled && (
          <SidebarMenuItem>
-            <Collapsible defaultOpen={isSalesOpen}>
+            <Collapsible open={isSalesOpen} onOpenChange={setIsSalesOpen}>
               <CollapsibleTrigger asChild>
                   <SidebarMenuButton className="w-full justify-between">
                       <div className="flex items-center gap-2">
@@ -128,7 +129,7 @@ export function DashboardSidebarItems() {
 
       {isProjectManagementEnabled && (
          <SidebarMenuItem>
-            <Collapsible defaultOpen={isProjectManagementOpen}>
+            <Collapsible open={isProjectManagementOpen} onOpenChange={setIsProjectManagementOpen}>
               <CollapsibleTrigger asChild>
                   <SidebarMenuButton className="w-full justify-between">
                       <div className="flex items-center gap-2">
@@ -172,7 +173,7 @@ export function DashboardSidebarItems() {
       )}
       {isPurchaseModuleEnabled && (
         <SidebarMenuItem>
-          <Collapsible defaultOpen={isPurchaseOpen}>
+          <Collapsible open={isPurchaseOpen} onOpenChange={setIsPurchaseOpen}>
             <CollapsibleTrigger asChild>
                 <SidebarMenuButton className="w-full justify-between">
                     <div className="flex items-center gap-2">
@@ -222,7 +223,7 @@ export function DashboardSidebarItems() {
 
       {isPayrollEnabled && (
          <SidebarMenuItem>
-            <Collapsible defaultOpen={isPayrollOpen}>
+            <Collapsible open={isPayrollOpen} onOpenChange={setIsPayrollOpen}>
               <CollapsibleTrigger asChild>
                   <SidebarMenuButton className="w-full justify-between">
                       <div className="flex items-center gap-2">
@@ -261,7 +262,7 @@ export function DashboardSidebarItems() {
       )}
 
        <SidebarMenuItem>
-            <Collapsible defaultOpen={isSettingsOpen}>
+            <Collapsible open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
                 <CollapsibleTrigger asChild>
                     <SidebarMenuButton className="w-full justify-between">
                         <div className="flex items-center gap-2">
@@ -291,7 +292,7 @@ export function DashboardSidebarItems() {
                         </SidebarMenuItem>
                         {isUserManagementEnabled && (
                           <SidebarMenuItem>
-                             <Collapsible defaultOpen={isUserManagementOpen}>
+                             <Collapsible open={isUserManagementOpen} onOpenChange={setIsUserManagementOpen}>
                                 <CollapsibleTrigger asChild>
                                     <SidebarMenuSubButton className="w-full justify-between">
                                         <div className="flex items-center gap-2">
@@ -327,7 +328,7 @@ export function DashboardSidebarItems() {
                             </SidebarMenuSubButton>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
-                            <Collapsible defaultOpen={isPreferencesOpen}>
+                            <Collapsible open={isPreferencesOpen} onOpenChange={setIsPreferencesOpen}>
                                 <CollapsibleTrigger asChild>
                                     <SidebarMenuSubButton className="w-full justify-between">
                                         <div className="flex items-center gap-2">
