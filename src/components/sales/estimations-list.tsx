@@ -66,6 +66,8 @@ export type Estimation = {
     tasks: EstimationTask[];
     totalCost: number;
     createdDate: string;
+    customerId?: string;
+    customerName?: string;
 };
 
 interface EstimationsListProps {
@@ -158,6 +160,10 @@ export function EstimationsList({ data, products }: EstimationsListProps) {
           {row.getValue('title')}
       </Link>
     ),
+  },
+   {
+    accessorKey: 'customerName',
+    header: 'Customer',
   },
   {
     accessorKey: 'totalCost',

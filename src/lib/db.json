@@ -913,5 +913,14 @@
       "status": "active"
     }
   ],
-  "customers": []
+  "customers": [
+    {
+      "id": "CS_4001",
+      "name": "James Battual",
+      "email": "",
+      "phone": "",
+      "address": "",
+      "status": "active"
+    }
+  ]
 }

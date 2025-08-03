@@ -130,6 +130,10 @@ export function QuotationsList({ data, estimations, products }: QuotationsListPr
       </Link>
     ),
   },
+   {
+    accessorKey: 'customer',
+    header: 'Customer',
+  },
   {
     accessorKey: 'status',
     header: 'Status',

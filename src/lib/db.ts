@@ -10,7 +10,7 @@ import type { Issue } from '@/components/project-management/issues-list';
 import type { TaskBlueprint } from '@/components/project-management/task-blueprints-list';
 import type { Product } from '@/components/purchase/products-list';
 import type { Currency } from '@/components/settings/currency-management';
-import type { Estimation } from './estimations-list';
+import type { Estimation } from '@/components/sales/estimations-list';
 import type { Quotation } from '@/components/sales/quotations-list';
 
 const dbPath = path.join(process.cwd(), 'src', 'lib', 'db.json');

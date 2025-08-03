@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import type { Product } from "@/components/purchase/products-list";
 import type { Estimation } from "./estimations-list";
 import { Button } from "../ui/button"
-import { Pencil, Trash2, FileText, GripVertical, FileSignature, Briefcase } from "lucide-react"
+import { Pencil, Trash2, FileText, GripVertical, FileSignature, Briefcase, User } from "lucide-react"
 import { useModules } from '@/context/modules-context';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 import { EditEstimationDialog } from './edit-estimation-dialog';
@@ -109,6 +109,12 @@ export function EstimationDetailView({ estimation, products }: EstimationDetailV
                             <p className="font-semibold">Date Created</p>
                             <p>{estimation.createdDate}</p>
                         </div>
+                        {estimation.customerName && (
+                            <div>
+                                <p className="font-semibold flex items-center gap-1"><User className="h-4 w-4" /> Customer</p>
+                                <p>{estimation.customerName}</p>
+                            </div>
+                        )}
                     </div>
                      <div className="flex justify-end">
                         <div className="text-right space-y-1 p-4 rounded-md border w-80 bg-background">
