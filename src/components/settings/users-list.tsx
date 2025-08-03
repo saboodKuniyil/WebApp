@@ -46,7 +46,7 @@ import { EditUserDialog } from './edit-user-dialog';
 import { DeleteUserDialog } from './delete-user-dialog';
 import type { User } from '@/lib/db';
 
-const statusColors = {
+const statusColors: Record<User['status'], string> = {
   active: 'bg-green-500/20 text-green-700 dark:text-green-300',
   inactive: 'bg-gray-500/20 text-gray-700 dark:text-gray-300',
 };
@@ -71,7 +71,7 @@ export function UsersList({ data }: { data: User[] }) {
     setIsDeleteDialogOpen(true);
   };
   
-  const columns: ColumnDef<User>[] = [
+  const columns: ColumnDef<User>[] = React.useMemo(() => [
     {
       id: 'select',
       header: ({ table }) => (
@@ -150,7 +150,7 @@ export function UsersList({ data }: { data: User[] }) {
         );
       },
     },
-  ];
+  ], []);
 
   const table = useReactTable({
     data,

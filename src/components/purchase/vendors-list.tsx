@@ -71,7 +71,7 @@ export function VendorsList({ data }: { data: Vendor[] }) {
     setIsDeleteDialogOpen(true);
   };
   
-  const columns: ColumnDef<Vendor>[] = [
+  const columns: ColumnDef<Vendor>[] = React.useMemo(() => [
     {
       id: 'select',
       header: ({ table }) => (
@@ -153,7 +153,7 @@ export function VendorsList({ data }: { data: Vendor[] }) {
         );
       },
     },
-  ];
+  ], []);
 
   const table = useReactTable({
     data,

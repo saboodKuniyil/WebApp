@@ -71,7 +71,7 @@ export function CustomersList({ data }: { data: Customer[] }) {
     setIsDeleteDialogOpen(true);
   };
   
-  const columns: ColumnDef<Customer>[] = [
+  const columns: ColumnDef<Customer>[] = React.useMemo(() => [
     {
       id: 'select',
       header: ({ table }) => (
@@ -153,7 +153,7 @@ export function CustomersList({ data }: { data: Customer[] }) {
         );
       },
     },
-  ];
+  ], []);
 
   const table = useReactTable({
     data,

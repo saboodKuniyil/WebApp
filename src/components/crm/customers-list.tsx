@@ -41,9 +41,9 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { AddCustomerDialog } from './add-customer-dialog';
-import { EditCustomerDialog } from './edit-customer-dialog';
-import { DeleteCustomerDialog } from './delete-customer-dialog';
+import { AddCustomerDialog } from '../customers/add-customer-dialog';
+import { EditCustomerDialog } from '../customers/edit-customer-dialog';
+import { DeleteCustomerDialog } from '../customers/delete-customer-dialog';
 import type { Customer } from '@/lib/db';
 
 const statusColors: Record<Customer['status'], string> = {
@@ -71,7 +71,7 @@ export function CustomersList({ data }: { data: Customer[] }) {
     setIsDeleteDialogOpen(true);
   };
   
-  const columns: ColumnDef<Customer>[] = [
+  const columns: ColumnDef<Customer>[] = React.useMemo(() => [
     {
       id: 'select',
       header: ({ table }) => (
@@ -153,7 +153,7 @@ export function CustomersList({ data }: { data: Customer[] }) {
         );
       },
     },
-  ];
+  ], []);
 
   const table = useReactTable({
     data,

@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
@@ -21,7 +20,6 @@ interface ModulesContextType {
   companyProfile: CompanyProfile | null;
   setCompanyProfile: (profile: CompanyProfile | null) => void;
   isLoading: boolean;
-  isInitialLoad: boolean;
 }
 
 const ModulesContext = createContext<ModulesContextType | undefined>(undefined);
@@ -45,8 +43,6 @@ export const ModulesProvider: React.FC<ModulesProviderProps> = ({
   const [currency, setCurrency] = useState<Currency | null>(() => {
     return serverCurrencies.find(c => c.code === serverAppSettings.currency) || null;
   });
-  
-  const [isInitialLoad, setIsInitialLoad] = useState(false); // No initial load flicker needed
 
   const handleSetAppSettings = (settings: AppSettings) => {
     setAppSettings(settings);
@@ -92,7 +88,6 @@ export const ModulesProvider: React.FC<ModulesProviderProps> = ({
         companyProfile,
         setCompanyProfile: handleSetCompanyProfile,
         isLoading: false, // Data is pre-loaded
-        isInitialLoad
     }}>
       {children}
     </ModulesContext.Provider>
