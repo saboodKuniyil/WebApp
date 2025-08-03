@@ -20,14 +20,25 @@ export function DashboardSidebarItems() {
   const pathname = usePathname();
   const { isProjectManagementEnabled, isPurchaseModuleEnabled, isCrmEnabled, isPayrollEnabled, isUserManagementEnabled, isSalesModuleEnabled } = useModules();
   
-  const [isCrmOpen, setIsCrmOpen] = React.useState(pathname.startsWith('/crm'));
-  const [isSalesOpen, setIsSalesOpen] = React.useState(pathname.startsWith('/sales'));
-  const [isProjectManagementOpen, setIsProjectManagementOpen] = React.useState(pathname.startsWith('/project-management'));
-  const [isPurchaseOpen, setIsPurchaseOpen] = React.useState(pathname.startsWith('/purchase'));
-  const [isPayrollOpen, setIsPayrollOpen] = React.useState(pathname.startsWith('/payroll'));
-  const [isSettingsOpen, setIsSettingsOpen] = React.useState(pathname.startsWith('/settings') || pathname.startsWith('/modules'));
-  const [isUserManagementOpen, setIsUserManagementOpen] = React.useState(pathname.startsWith('/settings/user-management'));
-  const [isPreferencesOpen, setIsPreferencesOpen] = React.useState(pathname.startsWith('/settings/preferences'));
+  const [isCrmOpen, setIsCrmOpen] = React.useState(false);
+  const [isSalesOpen, setIsSalesOpen] = React.useState(false);
+  const [isProjectManagementOpen, setIsProjectManagementOpen] = React.useState(false);
+  const [isPurchaseOpen, setIsPurchaseOpen] = React.useState(false);
+  const [isPayrollOpen, setIsPayrollOpen] = React.useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
+  const [isUserManagementOpen, setIsUserManagementOpen] = React.useState(false);
+  const [isPreferencesOpen, setIsPreferencesOpen] = React.useState(false);
+  
+  React.useEffect(() => {
+    setIsCrmOpen(pathname.startsWith('/crm'));
+    setIsSalesOpen(pathname.startsWith('/sales'));
+    setIsProjectManagementOpen(pathname.startsWith('/project-management'));
+    setIsPurchaseOpen(pathname.startsWith('/purchase'));
+    setIsPayrollOpen(pathname.startsWith('/payroll'));
+    setIsSettingsOpen(pathname.startsWith('/settings') || pathname.startsWith('/modules'));
+    setIsUserManagementOpen(pathname.startsWith('/settings/user-management'));
+    setIsPreferencesOpen(pathname.startsWith('/settings/preferences'));
+  }, [pathname]);
 
 
   return (
