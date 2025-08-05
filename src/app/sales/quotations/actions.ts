@@ -2,7 +2,7 @@
 'use server';
 
 import { z } from 'zod';
-import { getQuotations, createQuotation as createDbQuotation, getEstimationById, updateQuotation as updateDbQuotation } from '@/lib/db';
+import { getQuotations, createQuotation as createDbQuotation, getEstimationById, updateQuotation as updateDbQuotation, getQuotationById } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import type { QuotationItem, EstimationItem, Quotation } from '@/lib/db';
@@ -26,7 +26,7 @@ export async function getNextQuotationId(): Promise<string> {
 
 const quotationItemSchema = z.object({
   id: z.string(),
-  title: z.string(),
+  title: z.string().min(1, 'Item title cannot be empty.'),
   description: z.string().optional(),
   quantity: z.coerce.number().min(0.001, "Quantity must be positive"),
   rate: z.coerce.number().min(0, "Cost must be a positive number"),
@@ -60,13 +60,13 @@ export async function createQuotationFromScratch(
 
     if (!validatedFields.success) {
         const errors = validatedFields.error.flatten().fieldErrors;
-        return { message: 'Failed to create quotation.', errors };
+        return { message: 'Failed to create quotation. Please check the fields.', errors };
     }
 
     const { id, projectName, customer, items, totalCost, createdDate } = validatedFields.data;
 
     try {
-        const newQuotation = {
+        const newQuotation: Quotation = {
             id,
             title: projectName,
             estimationId: 'N/A', // No estimation linked
@@ -81,13 +81,11 @@ export async function createQuotationFromScratch(
         
     } catch (error) {
         console.error('Database Error:', error);
-        return { message: 'Failed to create quotation.' };
+        return { message: 'Failed to create quotation due to a database error.' };
     }
 
     revalidatePath('/sales/quotations');
-    // We can't redirect from here because the toast message won't be shown.
-    // Instead, we will return the ID and redirect from the client component.
-    return { message: 'Quotation created successfully.', quotationId: validatedFields.data.id, errors: {} };
+    return { message: 'Quotation created successfully.', quotationId: validatedFields.data.id };
 }
 
 
@@ -134,7 +132,7 @@ export async function createQuotationFromEstimation(
     
     const totalCost = newQuotationItems.reduce((acc, item) => acc + (item.quantity * item.rate), 0);
 
-    const newQuotation = {
+    const newQuotation: Quotation = {
         id: newId,
         title: estimation.title,
         estimationId: estimation.id,
@@ -186,7 +184,7 @@ export async function updateQuotationAction(prevState: any, formData: FormData):
         
         const totalCost = items.reduce((acc: number, item: QuotationItem) => acc + (item.quantity * item.rate), 0);
 
-        const updatedQuotation = {
+        const updatedQuotation: Quotation = {
             ...existingQuotation,
             items,
             totalCost,

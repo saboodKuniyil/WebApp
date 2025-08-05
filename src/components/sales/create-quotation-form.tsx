@@ -19,7 +19,7 @@ import { Customer } from '@/lib/db';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { useRouter } from 'next/navigation';
 
-const initialState = { message: '', errors: {}, quotationId: '' };
+const initialState = { message: '', errors: {}, quotationId: undefined };
 
 function SubmitButton() {
     return <Button type="submit">Create Quotation</Button>;
@@ -48,13 +48,13 @@ export function CreateQuotationForm({ customers }: CreateQuotationFormProps) {
     }, [currency]);
 
     React.useEffect(() => {
-        if (state.message && state.errors) {
+        if (state.message && state.errors && Object.keys(state.errors).length > 0) {
             toast({ variant: 'destructive', title: 'Error', description: state.message });
-        } else if (state.message) {
+        } else if (state.message && state.quotationId) {
             toast({ title: 'Success', description: state.message });
-            if (state.quotationId) {
-                router.push(`/sales/quotations/${state.quotationId}`);
-            }
+            router.push(`/sales/quotations/${state.quotationId}`);
+        } else if (state.message) {
+             toast({ variant: 'destructive', title: 'Error', description: state.message });
         }
     }, [state, toast, router]);
 
@@ -114,7 +114,7 @@ export function CreateQuotationForm({ customers }: CreateQuotationFormProps) {
                         <div className="space-y-2">
                             <Label htmlFor="projectName">Project Name</Label>
                             <Input id="projectName" name="projectName" />
-                            {state.errors?.projectName && <p className="text-red-500 text-xs text-right">{state.errors.projectName[0]}</p>}
+                            {state.errors?.projectName && <p className="text-red-500 text-xs">{state.errors.projectName[0]}</p>}
                         </div>
                     </div>
                      <div className="space-y-2">
@@ -131,7 +131,7 @@ export function CreateQuotationForm({ customers }: CreateQuotationFormProps) {
                                 ))}
                             </SelectContent>
                         </Select>
-                         {state.errors?.customer && <p className="text-red-500 text-xs text-right">{state.errors.customer[0]}</p>}
+                         {state.errors?.customer && <p className="text-red-500 text-xs">{state.errors.customer[0]}</p>}
                     </div>
 
                     <div className="space-y-2">
@@ -206,7 +206,7 @@ export function CreateQuotationForm({ customers }: CreateQuotationFormProps) {
                         <div className="flex justify-start mt-2">
                             <Button type="button" variant="outline" onClick={handleAddItem}><Plus className="h-4 w-4 mr-2"/>Add Item</Button>
                         </div>
-                         {state.errors?.items && <p className="text-red-500 text-xs text-right">{state.errors.items[0]}</p>}
+                         {state.errors?.items && <p className="text-red-500 text-xs">{state.errors.items[0]}</p>}
                     </div>
                     
                     <div className="flex justify-end">

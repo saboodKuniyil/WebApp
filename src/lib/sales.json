@@ -651,6 +651,24 @@
       "status": "draft",
       "customer": "Drakkulllan",
       "createdDate": "2025-08-05"
+    },
+    {
+      "id": "QUO-1015",
+      "title": "Villa demonlitiitions",
+      "estimationId": "N/A",
+      "items": [
+        {
+          "id": "item-1754420103709",
+          "title": "sdfsdf",
+          "description": "sdfsdf",
+          "quantity": 1,
+          "rate": 25000
+        }
+      ],
+      "totalCost": 25000,
+      "status": "draft",
+      "customer": "Drakkulllan",
+      "createdDate": "2025-08-05"
     }
   ],
   "salesOrders": []
