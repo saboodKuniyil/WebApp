@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import * as React from 'react';
@@ -28,7 +29,7 @@ import { useToast } from '@/hooks/use-toast';
 import type { Quotation } from './quotations-list';
 import { useRouter } from 'next/navigation';
 
-const initialState = { salesOrderId: '', message: '' };
+const initialState = { salesOrderId: undefined, message: '' };
 
 function SubmitButton() {
     return <Button type="submit"><ShoppingBag className="mr-2 h-4 w-4" />Create Sales Order</Button>;
@@ -87,7 +88,6 @@ export function CreateSalesOrderDialog({ quotations }: CreateSalesOrderDialogPro
         </DialogHeader>
         <form 
             ref={formRef} 
-            // We pass the quotationId directly to the action
             action={(formData) => {
                 const quotationId = formData.get('quotationId') as string;
                 if(quotationId) {

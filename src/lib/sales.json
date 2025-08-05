@@ -308,7 +308,7 @@
         }
       ],
       "totalCost": 4902.32,
-      "status": "draft",
+      "status": "converted",
       "customer": "N/A",
       "createdDate": "2025-08-02"
     },
@@ -689,5 +689,32 @@
       "createdDate": "2025-08-05"
     }
   ],
-  "salesOrders": []
+  "salesOrders": [
+    {
+      "id": "SO-1001",
+      "quotationId": "QUO-1002",
+      "title": "bED ROMM SETTT",
+      "items": [
+        {
+          "id": "ET-1001",
+          "title": "Cabinet",
+          "description": "dfdfd",
+          "quantity": 1,
+          "rate": 1249.91
+        },
+        {
+          "id": "ET-1002",
+          "title": "Bed ",
+          "description": "bEd size 120 /200\nthat isbew \nthis is new",
+          "quantity": 1,
+          "rate": 3652.41
+        }
+      ],
+      "totalCost": 4902.32,
+      "status": "open",
+      "customer": "N/A",
+      "createdDate": "2025-08-05",
+      "orderDate": "2025-08-05"
+    }
+  ]
 }
