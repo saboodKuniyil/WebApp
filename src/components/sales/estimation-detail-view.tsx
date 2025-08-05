@@ -22,6 +22,7 @@ import type { Project } from '../project-management/projects-list';
 import type { TaskBlueprint } from '../project-management/task-blueprints-list';
 import { CreateQuotationDialog } from './create-quotation-dialog';
 import type { Customer } from '@/lib/db';
+import Image from 'next/image';
 
 
 interface EstimationDetailViewProps {
@@ -156,7 +157,8 @@ export function EstimationDetailView({ estimation, products, customers }: Estima
                                 </div>
                                 <AccordionContent className="p-2 space-y-2">
                                     {task.description && <p className="text-sm text-muted-foreground border-b pb-2 mb-2 whitespace-pre-wrap">{task.description}</p>}
-                                    <div className="grid grid-cols-[1fr_80px_80px_80px] items-center gap-x-4 px-2 text-xs text-muted-foreground font-medium">
+                                    <div className="grid grid-cols-[80px_1fr_80px_80px_80px] items-center gap-x-4 px-2 text-xs text-muted-foreground font-medium">
+                                        <span>Image</span>
                                         <span>Material / Service</span>
                                         <span className="text-right">Qty</span>
                                         <span className="text-right">Rate</span>
@@ -164,7 +166,10 @@ export function EstimationDetailView({ estimation, products, customers }: Estima
                                     </div>
                                     {task.items.map(item => (
                                          <div key={item.id} className="p-2 border-b">
-                                            <div className="grid grid-cols-[1fr_80px_80px_80px] items-center gap-x-4 text-sm">
+                                            <div className="grid grid-cols-[80px_1fr_80px_80px_80px] items-center gap-x-4 text-sm">
+                                                 {item.imageUrl ? (
+                                                    <Image src={item.imageUrl} alt={item.name} width={64} height={64} className="rounded-md object-cover h-16 w-16" data-ai-hint="product item" />
+                                                ) : <div className="h-16 w-16 bg-muted rounded-md" />}
                                                 <span className="truncate font-medium" title={item.name}>{item.name}</span>
                                                 <span className="text-right">{item.quantity}</span>
                                                 <span className="text-right">{formatCurrency(item.cost)}</span>

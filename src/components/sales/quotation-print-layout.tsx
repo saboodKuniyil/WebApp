@@ -158,7 +158,7 @@ export function QuotationPrintLayout({ quotation, companyProfile, currency, appS
                 <div className="page">
                     <div className="header">
                         {companyProfile?.logoUrl && (
-                             <img src={companyProfile.logoUrl} alt={companyProfile.companyName} className="company-logo" data-ai-hint="logo company" />
+                             <img src={companyProfile.logoUrl} alt={companyProfile.companyName || 'Company Logo'} className="company-logo" data-ai-hint="logo company" />
                         )}
                         <div>
                             <h1>QUOTATION</h1>
