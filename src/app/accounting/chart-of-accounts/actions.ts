@@ -5,10 +5,6 @@ import { z } from 'zod';
 import { getAccounts, createAccount as createDbAccount } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 
-export const accountTypes = [
-    'Assets', 'Liabilities', 'Equity', 'Income', 'Expense'
-];
-
 const accountSchema = z.object({
   id: z.string(),
   name: z.string().min(1, 'Account name is required'),

@@ -24,11 +24,15 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { PlusCircle } from 'lucide-react';
-import { createAccount, getNextAccountId, accountTypes } from '@/app/accounting/chart-of-accounts/actions';
+import { createAccount, getNextAccountId } from '@/app/accounting/chart-of-accounts/actions';
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '../ui/textarea';
 
 const initialState = { message: '', errors: {} };
+
+const accountTypes = [
+    'Assets', 'Liabilities', 'Equity', 'Income', 'Expense'
+];
 
 export function AddAccountDialog() {
   const [state, dispatch] = useActionState(createAccount, initialState);

@@ -40,12 +40,15 @@ import { AddAccountDialog } from './add-account-dialog';
 import type { Account } from '@/lib/db';
 import { useModules } from '@/context/modules-context';
 import { Badge } from '../ui/badge';
-import { accountTypes } from '@/app/accounting/chart-of-accounts/actions';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 interface ChartOfAccountsListProps {
   data: Account[];
 }
+
+const accountTypes = [
+    'Assets', 'Liabilities', 'Equity', 'Income', 'Expense'
+];
 
 export function ChartOfAccountsList({ data }: ChartOfAccountsListProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
