@@ -58,7 +58,10 @@ const statusColors: Record<Customer['status'], string> = {
 export function CustomersList({ data }: { data: Customer[] }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
+    trnNumber: false,
+    address: false,
+  });
   const [rowSelection, setRowSelection] = React.useState({});
   
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
@@ -126,11 +129,19 @@ export function CustomersList({ data }: { data: Customer[] }) {
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Name
+          Contact Name
           <CaretSortIcon className="ml-2 h-4 w-4" />
         </Button>
       ),
       cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
+    },
+    {
+      accessorKey: 'companyName',
+      header: 'Company Name'
+    },
+    {
+      accessorKey: 'trnNumber',
+      header: 'TRN Number'
     },
     {
       accessorKey: 'email',
@@ -234,7 +245,7 @@ export function CustomersList({ data }: { data: Customer[] }) {
                       checked={column.getIsVisible()}
                       onCheckedChange={(value) => column.toggleVisibility(!!value)}
                     >
-                      {column.id}
+                      {column.id.replace(/([A-Z])/g, ' $1')}
                     </DropdownMenuCheckboxItem>
                   ))}
               </DropdownMenuContent>

@@ -26,6 +26,7 @@ import { updateCustomerAction } from '@/app/crm/customers/actions';
 import { useToast } from '@/hooks/use-toast';
 import type { Customer } from '@/lib/db';
 import { Textarea } from '../ui/textarea';
+import { ScrollArea } from '../ui/scroll-area';
 
 const initialState = { message: '', errors: {} };
 
@@ -52,47 +53,61 @@ export function EditCustomerDialog({ isOpen, setIsOpen, customer }: EditCustomer
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Edit Customer</DialogTitle>
           <DialogDescription>Update the customer's details.</DialogDescription>
         </DialogHeader>
-        <form action={dispatch} className="grid gap-4 py-4">
-          <Input id="id" name="id" type="hidden" value={customer.id} />
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">Name</Label>
-            <Input id="name" name="name" defaultValue={customer.name} className="col-span-3" />
-            {state.errors?.name && <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.name[0]}</p>}
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="email" className="text-right">Email</Label>
-            <Input id="email" name="email" type="email" defaultValue={customer.email} className="col-span-3" />
-            {state.errors?.email && <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.email[0]}</p>}
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="phone" className="text-right">Phone</Label>
-            <Input id="phone" name="phone" type="tel" defaultValue={customer.phone} className="col-span-3" />
-            {state.errors?.phone && <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.phone[0]}</p>}
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="address" className="text-right">Address</Label>
-            <Textarea id="address" name="address" defaultValue={customer.address} className="col-span-3" />
-            {state.errors?.address && <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.address[0]}</p>}
-          </div>
-           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="status" className="text-right">Status</Label>
-            <Select name="status" defaultValue={customer.status}>
-              <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Select a status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
-              </SelectContent>
-            </Select>
-            {state.errors?.status && <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.status[0]}</p>}
-          </div>
-          <DialogFooter>
+        <form action={dispatch}>
+           <ScrollArea className="h-[60vh] pr-4">
+            <div className="grid gap-4 py-4">
+              <Input id="id" name="id" type="hidden" value={customer.id} />
+              <div className="space-y-2">
+                <Label htmlFor="name">Contact Person Name</Label>
+                <Input id="name" name="name" defaultValue={customer.name} />
+                {state.errors?.name && <p className="text-red-500 text-xs">{state.errors.name[0]}</p>}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="companyName">Company Name</Label>
+                <Input id="companyName" name="companyName" defaultValue={customer.companyName} />
+                {state.errors?.companyName && <p className="text-red-500 text-xs">{state.errors.companyName[0]}</p>}
+              </div>
+               <div className="space-y-2">
+                <Label htmlFor="trnNumber">TRN Number</Label>
+                <Input id="trnNumber" name="trnNumber" defaultValue={customer.trnNumber} />
+                {state.errors?.trnNumber && <p className="text-red-500 text-xs">{state.errors.trnNumber[0]}</p>}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" name="email" type="email" defaultValue={customer.email} />
+                {state.errors?.email && <p className="text-red-500 text-xs">{state.errors.email[0]}</p>}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone</Label>
+                <Input id="phone" name="phone" type="tel" defaultValue={customer.phone} />
+                {state.errors?.phone && <p className="text-red-500 text-xs">{state.errors.phone[0]}</p>}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="address">Address</Label>
+                <Textarea id="address" name="address" defaultValue={customer.address} />
+                {state.errors?.address && <p className="text-red-500 text-xs">{state.errors.address[0]}</p>}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="status">Status</Label>
+                <Select name="status" defaultValue={customer.status}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
+                {state.errors?.status && <p className="text-red-500 text-xs">{state.errors.status[0]}</p>}
+              </div>
+            </div>
+          </ScrollArea>
+          <DialogFooter className="mt-4">
             <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
             <Button type="submit">Save Changes</Button>
           </DialogFooter>

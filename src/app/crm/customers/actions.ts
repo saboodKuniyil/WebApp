@@ -12,6 +12,8 @@ const customerSchema = z.object({
   phone: z.string().optional(),
   address: z.string().optional(),
   status: z.enum(['active', 'inactive']),
+  companyName: z.string().optional(),
+  trnNumber: z.string().optional(),
 });
 
 export type CustomerFormState = {
@@ -23,6 +25,8 @@ export type CustomerFormState = {
     phone?: string[];
     address?: string[];
     status?: string[];
+    companyName?: string[];
+    trnNumber?: string[];
   };
 };
 
@@ -50,6 +54,8 @@ export async function createCustomerAction(
     phone: formData.get('phone'),
     address: formData.get('address'),
     status: formData.get('status') ?? 'active',
+    companyName: formData.get('companyName'),
+    trnNumber: formData.get('trnNumber'),
   });
 
   if (!validatedFields.success) {
@@ -75,6 +81,8 @@ export async function createCustomerAction(
         email: validatedFields.data.email || '',
         phone: validatedFields.data.phone || '',
         address: validatedFields.data.address || '',
+        companyName: validatedFields.data.companyName || '',
+        trnNumber: validatedFields.data.trnNumber || '',
     });
 
     revalidatePath('/crm/customers');
@@ -96,6 +104,8 @@ export async function updateCustomerAction(
         phone: formData.get('phone'),
         address: formData.get('address'),
         status: formData.get('status'),
+        companyName: formData.get('companyName'),
+        trnNumber: formData.get('trnNumber'),
     });
 
     if (!validatedFields.success) {
@@ -124,6 +134,8 @@ export async function updateCustomerAction(
             email: validatedFields.data.email || '',
             phone: validatedFields.data.phone || '',
             address: validatedFields.data.address || '',
+            companyName: validatedFields.data.companyName || '',
+            trnNumber: validatedFields.data.trnNumber || '',
         });
         revalidatePath('/crm/customers');
         return { message: 'Customer updated successfully.' };

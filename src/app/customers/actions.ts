@@ -13,6 +13,8 @@ const customerSchema = z.object({
   phone: z.string().optional(),
   address: z.string().optional(),
   status: z.enum(['active', 'inactive']),
+  companyName: z.string().optional(),
+  trnNumber: z.string().optional(),
 });
 
 export type CustomerFormState = {
@@ -24,6 +26,8 @@ export type CustomerFormState = {
     phone?: string[];
     address?: string[];
     status?: string[];
+    companyName?: string[];
+    trnNumber?: string[];
   };
 };
 
@@ -58,6 +62,8 @@ export async function createCustomerAction(
     phone: formData.get('phone'),
     address: formData.get('address'),
     status: formData.get('status') ?? 'active',
+    companyName: formData.get('companyName'),
+    trnNumber: formData.get('trnNumber'),
   });
 
   if (!validatedFields.success) {
@@ -83,6 +89,8 @@ export async function createCustomerAction(
         email: validatedFields.data.email || '',
         phone: validatedFields.data.phone || '',
         address: validatedFields.data.address || '',
+        companyName: validatedFields.data.companyName || '',
+        trnNumber: validatedFields.data.trnNumber || '',
     });
 
     revalidatePath('/crm/customers');
@@ -105,6 +113,8 @@ export async function updateCustomerAction(
         phone: formData.get('phone'),
         address: formData.get('address'),
         status: formData.get('status'),
+        companyName: formData.get('companyName'),
+        trnNumber: formData.get('trnNumber'),
     });
 
     if (!validatedFields.success) {
@@ -133,6 +143,8 @@ export async function updateCustomerAction(
             email: validatedFields.data.email || '',
             phone: validatedFields.data.phone || '',
             address: validatedFields.data.address || '',
+            companyName: validatedFields.data.companyName || '',
+            trnNumber: validatedFields.data.trnNumber || '',
         });
         revalidatePath('/crm/customers');
         revalidatePath('/sales/customers');
@@ -159,7 +171,7 @@ export async function exportCustomersToCsv(): Promise<string> {
     const customers = await getCustomers();
     const csv = Papa.unparse(customers, {
         header: true,
-        columns: ['id', 'name', 'email', 'phone', 'address', 'status'],
+        columns: ['id', 'name', 'email', 'phone', 'address', 'status', 'companyName', 'trnNumber'],
     });
     return csv;
 }
@@ -185,7 +197,7 @@ export async function importCustomersFromCsv(csvData: string): Promise<{ message
                  return { message: `Validation failed for customer ${customerData.name}: ${JSON.stringify(validatedFields.error.flatten().fieldErrors)}` };
             }
 
-            const { name, email, phone, address, status } = validatedFields.data;
+            const { name, email, phone, address, status, companyName, trnNumber } = validatedFields.data;
 
             if (email && allEmails.has(email)) {
                 console.warn(`Skipping duplicate email: ${email}`);
@@ -200,6 +212,8 @@ export async function importCustomersFromCsv(csvData: string): Promise<{ message
                 phone: phone || '',
                 address: address || '',
                 status: status || 'active',
+                companyName: companyName || '',
+                trnNumber: trnNumber || '',
             });
             
             if(email) allEmails.add(email);

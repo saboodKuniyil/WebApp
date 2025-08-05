@@ -6,7 +6,9 @@
       "email": "",
       "phone": "",
       "address": "",
-      "status": "active"
+      "status": "active",
+      "companyName": "",
+      "trnNumber": ""
     },
     {
       "id": "CS_4002",
@@ -14,7 +16,9 @@
       "email": "",
       "phone": "",
       "address": "",
-      "status": "active"
+      "status": "active",
+      "companyName": "",
+      "trnNumber": ""
     },
     {
       "id": "CS_4003",
@@ -22,7 +26,9 @@
       "email": "",
       "phone": "",
       "address": "",
-      "status": "active"
+      "status": "active",
+      "companyName": "",
+      "trnNumber": ""
     }
   ]
 }

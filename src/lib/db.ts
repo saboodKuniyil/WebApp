@@ -129,6 +129,8 @@ export type Customer = {
     phone: string;
     address: string;
     status: 'active' | 'inactive';
+    companyName?: string;
+    trnNumber?: string;
 };
 
 // Define paths for the new database files
