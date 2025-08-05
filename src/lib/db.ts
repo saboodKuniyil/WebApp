@@ -735,6 +735,11 @@ export async function getSalesOrders(): Promise<SalesOrder[]> {
     return data.salesOrders || [];
 }
 
+export async function getSalesOrderById(id: string): Promise<SalesOrder | undefined> {
+    const data = await readDbFile<SalesDb>(salesDbPath, defaultSalesDb);
+    return (data.salesOrders || []).find(so => so.id === id);
+}
+
 export async function createSalesOrder(newSalesOrder: SalesOrder): Promise<void> {
     const data = await readDbFile<SalesDb>(salesDbPath, defaultSalesDb);
     data.salesOrders.push(newSalesOrder);
