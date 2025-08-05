@@ -44,6 +44,7 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { Badge } from '../ui/badge';
 import type { Invoice, SalesOrder } from '@/lib/db';
+import { Skeleton } from '../ui/skeleton';
 
 interface InvoicesListProps {
   data: Invoice[];
@@ -62,20 +63,17 @@ export function InvoicesList({ data, salesOrders }: InvoicesListProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
 
-  const { currency } = useModules();
+  const { currency, isInitialLoad } = useModules();
 
   const formatCurrency = React.useCallback((amount: number) => {
-    if (!currency) {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-        }).format(amount);
+    if (isInitialLoad || !currency) {
+        return <Skeleton className="h-4 w-20" />;
     }
     return new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: currency.code,
     }).format(amount);
-  }, [currency]);
+  }, [currency, isInitialLoad]);
 
   const columns: ColumnDef<Invoice>[] = React.useMemo(() => [
   {

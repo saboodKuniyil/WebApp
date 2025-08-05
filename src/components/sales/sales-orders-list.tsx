@@ -46,6 +46,7 @@ import { Badge } from '../ui/badge';
 import type { SalesOrder } from '@/lib/db';
 import type { Quotation } from './quotations-list';
 import { CreateSalesOrderDialog } from './create-sales-order-dialog';
+import { Skeleton } from '../ui/skeleton';
 
 interface SalesOrdersListProps {
   data: SalesOrder[];
@@ -57,6 +58,7 @@ const statusColors: Record<SalesOrder['status'], string> = {
     'in-progress': 'bg-yellow-500/20 text-yellow-700 dark:text-yellow-300',
     fulfilled: 'bg-green-500/20 text-green-700 dark:text-green-300',
     canceled: 'bg-red-500/20 text-red-700 dark:text-red-300',
+    invoiced: 'bg-purple-500/20 text-purple-700 dark:text-purple-300',
 };
 
 
@@ -65,20 +67,17 @@ export function SalesOrdersList({ data, quotations }: SalesOrdersListProps) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
 
-  const { currency } = useModules();
+  const { currency, isInitialLoad } = useModules();
 
   const formatCurrency = React.useCallback((amount: number) => {
-    if (!currency) {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-        }).format(amount);
+    if (isInitialLoad || !currency) {
+        return <Skeleton className="h-4 w-20" />;
     }
     return new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: currency.code,
     }).format(amount);
-  }, [currency]);
+  }, [currency, isInitialLoad]);
 
   const columns: ColumnDef<SalesOrder>[] = React.useMemo(() => [
   {
