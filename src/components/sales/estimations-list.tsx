@@ -50,6 +50,7 @@ import Link from 'next/link';
 import { EditEstimationDialog } from './edit-estimation-dialog';
 import { DeleteEstimationDialog } from './delete-estimation-dialog';
 import type { EstimationItem, Customer } from '@/lib/db';
+import { Badge } from '../ui/badge';
 
 
 export type EstimationTask = {
@@ -69,6 +70,7 @@ export type Estimation = {
     createdDate: string;
     customerId?: string;
     customerName?: string;
+    status: 'draft' | 'sent' | 'approved' | 'rejected';
 };
 
 interface EstimationsListProps {
@@ -77,6 +79,12 @@ interface EstimationsListProps {
   customers: Customer[];
 }
 
+const statusColors: Record<Estimation['status'], string> = {
+    draft: 'bg-gray-500/20 text-gray-700 dark:text-gray-300',
+    sent: 'bg-blue-500/20 text-blue-700 dark:text-blue-300',
+    approved: 'bg-green-500/20 text-green-700 dark:text-green-300',
+    rejected: 'bg-red-500/20 text-red-700 dark:text-red-300',
+};
 
 export function EstimationsList({ data, products, customers }: EstimationsListProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -166,6 +174,11 @@ export function EstimationsList({ data, products, customers }: EstimationsListPr
    {
     accessorKey: 'customerName',
     header: 'Customer',
+  },
+  {
+    accessorKey: 'status',
+    header: 'Status',
+    cell: ({ row }) => <Badge variant="outline" className={`capitalize border-0 ${statusColors[row.original.status]}`}>{row.original.status}</Badge>,
   },
   {
     accessorKey: 'totalCost',

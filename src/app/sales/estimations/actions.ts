@@ -3,9 +3,10 @@
 'use server';
 
 import { z } from 'zod';
-import { getEstimations, createEstimation as createDbEstimation, updateEstimation as updateDbEstimation, deleteEstimation as deleteDbEstimation } from '@/lib/db';
+import { getEstimations, createEstimation as createDbEstimation, updateEstimation as updateDbEstimation, deleteEstimation as deleteDbEstimation, getEstimationById } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import type { Estimation } from '@/components/sales/estimations-list';
 
 const estimationItemSchema = z.object({
   id: z.string(),
@@ -39,6 +40,7 @@ const estimationSchema = z.object({
     .pipe(z.array(estimationTaskSchema).min(1, 'At least one task is required')),
   totalCost: z.coerce.number(),
   createdDate: z.string(),
+  status: z.enum(['draft', 'sent', 'approved', 'rejected']),
 });
 
 export type EstimationFormState = {
@@ -48,6 +50,7 @@ export type EstimationFormState = {
     title?: string[];
     customerId?: string[];
     tasks?: string[];
+    status?: string[];
   };
 };
 
@@ -80,6 +83,7 @@ export async function createEstimation(
     tasks: formData.get('tasks'),
     totalCost: formData.get('totalCost'),
     createdDate: new Date().toISOString().split('T')[0],
+    status: 'draft',
   });
   
   if (!validatedFields.success) {
@@ -94,7 +98,7 @@ export async function createEstimation(
     };
   }
 
-  const { id, title, customerId, customerName, tasks, totalCost, createdDate } = validatedFields.data;
+  const { id, title, customerId, customerName, tasks, totalCost, createdDate, status } = validatedFields.data;
 
   try {
     await createDbEstimation({
@@ -104,7 +108,8 @@ export async function createEstimation(
       customerName,
       tasks,
       totalCost,
-      createdDate
+      createdDate,
+      status
     });
 
     revalidatePath('/sales/estimations');
@@ -119,14 +124,19 @@ export async function updateEstimation(
   prevState: EstimationFormState,
   formData: FormData
 ): Promise<EstimationFormState> {
+  // We need to fetch the current status to add it to the schema validation
+  const id = formData.get('id') as string;
+  const currentEstimation = await getEstimationById(id);
+  
   const validatedFields = estimationSchema.safeParse({
-    id: formData.get('id'),
+    id: id,
     title: formData.get('title'),
     customerId: formData.get('customerId'),
     customerName: formData.get('customerName'),
     tasks: formData.get('tasks'),
     totalCost: formData.get('totalCost'),
     createdDate: formData.get('createdDate'), // Pass existing date
+    status: currentEstimation?.status || 'draft',
   });
 
   if (!validatedFields.success) {
@@ -161,4 +171,26 @@ export async function deleteEstimationAction(estimationId: string): Promise<{ me
     }
     revalidatePath('/sales/estimations');
     redirect('/sales/estimations');
+}
+
+export async function updateEstimationStatus(
+  estimationId: string,
+  status: Estimation['status']
+): Promise<{ message: string; errors?: any }> {
+  try {
+    const estimation = await getEstimationById(estimationId);
+    if (!estimation) {
+      return { message: 'Estimation not found.' };
+    }
+
+    const updatedEstimation: Estimation = { ...estimation, status };
+    await updateDbEstimation(updatedEstimation);
+
+    revalidatePath(`/sales/estimations/${estimationId}`);
+    revalidatePath('/sales/estimations');
+    return { message: `Estimation status updated to ${status}.` };
+  } catch (error) {
+    console.error('Database Error:', error);
+    return { message: 'Failed to update estimation status.' };
+  }
 }

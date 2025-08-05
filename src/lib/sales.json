@@ -1,88 +1,6 @@
 {
   "estimations": [
     {
-      "id": "EST-1001",
-      "title": "estimation 001111",
-      "tasks": [
-        {
-          "id": "ET-1001",
-          "title": "Kitchen Cabinet",
-          "description": "",
-          "items": [
-            {
-              "id": "FG_FNT_7001",
-              "name": "Ergonomic Office Chair",
-              "quantity": 1,
-              "cost": 349.99,
-              "type": "product"
-            },
-            {
-              "id": "adhoc-1754059951753",
-              "name": "labour charges",
-              "quantity": 15,
-              "cost": 5.85,
-              "type": "adhoc"
-            },
-            {
-              "id": "FG_FNT_7002",
-              "name": "TPR Desk 1700*55",
-              "quantity": 1,
-              "cost": 810.99,
-              "type": "product"
-            }
-          ],
-          "totalCost": 1248.73
-        }
-      ],
-      "totalCost": 1248.73,
-      "createdDate": "2025-08-01"
-    },
-    {
-      "id": "EST-1002",
-      "title": "Batches of costing",
-      "tasks": [
-        {
-          "id": "ET-1001",
-          "title": "Tasking bench",
-          "description": "this is apppering cost wise",
-          "items": [
-            {
-              "id": "FG_ELC_7002",
-              "name": "Wireless Mechanical Keyboard",
-              "quantity": 10,
-              "cost": 129.99,
-              "type": "product"
-            }
-          ],
-          "totalCost": 1299.9
-        },
-        {
-          "id": "ET-1002",
-          "title": "second batch",
-          "description": "this is s ceoooennnncisdsdfa",
-          "items": [
-            {
-              "id": "adhoc-1754141733215",
-              "name": "labour chasrges ofr militory",
-              "quantity": 12,
-              "cost": 7.85,
-              "type": "adhoc"
-            },
-            {
-              "id": "FG_FNT_7002",
-              "name": "TPR Desk 1700*55",
-              "quantity": 11,
-              "cost": 810.99,
-              "type": "product"
-            }
-          ],
-          "totalCost": 9015.09
-        }
-      ],
-      "totalCost": 10314.99,
-      "createdDate": "2025-08-02"
-    },
-    {
       "id": "EST-1003",
       "title": "bED ROMM SETTT",
       "tasks": [
@@ -308,7 +226,7 @@
         }
       ],
       "totalCost": 4902.32,
-      "status": "converted",
+      "status": "approved",
       "customer": "N/A",
       "createdDate": "2025-08-02"
     },

@@ -8,21 +8,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import type { Product } from "@/components/purchase/products-list";
 import type { Estimation, EstimationTask } from "./estimations-list";
 import { Button } from "../ui/button"
-import { Pencil, Trash2, FileText, GripVertical, FileSignature, Briefcase, User } from "lucide-react"
+import { Pencil, Trash2, FileText, GripVertical, FileSignature, Briefcase, User, Send, CheckCircle2, XCircle, Redo } from "lucide-react"
 import { useModules } from '@/context/modules-context';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 import { EditEstimationDialog } from './edit-estimation-dialog';
 import { DeleteEstimationDialog } from './delete-estimation-dialog';
-import { createQuotationFromEstimation } from '@/app/sales/quotations/actions';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { AddTaskDialog } from '../project-management/add-task-dialog';
-import { getProjects, getTaskBlueprints, getEstimations } from '@/lib/db';
+import { getProjects, getTaskBlueprints } from '@/lib/db';
 import type { Project } from '../project-management/projects-list';
 import type { TaskBlueprint } from '../project-management/task-blueprints-list';
-import { CreateQuotationDialog } from './create-quotation-dialog';
 import type { Customer } from '@/lib/db';
 import Image from 'next/image';
+import { updateEstimationStatus } from '@/app/sales/estimations/actions';
 
 
 interface EstimationDetailViewProps {
@@ -31,10 +30,19 @@ interface EstimationDetailViewProps {
     customers: Customer[];
 }
 
+const statusColors: Record<Estimation['status'], string> = {
+    draft: 'bg-gray-500/20 text-gray-700 dark:text-gray-300',
+    sent: 'bg-blue-500/20 text-blue-700 dark:text-blue-300',
+    approved: 'bg-green-500/20 text-green-700 dark:text-green-300',
+    rejected: 'bg-red-500/20 text-red-700 dark:text-red-300',
+};
+
 export function EstimationDetailView({ estimation, products, customers }: EstimationDetailViewProps) {
     const { currency } = useModules();
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
+    const [isChangingStatus, setIsChangingStatus] = React.useState(false);
+    const { toast } = useToast();
     
     // State for AddTaskDialog
     const [projects, setProjects] = React.useState<Project[]>([]);
@@ -54,6 +62,17 @@ export function EstimationDetailView({ estimation, products, customers }: Estima
         }
         loadProjectsAndBlueprints();
     }, []);
+    
+    const handleChangeStatus = async (newStatus: Estimation['status']) => {
+        setIsChangingStatus(true);
+        const result = await updateEstimationStatus(estimation.id, newStatus);
+        if (result.message.includes('success')) {
+            toast({ title: 'Success', description: result.message });
+        } else {
+            toast({ variant: 'destructive', title: 'Error', description: result.message });
+        }
+        setIsChangingStatus(false);
+    };
 
     const formatCurrency = React.useCallback((amount: number) => {
         if (!currency) {
@@ -72,15 +91,6 @@ export function EstimationDetailView({ estimation, products, customers }: Estima
                             <CardDescription>{estimation.id}</CardDescription>
                         </div>
                         <div className="flex items-center gap-2">
-                             <CreateQuotationDialog 
-                                estimations={[estimation]}
-                                trigger={
-                                    <Button>
-                                        <FileSignature className="mr-2 h-4 w-4" />
-                                        Create Quotation
-                                    </Button>
-                                }
-                             />
                              <Button variant="outline" size="icon" onClick={() => setIsEditDialogOpen(true)}>
                                 <Pencil className="h-4 w-4" />
                                 <span className="sr-only">Edit Estimation</span>
@@ -89,10 +99,28 @@ export function EstimationDetailView({ estimation, products, customers }: Estima
                                 <Trash2 className="h-4 w-4" />
                                 <span className="sr-only">Delete Estimation</span>
                             </Button>
+                             <Badge variant="outline" className={`capitalize text-lg border-0 ${statusColors[estimation.status]}`}>{estimation.status}</Badge>
                         </div>
                     </div>
                 </CardHeader>
                 <CardContent className="space-y-4 p-4 pt-0">
+                     <div className="border-t my-4" />
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {estimation.status === 'draft' && (
+                             <Button type="button" size="sm" onClick={() => handleChangeStatus('sent')} disabled={isChangingStatus}><Send className="mr-2 h-4 w-4" />Mark as Sent</Button>
+                        )}
+                        {(estimation.status === 'draft' || estimation.status === 'sent') && (
+                             <Button type="button" size="sm" variant="secondary" onClick={() => handleChangeStatus('approved')} disabled={isChangingStatus}><CheckCircle2 className="mr-2 h-4 w-4" />Approve</Button>
+                        )}
+                         {estimation.status === 'sent' && (
+                             <Button type="button" size="sm" variant="destructive" onClick={() => handleChangeStatus('rejected')} disabled={isChangingStatus}><XCircle className="mr-2 h-4 w-4" />Reject</Button>
+                         )}
+                         {(estimation.status === 'approved' || estimation.status === 'rejected') && (
+                            <Button type="button" size="sm" variant="outline" onClick={() => handleChangeStatus('draft')} disabled={isChangingStatus}><Redo className="mr-2 h-4 w-4" />Re-draft</Button>
+                         )}
+                    </div>
+                    <div className="border-t my-4" />
+
                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
                             <p className="font-semibold">Date Created</p>

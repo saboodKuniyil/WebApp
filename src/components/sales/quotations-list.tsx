@@ -47,7 +47,6 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import type { Estimation, EstimationItem } from './estimations-list';
 import { Badge } from '../ui/badge';
-import { CreateQuotationDialog } from './create-quotation-dialog';
 import { PlusCircle } from 'lucide-react';
 
 export type QuotationItem = {
