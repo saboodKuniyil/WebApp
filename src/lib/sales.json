@@ -669,6 +669,24 @@
       "status": "draft",
       "customer": "Drakkulllan",
       "createdDate": "2025-08-05"
+    },
+    {
+      "id": "QUO-1016",
+      "title": "Villa renovation",
+      "estimationId": "N/A",
+      "items": [
+        {
+          "id": "item-1754420321187",
+          "title": "asdfasdfsdf",
+          "description": "sdfsdfsdfsdf",
+          "quantity": 1,
+          "rate": 10000
+        }
+      ],
+      "totalCost": 10000,
+      "status": "sent",
+      "customer": "sabood kuniyil",
+      "createdDate": "2025-08-05"
     }
   ],
   "salesOrders": []
