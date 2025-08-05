@@ -1,3 +1,14 @@
 {
-  "customers": []
+  "customers": [
+    {
+      "id": "CS_4001",
+      "name": "sabood Kuniyil",
+      "email": "",
+      "phone": "",
+      "address": "",
+      "status": "active",
+      "companyName": "Lacasafitout",
+      "trnNumber": ""
+    }
+  ]
 }
