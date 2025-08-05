@@ -227,6 +227,9 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
                                     {isCreatingSO ? 'Creating...' : 'Create Sales Order'}
                                 </Button>
                             )}
+                        {quotation.status === 'converted' && (
+                            <Button type="button" size="sm" variant="outline" onClick={() => handleChangeStatus('approved')} disabled={isChangingStatus}><Redo className="mr-2 h-4 w-4" />Revert to Approved</Button>
+                        )}
                     </div>
 
                      <div className="grid md:grid-cols-2 gap-4 pt-6 text-sm">
