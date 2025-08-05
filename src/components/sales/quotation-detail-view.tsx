@@ -207,7 +207,7 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
                                         <TableCell className="p-2 align-top">
                                             <div className="flex items-start gap-4">
                                                 {item.imageUrl && (
-                                                    <Image src={item.imageUrl} alt={item.title} width={64} height={64} className="rounded-md object-cover w-16 h-16" />
+                                                    <Image src={item.imageUrl} alt={item.title} width={64} height={64} className="rounded-md object-cover w-16 h-16" data-ai-hint="product item" />
                                                 )}
                                                 <div className="flex-1">
                                                     {isEditing ? (

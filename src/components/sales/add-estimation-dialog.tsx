@@ -17,7 +17,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { PlusCircle, Plus, Trash2, GripVertical, ChevronDown } from 'lucide-react';
+import { PlusCircle, Plus, Trash2, GripVertical, ChevronDown, Upload } from 'lucide-react';
 import { createEstimation, getNextEstimationId } from '@/app/sales/estimations/actions';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '../ui/scroll-area';
@@ -30,6 +30,7 @@ import { Card } from '../ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger as AccordionTriggerPrimitive } from '../ui/accordion';
 import { Textarea } from '../ui/textarea';
 import type { Customer } from '@/lib/db';
+import Image from 'next/image';
 
 const AccordionTrigger = React.forwardRef<
   React.ElementRef<typeof AccordionTriggerPrimitive>,
@@ -76,6 +77,8 @@ export function AddEstimationDialog({ products, customers }: AddEstimationDialog
     const [adhocColor, setAdhocColor] = React.useState('');
     const [adhocModel, setAdhocModel] = React.useState('');
     const [adhocNotes, setAdhocNotes] = React.useState('');
+    const [adhocImage, setAdhocImage] = React.useState<string | null>(null);
+    const adhocFileInputRef = React.useRef<HTMLInputElement>(null);
 
 
     // State for adding a new task
@@ -108,6 +111,7 @@ export function AddEstimationDialog({ products, customers }: AddEstimationDialog
         setAdhocColor('');
         setAdhocModel('');
         setAdhocNotes('');
+        setAdhocImage(null);
         setNewTaskTitle('');
         setNewTaskDescription('');
     }, []);
@@ -181,6 +185,7 @@ export function AddEstimationDialog({ products, customers }: AddEstimationDialog
             color: adhocColor,
             model: adhocModel,
             notes: adhocNotes,
+            imageUrl: adhocImage || undefined,
         });
         setAdhocName('');
         setAdhocQuantity(1);
@@ -189,6 +194,8 @@ export function AddEstimationDialog({ products, customers }: AddEstimationDialog
         setAdhocColor('');
         setAdhocModel('');
         setAdhocNotes('');
+        setAdhocImage(null);
+        if (adhocFileInputRef.current) adhocFileInputRef.current.value = '';
     };
     
     const handleRemoveItem = (taskId: string, itemId: string) => {
@@ -226,6 +233,18 @@ export function AddEstimationDialog({ products, customers }: AddEstimationDialog
             setSelectedCustomer({id: customer.id, name: customer.name});
         }
     }
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                setAdhocImage(event.target?.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -324,7 +343,10 @@ export function AddEstimationDialog({ products, customers }: AddEstimationDialog
                                                         {task.description && <p className="text-sm text-muted-foreground border-b pb-4 mb-4 whitespace-pre-wrap">{task.description}</p>}
                                                          {task.items.map(item => (
                                                             <div key={item.id} className="p-2 border rounded-md">
-                                                                <div className="grid grid-cols-[1fr_80px_80px_80px_40px] items-center gap-x-4 text-sm">
+                                                                <div className="grid grid-cols-[80px_1fr_80px_80px_80px_40px] items-center gap-x-4 text-sm">
+                                                                    {item.imageUrl ? (
+                                                                        <Image src={item.imageUrl} alt={item.name} width={64} height={64} className="rounded-md object-cover h-16 w-16" />
+                                                                    ) : <div className="h-16 w-16 bg-muted rounded-md" />}
                                                                     <span className="truncate font-medium" title={item.name}>{item.name}</span>
                                                                     <span className="text-right">{item.quantity}</span>
                                                                     <span className="text-right">{formatCurrency(item.cost)}</span>
@@ -372,6 +394,12 @@ export function AddEstimationDialog({ products, customers }: AddEstimationDialog
                                                                         <div className="space-y-1"><Label>Model</Label><Input value={adhocModel} onChange={e => setAdhocModel(e.target.value)} /></div>
                                                                     </div>
                                                                     <div className="space-y-1"><Label>Notes</Label><Textarea value={adhocNotes} onChange={e => setAdhocNotes(e.target.value)} /></div>
+                                                                    <div className="space-y-1"><Label>Image</Label>
+                                                                        <div className="flex items-center gap-2">
+                                                                            {adhocImage && <Image src={adhocImage} alt="preview" width={40} height={40} className="rounded-md" />}
+                                                                            <Input type="file" accept="image/*" onChange={handleImageChange} ref={adhocFileInputRef} />
+                                                                        </div>
+                                                                    </div>
                                                                     <div className="flex justify-end">
                                                                         <Button type="button" onClick={() => handleAddAdhocItem(task.id)}><Plus className="h-4 w-4 mr-2" />Add</Button>
                                                                     </div>

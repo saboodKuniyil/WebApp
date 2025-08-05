@@ -381,9 +381,16 @@
           "description": "Phenomen painting \nRates are as per SQF",
           "quantity": 110,
           "rate": 76
+        },
+        {
+          "id": "manual-1754389669592",
+          "title": "Wall Renewasioin ",
+          "description": "techni\nthiiiis\nthiuhsdfsd\nthihisdfsdf\ntjhiioerere\nhiieernber\n",
+          "quantity": 45,
+          "rate": 25
         }
       ],
-      "totalCost": 8360,
+      "totalCost": 9485,
       "status": "draft",
       "customer": "Drakkulllan",
       "createdDate": "2025-08-05"

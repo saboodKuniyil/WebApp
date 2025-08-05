@@ -158,7 +158,7 @@ export function QuotationPrintLayout({ quotation, companyProfile, currency, appS
                 <div className="page">
                     <div className="header">
                         {companyProfile?.logoUrl && (
-                             <img src={companyProfile.logoUrl} alt={companyProfile.companyName} className="company-logo" />
+                             <img src={companyProfile.logoUrl} alt={companyProfile.companyName} className="company-logo" data-ai-hint="logo company" />
                         )}
                         <div>
                             <h1>QUOTATION</h1>
@@ -196,7 +196,7 @@ export function QuotationPrintLayout({ quotation, companyProfile, currency, appS
                                     <td>
                                         <div className="item-cell">
                                             {item.imageUrl && (
-                                                <img src={item.imageUrl} alt={item.title} className="item-image" />
+                                                <img src={item.imageUrl} alt={item.title} className="item-image" data-ai-hint="product item" />
                                             )}
                                             <div>
                                                 <strong>{item.title}</strong>
