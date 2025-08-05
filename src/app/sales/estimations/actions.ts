@@ -3,7 +3,7 @@
 'use server';
 
 import { z } from 'zod';
-import { getEstimations, createEstimation as createDbEstimation, updateEstimation as updateDbEstimation, deleteEstimation as deleteDbEstimation, getEstimationById } from '@/lib/db';
+import { getEstimations, createEstimation as createDbEstimation, updateEstimation, deleteEstimation as deleteDbEstimation, getEstimationById } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import type { Estimation } from '@/components/sales/estimations-list';
@@ -151,7 +151,7 @@ export async function updateEstimation(
   }
   
   try {
-    await updateDbEstimation(validatedFields.data);
+    await updateEstimation(validatedFields.data);
 
     revalidatePath('/sales/estimations');
     revalidatePath(`/sales/estimations/${validatedFields.data.id}`);
@@ -184,7 +184,7 @@ export async function updateEstimationStatus(
     }
 
     const updatedEstimation: Estimation = { ...estimation, status };
-    await updateDbEstimation(updatedEstimation);
+    await updateEstimation(updatedEstimation);
 
     revalidatePath(`/sales/estimations/${estimationId}`);
     revalidatePath('/sales/estimations');
