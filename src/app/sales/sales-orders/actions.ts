@@ -2,9 +2,10 @@
 'use server';
 
 import { z } from 'zod';
-import { getQuotations, getQuotationById, updateQuotation, createSalesOrder, getSalesOrders } from '@/lib/db';
+import { getQuotationById, createSalesOrder, getSalesOrders } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import type { SalesOrder } from '@/lib/db';
+import { updateQuotationStatus } from '../quotations/actions';
 
 export async function getNextSalesOrderId(): Promise<string> {
     const salesOrders = await getSalesOrders();
@@ -57,8 +58,8 @@ export async function createSalesOrderFromQuotation(
 
     await createSalesOrder(newSalesOrder);
     
-    // Update quotation status
-    await updateQuotation({ ...quotation, status: 'converted' });
+    // Update quotation status to 'converted'
+    await updateQuotationStatus(quotation.id, 'converted');
 
     revalidatePath('/sales/sales-orders');
     revalidatePath(`/sales/quotations/${quotationId}`);
