@@ -1,44 +1,5 @@
 {
-  "estimations": [
-    {
-      "id": "EST-1001",
-      "title": "Bedroom setting",
-      "customerId": "CS_4002",
-      "customerName": "Drakkulllan",
-      "tasks": [
-        {
-          "id": "ET-1001",
-          "title": "Bed",
-          "description": "sdf21001",
-          "items": [
-            {
-              "id": "FG_ELC_7002",
-              "name": "Wireless Mechanical Keyboard",
-              "quantity": 3,
-              "cost": 129.99,
-              "type": "product",
-              "imageUrl": "https://placehold.co/400x400.png"
-            },
-            {
-              "id": "adhoc-1754426425975",
-              "name": "Labor charges",
-              "quantity": 1,
-              "cost": 250,
-              "type": "adhoc",
-              "size": "",
-              "color": "",
-              "model": "",
-              "notes": ""
-            }
-          ],
-          "totalCost": 639.97
-        }
-      ],
-      "totalCost": 639.97,
-      "createdDate": "2025-08-05",
-      "status": "rejected"
-    }
-  ],
+  "estimations": [],
   "quotations": [
     {
       "id": "QUO-1001",
