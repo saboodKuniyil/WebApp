@@ -85,6 +85,8 @@ export function EditEstimationDialog({ products, customers, estimation, isOpen, 
     // State for adding a new task
     const [newTaskTitle, setNewTaskTitle] = React.useState('');
     const [newTaskDescription, setNewTaskDescription] = React.useState('');
+    const [newTaskImage, setNewTaskImage] = React.useState<string | null>(null);
+    const taskFileInputRef = React.useRef<HTMLInputElement>(null);
     
     const { toast } = useToast();
     const { currency } = useModules();
@@ -190,11 +192,14 @@ export function EditEstimationDialog({ products, customers, estimation, isOpen, 
             title: newTaskTitle,
             description: newTaskDescription,
             items: [],
-            totalCost: 0
+            totalCost: 0,
+            imageUrl: newTaskImage || undefined,
         };
         setTasks([...tasks, newTask]);
         setNewTaskTitle('');
         setNewTaskDescription('');
+        setNewTaskImage(null);
+        if (taskFileInputRef.current) taskFileInputRef.current.value = '';
     };
 
     const handleRemoveTask = (taskId: string) => {
@@ -209,12 +214,23 @@ export function EditEstimationDialog({ products, customers, estimation, isOpen, 
         }
     };
     
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleAdhocImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = (event) => {
                 setAdhocImage(event.target?.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleTaskImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                setNewTaskImage(event.target?.result as string);
             };
             reader.readAsDataURL(file);
         }
@@ -278,6 +294,13 @@ export function EditEstimationDialog({ products, customers, estimation, isOpen, 
                                         onChange={e => setNewTaskDescription(e.target.value)}
                                         rows={2}
                                     />
+                                     <div className="space-y-1">
+                                        <Label>Task Image (optional)</Label>
+                                        <div className="flex items-center gap-2">
+                                            {newTaskImage && <Image src={newTaskImage} alt="preview" width={40} height={40} className="rounded-md" />}
+                                            <Input type="file" accept="image/*" onChange={handleTaskImageChange} ref={taskFileInputRef} />
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className="flex justify-end">
                                     <Button type="button" onClick={handleAddTask}><Plus className="h-4 w-4 mr-2" />Add Task</Button>
@@ -295,6 +318,7 @@ export function EditEstimationDialog({ products, customers, estimation, isOpen, 
                                                         <AccordionTrigger>
                                                           <div className="flex items-center gap-2">
                                                               <GripVertical className="h-5 w-5 text-muted-foreground" />
+                                                              {task.imageUrl && <Image src={task.imageUrl} alt={task.title} width={40} height={40} className="rounded-md object-cover h-10 w-10" />}
                                                               <div>
                                                                   <span className="font-semibold text-lg">{task.title}</span>
                                                                   <p className="text-xs text-muted-foreground font-mono">{task.id}</p>
@@ -367,7 +391,7 @@ export function EditEstimationDialog({ products, customers, estimation, isOpen, 
                                                                     <div className="space-y-1"><Label>Image</Label>
                                                                         <div className="flex items-center gap-2">
                                                                             {adhocImage && <Image src={adhocImage} alt="preview" width={40} height={40} className="rounded-md" />}
-                                                                            <Input type="file" accept="image/*" onChange={handleImageChange} ref={adhocFileInputRef} />
+                                                                            <Input type="file" accept="image/*" onChange={handleAdhocImageChange} ref={adhocFileInputRef} />
                                                                         </div>
                                                                     </div>
                                                                     <div className="flex justify-end">
