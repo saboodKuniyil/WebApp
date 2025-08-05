@@ -10,7 +10,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
 } from '@/components/ui/sidebar';
-import { Box, Calendar, LayoutDashboard, Briefcase, ShoppingCart, Home, Package, FileText, Landmark, Truck, CheckSquare, AlertTriangle, ClipboardList, Settings, ChevronsRight, CircleDollarSign, Heart, Wallet, User, ClipboardSignature, PenSquare, Building, Users as UsersIcon, ShieldCheck, DollarSign, FileSignature, ShoppingBag, Blocks, Database } from 'lucide-react';
+import { Box, Calendar, LayoutDashboard, Briefcase, ShoppingCart, Home, Package, FileText, Landmark, Truck, CheckSquare, AlertTriangle, ClipboardList, Settings, ChevronsRight, CircleDollarSign, Heart, Wallet, User, ClipboardSignature, PenSquare, Building, Users as UsersIcon, ShieldCheck, DollarSign, FileSignature, ShoppingBag, Blocks, Database, Scale, BookOpen } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useModules } from '@/context/modules-context';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -18,13 +18,14 @@ import { ChevronDown } from 'lucide-react';
 
 export function DashboardSidebarItems() {
   const pathname = usePathname();
-  const { isProjectManagementEnabled, isPurchaseModuleEnabled, isCrmEnabled, isPayrollEnabled, isUserManagementEnabled, isSalesModuleEnabled } = useModules();
+  const { isProjectManagementEnabled, isPurchaseModuleEnabled, isCrmEnabled, isPayrollEnabled, isUserManagementEnabled, isSalesModuleEnabled, isAccountingEnabled } = useModules();
   
   const isCrmOpen = pathname.startsWith('/crm');
   const isSalesOpen = pathname.startsWith('/sales');
   const isProjectManagementOpen = pathname.startsWith('/project-management');
   const isPurchaseOpen = pathname.startsWith('/purchase');
   const isPayrollOpen = pathname.startsWith('/payroll');
+  const isAccountingOpen = pathname.startsWith('/accounting');
   const isSettingsOpen = pathname.startsWith('/settings') || pathname.startsWith('/modules');
   const isUserManagementOpen = pathname.startsWith('/settings/user-management');
   const isPreferencesOpen = pathname.startsWith('/settings/preferences');
@@ -40,6 +41,41 @@ export function DashboardSidebarItems() {
         </SidebarMenuButton>
       </SidebarMenuItem>
       
+      {isAccountingEnabled && (
+         <SidebarMenuItem>
+            <Collapsible defaultOpen={isAccountingOpen}>
+              <CollapsibleTrigger asChild>
+                  <SidebarMenuButton className="w-full justify-between">
+                      <div className="flex items-center gap-2">
+                          <Scale />
+                          Accounting
+                      </div>
+                      <ChevronDown className={`h-4 w-4 transition-transform data-[state=open]:rotate-180`} />
+                  </SidebarMenuButton>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <SidebarMenuSub>
+                  <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/accounting/dashboard'}>
+                      <Link href="/accounting/dashboard"><Home />Dashboard</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/accounting/chart-of-accounts'}>
+                      <Link href="/accounting/chart-of-accounts"><ClipboardList />Chart of Accounts</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/accounting/journals'}>
+                      <Link href="/accounting/journals"><BookOpen />Manual Journals</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                </SidebarMenuSub>
+              </CollapsibleContent>
+            </Collapsible>
+         </SidebarMenuItem>
+      )}
+
       {isCrmEnabled && (
          <SidebarMenuItem>
             <Collapsible defaultOpen={isCrmOpen}>

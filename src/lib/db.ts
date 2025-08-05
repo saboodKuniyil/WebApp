@@ -1,5 +1,4 @@
 
-
 'use server';
 
 import fs from 'fs/promises';
@@ -56,7 +55,6 @@ export type UserRole = {
   permissions: Permissions;
 };
 
-
 export type DashboardSettings = {
   showFinancialStats: boolean;
   showRevenueChart: boolean;
@@ -83,6 +81,7 @@ export type EnabledModules = {
     payroll: boolean;
     user_management: boolean;
     sales: boolean;
+    accounting: boolean;
 }
 
 export type QuotationSettings = {
@@ -133,6 +132,29 @@ export type Customer = {
     trnNumber?: string;
 };
 
+// Accounting Types
+export type Account = {
+    id: string;
+    name: string;
+    type: string;
+    description: string;
+    balance: number;
+};
+
+export type JournalEntry = {
+    accountId: string;
+    debit?: number;
+    credit?: number;
+};
+
+export type Journal = {
+    id: string;
+    date: string;
+    notes: string;
+    entries: JournalEntry[];
+}
+
+
 // Define paths for the new database files
 const dbDirectory = path.join(process.cwd(), 'src', 'lib');
 const pmDbPath = path.join(dbDirectory, 'project-management.json');
@@ -141,11 +163,13 @@ const salesDbPath = path.join(dbDirectory, 'sales.json');
 const crmDbPath = path.join(dbDirectory, 'crm.json');
 const payrollDbPath = path.join(dbDirectory, 'payroll.json');
 const settingsDbPath = path.join(dbDirectory, 'settings.json');
+const accountingDbPath = path.join(dbDirectory, 'accounting.json');
 
 
 // Generic function to read a JSON file
 async function readDbFile<T>(filePath: string, defaultValue: T): Promise<T> {
     try {
+        await fs.access(filePath);
         const data = await fs.readFile(filePath, 'utf-8');
         return JSON.parse(data) as T;
     } catch (error) {
@@ -430,9 +454,10 @@ const defaultSettingsDb: SettingsDb = {
             payroll: true,
             user_management: true,
             sales: true,
+            accounting: true,
         },
         quotationSettings: {
-            termsAndConditions: "1. Payment to be made within 30 days of the invoice date.\n2. Any additional work not mentioned in this quotation will be charged separately.\n3. This quotation is valid for 15 days from the date of issue.",
+            termsAndConditions: "1. Payment to be made within 30 days of the invoice date.\\n2. Any additional work not mentioned in this quotation will be charged separately.\\n3. This quotation is valid for 15 days from the date of issue.",
             bankName: "Default Bank",
             accountNumber: "0000-0000-0000-0000",
             iban: "AE000000000000000000000",
@@ -689,6 +714,48 @@ export async function updateQuotation(updatedQuotation: Quotation): Promise<void
     }
 }
 
+// Accounting Data
+type AccountingDb = {
+    accounts: Account[];
+    journals: Journal[];
+};
+
+const defaultAccountingDb: AccountingDb = { accounts: [], journals: [] };
+
+export async function getAccounts(): Promise<Account[]> {
+    const data = await readDbFile<AccountingDb>(accountingDbPath, defaultAccountingDb);
+    return data.accounts || [];
+}
+
+export async function createAccount(newAccount: Account): Promise<void> {
+    const data = await readDbFile<AccountingDb>(accountingDbPath, defaultAccountingDb);
+    data.accounts.push(newAccount);
+    await writeDbFile(accountingDbPath, data);
+}
+
+export async function updateAccountBalance(accountId: string, newBalance: number): Promise<void> {
+    const data = await readDbFile<AccountingDb>(accountingDbPath, defaultAccountingDb);
+    const accountIndex = data.accounts.findIndex(a => a.id === accountId);
+    if (accountIndex !== -1) {
+        data.accounts[accountIndex].balance = newBalance;
+        await writeDbFile(accountingDbPath, data);
+    } else {
+        throw new Error(`Account with id ${accountId} not found.`);
+    }
+}
+
+export async function getJournals(): Promise<Journal[]> {
+    const data = await readDbFile<AccountingDb>(accountingDbPath, defaultAccountingDb);
+    return data.journals || [];
+}
+
+export async function createJournal(newJournal: Journal): Promise<void> {
+    const data = await readDbFile<AccountingDb>(accountingDbPath, defaultAccountingDb);
+    data.journals.push(newJournal);
+    await writeDbFile(accountingDbPath, data);
+}
+
+
 // Backup and Restore
 type FullBackup = {
   settings: SettingsDb;
@@ -697,6 +764,7 @@ type FullBackup = {
   sales: SalesDb;
   crm: CrmDb;
   payroll: PayrollDb;
+  accounting: AccountingDb;
 };
 
 export async function getDbJsonContent(): Promise<{ content: string | null; error?: string }> {
@@ -708,6 +776,7 @@ export async function getDbJsonContent(): Promise<{ content: string | null; erro
         sales: await readDbFile<SalesDb>(salesDbPath, defaultSalesDb),
         crm: await readDbFile<CrmDb>(crmDbPath, defaultCrmDb),
         payroll: await readDbFile<PayrollDb>(payrollDbPath, defaultPayrollDb),
+        accounting: await readDbFile<AccountingDb>(accountingDbPath, defaultAccountingDb),
     };
     return { content: JSON.stringify(backupData, null, 2) };
   } catch (error) {
@@ -720,9 +789,11 @@ export async function restoreDbFromJsonContent(content: string): Promise<{ succe
   try {
     const backupData = JSON.parse(content) as FullBackup;
 
-    // Validate the backup data structure
-    if (!backupData.settings || !backupData.projectManagement || !backupData.purchase || !backupData.sales || !backupData.crm || !backupData.payroll) {
-        throw new Error('Invalid backup file structure. One or more modules are missing.');
+    const requiredModules: (keyof FullBackup)[] = ['settings', 'projectManagement', 'purchase', 'sales', 'crm', 'payroll', 'accounting'];
+    for (const module of requiredModules) {
+        if (!backupData[module]) {
+            throw new Error(`Invalid backup file structure. Module "${module}" is missing.`);
+        }
     }
 
     // Write each module's data to its respective file
@@ -732,6 +803,7 @@ export async function restoreDbFromJsonContent(content: string): Promise<{ succe
     await writeDbFile(salesDbPath, backupData.sales);
     await writeDbFile(crmDbPath, backupData.crm);
     await writeDbFile(payrollDbPath, backupData.payroll);
+    await writeDbFile(accountingDbPath, backupData.accounting);
 
     return { success: true };
   } catch (error: any) {
@@ -742,5 +814,3 @@ export async function restoreDbFromJsonContent(content: string): Promise<{ succe
     return { success: false, error: `Failed to restore database: ${error.message}` };
   }
 }
-
-    

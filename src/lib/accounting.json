@@ -1,0 +1,66 @@
+
+{
+  "accounts": [
+    {
+      "id": "AST-1001",
+      "name": "Cash",
+      "type": "Assets",
+      "description": "Cash on hand and in bank accounts.",
+      "balance": 50000
+    },
+    {
+      "id": "AST-1002",
+      "name": "Accounts Receivable",
+      "type": "Assets",
+      "description": "Money owed to the company by customers.",
+      "balance": 12450
+    },
+    {
+      "id": "LIA-1001",
+      "name": "Accounts Payable",
+      "type": "Liabilities",
+      "description": "Money the company owes to its suppliers.",
+      "balance": 8230.50
+    },
+    {
+      "id": "EQU-1001",
+      "name": "Owner's Equity",
+      "type": "Equity",
+      "description": "The owner's investment in the company.",
+      "balance": 100000
+    },
+    {
+      "id": "INC-1001",
+      "name": "Sales Revenue",
+      "type": "Income",
+      "description": "Revenue from sales of goods or services.",
+      "balance": 150000
+    },
+    {
+      "id": "EXP-1001",
+      "name": "Rent Expense",
+      "type": "Expense",
+      "description": "Cost of renting office or other space.",
+      "balance": 20000
+    }
+  ],
+  "journals": [
+    {
+      "id": "JRN-1001",
+      "date": "2024-08-01T00:00:00.000Z",
+      "notes": "Initial investment by owner.",
+      "entries": [
+        {
+          "accountId": "AST-1001",
+          "debit": 100000,
+          "credit": 0
+        },
+        {
+          "accountId": "EQU-1001",
+          "debit": 0,
+          "credit": 100000
+        }
+      ]
+    }
+  ]
+}

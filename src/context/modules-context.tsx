@@ -12,6 +12,7 @@ interface ModulesContextType {
   isPayrollEnabled: boolean;
   isUserManagementEnabled: boolean;
   isSalesModuleEnabled: boolean;
+  isAccountingEnabled: boolean;
   currency: Currency | null;
   setCurrency: (currency: Currency | null) => void;
   allCurrencies: Currency[];
@@ -19,7 +20,7 @@ interface ModulesContextType {
   setAppSettings: (settings: AppSettings) => void;
   companyProfile: CompanyProfile | null;
   setCompanyProfile: (profile: CompanyProfile | null) => void;
-  isLoading: boolean;
+  isInitialLoad: boolean; // Renamed from isLoading for clarity
 }
 
 const ModulesContext = createContext<ModulesContextType | undefined>(undefined);
@@ -37,12 +38,20 @@ export const ModulesProvider: React.FC<ModulesProviderProps> = ({
   serverCurrencies,
   serverCompanyProfile
 }) => {
-  const [appSettings, setAppSettings] = useState<AppSettings | null>(serverAppSettings);
-  const [allCurrencies, setAllCurrencies] = useState<Currency[]>(serverCurrencies);
-  const [companyProfile, setCompanyProfile] = useState<CompanyProfile | null>(serverCompanyProfile);
-  const [currency, setCurrency] = useState<Currency | null>(() => {
-    return serverCurrencies.find(c => c.code === serverAppSettings.currency) || null;
-  });
+  const [appSettings, setAppSettings] = useState<AppSettings | null>(null);
+  const [allCurrencies, setAllCurrencies] = useState<Currency[]>([]);
+  const [companyProfile, setCompanyProfile] = useState<CompanyProfile | null>(null);
+  const [currency, setCurrency] = useState<Currency | null>(null);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+
+  useEffect(() => {
+    setAppSettings(serverAppSettings);
+    setAllCurrencies(serverCurrencies);
+    setCompanyProfile(serverCompanyProfile);
+    setCurrency(serverCurrencies.find(c => c.code === serverAppSettings.currency) || null);
+    setIsInitialLoad(false);
+  }, [serverAppSettings, serverCurrencies, serverCompanyProfile]);
+
 
   const handleSetAppSettings = (settings: AppSettings) => {
     setAppSettings(settings);
@@ -71,6 +80,7 @@ export const ModulesProvider: React.FC<ModulesProviderProps> = ({
   const isPayrollEnabled = appSettings?.enabled_modules?.payroll ?? false;
   const isUserManagementEnabled = appSettings?.enabled_modules?.user_management ?? false;
   const isSalesModuleEnabled = appSettings?.enabled_modules?.sales ?? false;
+  const isAccountingEnabled = appSettings?.enabled_modules?.accounting ?? false;
 
   return (
     <ModulesContext.Provider value={{ 
@@ -80,6 +90,7 @@ export const ModulesProvider: React.FC<ModulesProviderProps> = ({
         isPayrollEnabled,
         isUserManagementEnabled,
         isSalesModuleEnabled,
+        isAccountingEnabled,
         currency,
         setCurrency: handleSetCurrency,
         allCurrencies,
@@ -87,7 +98,7 @@ export const ModulesProvider: React.FC<ModulesProviderProps> = ({
         setAppSettings: handleSetAppSettings,
         companyProfile,
         setCompanyProfile: handleSetCompanyProfile,
-        isLoading: false, // Data is pre-loaded
+        isInitialLoad,
     }}>
       {children}
     </ModulesContext.Provider>

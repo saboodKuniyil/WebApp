@@ -5,7 +5,7 @@
       "showFinancialStats": false,
       "showRevenueChart": false,
       "showSalesAnalysis": false,
-      "showProjectManagementStats": false,
+      "showProjectManagementStats": true,
       "showCrmStats": false,
       "showPurchaseStats": true
     },
