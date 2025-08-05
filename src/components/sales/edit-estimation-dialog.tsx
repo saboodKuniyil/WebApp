@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Plus, Trash2, GripVertical, Upload } from 'lucide-react';
-import { updateEstimation } from '@/app/sales/estimations/actions';
+import { updateEstimationAction } from '@/app/sales/estimations/actions';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '../ui/scroll-area';
 import { useModules } from '@/context/modules-context';
@@ -60,7 +60,7 @@ function SubmitButton() {
 }
 
 export function EditEstimationDialog({ products, customers, estimation, isOpen, setIsOpen }: EditEstimationDialogProps) {
-    const [state, dispatch] = useActionState(updateEstimation, initialState);
+    const [state, dispatch] = useActionState(updateEstimationAction, initialState);
     const [tasks, setTasks] = React.useState<EstimationTask[]>(estimation.tasks);
     const [totalCost, setTotalCost] = React.useState(estimation.totalCost);
     const [selectedCustomer, setSelectedCustomer] = React.useState<{id: string, name: string} | null>(

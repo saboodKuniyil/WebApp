@@ -3,7 +3,7 @@
 'use server';
 
 import { z } from 'zod';
-import { getEstimations, createEstimation as createDbEstimation, updateEstimation, deleteEstimation as deleteDbEstimation, getEstimationById } from '@/lib/db';
+import { getEstimations, createEstimation as createDbEstimation, updateEstimation as updateDbEstimation, deleteEstimation as deleteDbEstimation, getEstimationById } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import type { Estimation } from '@/components/sales/estimations-list';
@@ -27,6 +27,7 @@ const estimationTaskSchema = z.object({
     description: z.string().optional(),
     items: z.array(estimationItemSchema).min(1, 'Each task must have at least one item'),
     totalCost: z.coerce.number(),
+    imageUrl: z.string().optional(),
 });
 
 const estimationSchema = z.object({
@@ -120,7 +121,7 @@ export async function createEstimation(
   }
 }
 
-export async function updateEstimation(
+export async function updateEstimationAction(
   prevState: EstimationFormState,
   formData: FormData
 ): Promise<EstimationFormState> {
@@ -151,7 +152,7 @@ export async function updateEstimation(
   }
   
   try {
-    await updateEstimation(validatedFields.data);
+    await updateDbEstimation(validatedFields.data);
 
     revalidatePath('/sales/estimations');
     revalidatePath(`/sales/estimations/${validatedFields.data.id}`);
@@ -184,7 +185,7 @@ export async function updateEstimationStatus(
     }
 
     const updatedEstimation: Estimation = { ...estimation, status };
-    await updateEstimation(updatedEstimation);
+    await updateDbEstimation(updatedEstimation);
 
     revalidatePath(`/sales/estimations/${estimationId}`);
     revalidatePath('/sales/estimations');
