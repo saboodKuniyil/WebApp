@@ -9,7 +9,7 @@ import type { Issue } from '@/components/project-management/issues-list';
 import type { TaskBlueprint } from '@/components/project-management/task-blueprints-list';
 import type { Product } from '@/components/purchase/products-list';
 import type { Currency } from '@/components/settings/currency-management';
-import type { Estimation } from '@/components/sales/estimations-list';
+import type { Estimation, EstimationTask } from '@/components/sales/estimations-list';
 import type { Quotation, QuotationItem } from '@/components/sales/quotations-list';
 
 // Define types for the new Payroll module

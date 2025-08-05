@@ -58,6 +58,7 @@ export type EstimationTask = {
     description?: string;
     items: EstimationItem[];
     totalCost: number;
+    imageUrl?: string;
 }
 
 export type Estimation = {
