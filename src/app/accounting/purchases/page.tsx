@@ -1,0 +1,21 @@
+
+import { VendorsList } from '@/components/purchase/vendors-list';
+import { getVendors } from '@/lib/db';
+import type { Vendor } from '@/lib/db';
+
+async function fetchVendors(): Promise<Vendor[]> {
+    return getVendors();
+}
+
+export default async function AccountingPurchasesPage() {
+  const vendors = await fetchVendors();
+
+  return (
+    <main className="flex-1 space-y-4 p-2 md:p-4 pt-4">
+      <div className="flex items-center justify-between space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight font-headline">Purchases</h1>
+      </div>
+      <VendorsList data={vendors} />
+    </main>
+  );
+}

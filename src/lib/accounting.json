@@ -1,4 +1,3 @@
-
 {
   "accounts": [
     {
@@ -6,7 +5,7 @@
       "name": "Cash",
       "type": "Assets",
       "description": "Cash on hand and in bank accounts.",
-      "balance": 50000
+      "balance": 77500
     },
     {
       "id": "AST-1002",
@@ -20,14 +19,14 @@
       "name": "Accounts Payable",
       "type": "Liabilities",
       "description": "Money the company owes to its suppliers.",
-      "balance": 8230.50
+      "balance": 8230.5
     },
     {
       "id": "EQU-1001",
       "name": "Owner's Equity",
       "type": "Equity",
       "description": "The owner's investment in the company.",
-      "balance": 100000
+      "balance": 127500
     },
     {
       "id": "INC-1001",
@@ -59,6 +58,21 @@
           "accountId": "EQU-1001",
           "debit": 0,
           "credit": 100000
+        }
+      ]
+    },
+    {
+      "id": "JRN-1002",
+      "date": "2025-08-04T20:00:00.000Z",
+      "notes": "Equity",
+      "entries": [
+        {
+          "accountId": "AST-1001",
+          "debit": 27500
+        },
+        {
+          "accountId": "EQU-1001",
+          "credit": 27500
         }
       ]
     }

@@ -60,6 +60,16 @@ export function DashboardSidebarItems() {
                       <Link href="/accounting/dashboard"><Home />Dashboard</Link>
                     </SidebarMenuSubButton>
                   </SidebarMenuItem>
+                   <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/accounting/sales'}>
+                      <Link href="/accounting/sales"><DollarSign />Sales</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                   <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/accounting/purchases'}>
+                      <Link href="/accounting/purchases"><ShoppingCart />Purchases</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
                   <SidebarMenuItem>
                     <SidebarMenuSubButton asChild isActive={pathname === '/accounting/chart-of-accounts'}>
                       <Link href="/accounting/chart-of-accounts"><ClipboardList />Chart of Accounts</Link>
