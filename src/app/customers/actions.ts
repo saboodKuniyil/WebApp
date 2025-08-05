@@ -4,6 +4,7 @@
 import { z } from 'zod';
 import { getCustomers, createCustomer, updateCustomer as updateDbCustomer, deleteCustomer as deleteDbCustomer } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
+import Papa from 'papaparse';
 
 const customerSchema = z.object({
   id: z.string(),
@@ -151,5 +152,64 @@ export async function deleteCustomerAction(customerId: string): Promise<{ messag
     } catch (error: any) {
         console.error('Database Error:', error);
         return { message: 'Failed to delete customer.' };
+    }
+}
+
+export async function exportCustomersToCsv(): Promise<string> {
+    const customers = await getCustomers();
+    const csv = Papa.unparse(customers, {
+        header: true,
+        columns: ['id', 'name', 'email', 'phone', 'address', 'status'],
+    });
+    return csv;
+}
+
+export async function importCustomersFromCsv(csvData: string): Promise<{ message: string; errors?: any[] }> {
+    try {
+        const parsed = Papa.parse(csvData, { header: true, skipEmptyLines: true });
+        if (parsed.errors.length) {
+            return { message: 'Failed to parse CSV file.', errors: parsed.errors };
+        }
+
+        const newCustomers = parsed.data as any[];
+        const allCustomers = await getCustomers();
+        const allEmails = new Set(allCustomers.map(c => c.email).filter(Boolean));
+
+        for (const customerData of newCustomers) {
+             const validatedFields = customerSchema.partial({id: true, status: true}).safeParse({
+                ...customerData,
+                status: customerData.status || 'active',
+            });
+
+            if (!validatedFields.success) {
+                 return { message: `Validation failed for customer ${customerData.name}: ${JSON.stringify(validatedFields.error.flatten().fieldErrors)}` };
+            }
+
+            const { name, email, phone, address, status } = validatedFields.data;
+
+            if (email && allEmails.has(email)) {
+                console.warn(`Skipping duplicate email: ${email}`);
+                continue;
+            }
+
+            const newId = await getNextCustomerId();
+            await createCustomer({
+                id: newId,
+                name: name || '',
+                email: email || '',
+                phone: phone || '',
+                address: address || '',
+                status: status || 'active',
+            });
+            
+            if(email) allEmails.add(email);
+        }
+
+        revalidatePath('/crm/customers');
+        revalidatePath('/sales/customers');
+        return { message: 'Customers imported successfully.' };
+    } catch (error: any) {
+        console.error('CSV Import Error:', error);
+        return { message: `Failed to import customers: ${error.message}` };
     }
 }

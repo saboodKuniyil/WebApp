@@ -19,6 +19,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import { Upload, Download } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -45,6 +46,9 @@ import { AddCustomerDialog } from './add-customer-dialog';
 import { EditCustomerDialog } from './edit-customer-dialog';
 import { DeleteCustomerDialog } from './delete-customer-dialog';
 import type { Customer } from '@/lib/db';
+import { exportCustomersToCsv } from '@/app/customers/actions';
+import { useToast } from '@/hooks/use-toast';
+import { ImportCustomersDialog } from './import-customers-dialog';
 
 const statusColors: Record<Customer['status'], string> = {
   active: 'bg-green-500/20 text-green-700 dark:text-green-300',
@@ -59,7 +63,10 @@ export function CustomersList({ data }: { data: Customer[] }) {
   
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
+  const [isImportDialogOpen, setIsImportDialogOpen] = React.useState(false);
   const [selectedCustomer, setSelectedCustomer] = React.useState<Customer | null>(null);
+
+  const { toast } = useToast();
 
   const handleEdit = (customer: Customer) => {
     setSelectedCustomer(customer);
@@ -71,6 +78,24 @@ export function CustomersList({ data }: { data: Customer[] }) {
     setIsDeleteDialogOpen(true);
   };
   
+  const handleExport = async () => {
+    try {
+        const csvData = await exportCustomersToCsv();
+        const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', `customers-export-${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        toast({ title: 'Success', description: 'Customer data exported successfully.' });
+    } catch (error) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Failed to export customers.' });
+    }
+  };
+
   const columns: ColumnDef<Customer>[] = React.useMemo(() => [
     {
       id: 'select',
@@ -185,6 +210,12 @@ export function CustomersList({ data }: { data: Customer[] }) {
             className="max-w-sm"
           />
           <div className="flex items-center gap-2">
+             <Button variant="outline" onClick={() => setIsImportDialogOpen(true)}>
+              <Upload className="mr-2 h-4 w-4" /> Import
+            </Button>
+            <Button variant="outline" onClick={handleExport}>
+              <Download className="mr-2 h-4 w-4" /> Export
+            </Button>
             <AddCustomerDialog />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -256,6 +287,7 @@ export function CustomersList({ data }: { data: Customer[] }) {
           </Button>
         </div>
       </div>
+      <ImportCustomersDialog isOpen={isImportDialogOpen} setIsOpen={setIsImportDialogOpen} />
       {selectedCustomer && (
         <>
           <EditCustomerDialog isOpen={isEditDialogOpen} setIsOpen={setIsEditDialogOpen} customer={selectedCustomer} />
