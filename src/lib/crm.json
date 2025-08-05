@@ -1,34 +1,3 @@
 {
-  "customers": [
-    {
-      "id": "CS_4001",
-      "name": "James Battual",
-      "email": "",
-      "phone": "",
-      "address": "",
-      "status": "active",
-      "companyName": "",
-      "trnNumber": ""
-    },
-    {
-      "id": "CS_4002",
-      "name": "Drakkulllan",
-      "email": "",
-      "phone": "",
-      "address": "",
-      "status": "active",
-      "companyName": "",
-      "trnNumber": ""
-    },
-    {
-      "id": "CS_4003",
-      "name": "sabood kuniyil",
-      "email": "",
-      "phone": "",
-      "address": "",
-      "status": "active",
-      "companyName": "",
-      "trnNumber": ""
-    }
-  ]
+  "customers": []
 }
