@@ -157,12 +157,12 @@ export function DashboardSidebarItems() {
                     </SidebarMenuSubButton>
                   </SidebarMenuItem>
                    <SidebarMenuItem>
-                    <SidebarMenuSubButton asChild isActive={pathname === '/sales/sales-orders'}>
+                    <SidebarMenuSubButton asChild isActive={pathname.startsWith('/sales/sales-orders')}>
                       <Link href="/sales/sales-orders"><ShoppingBag />Sales Orders</Link>
                     </SidebarMenuSubButton>
                   </SidebarMenuItem>
                    <SidebarMenuItem>
-                    <SidebarMenuSubButton asChild isActive={pathname === '/sales/invoices'}>
+                    <SidebarMenuSubButton asChild isActive={pathname.startsWith('/sales/invoices')}>
                       <Link href="/sales/invoices"><FileText />Invoices</Link>
                     </SidebarMenuSubButton>
                   </SidebarMenuItem>
