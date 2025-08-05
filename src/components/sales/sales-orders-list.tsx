@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import * as React from 'react';
@@ -24,7 +23,6 @@ import {
 import { Button, buttonVariants } from '@/components/ui/button';
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
@@ -41,54 +39,30 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import type { Product } from '../purchase/products-list';
 import { useModules } from '@/context/modules-context';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import type { Estimation, EstimationItem } from './estimations-list';
 import { Badge } from '../ui/badge';
-import { CreateQuotationDialog } from './create-quotation-dialog';
-import { PlusCircle } from 'lucide-react';
+import type { SalesOrder } from '@/lib/db';
+import type { Quotation } from './quotations-list';
 
-export type QuotationItem = {
-    id: string; // Corresponds to the EstimationTask ID
-    title: string;
-    description?: string;
-    quantity: number;
-    rate: number; // Corresponds to the EstimationTask totalCost
-    imageUrl?: string;
-};
-
-export type Quotation = {
-    id: string;
-    title: string;
-    estimationId: string;
-    items: QuotationItem[];
-    totalCost: number;
-    status: 'draft' | 'sent' | 'approved' | 'rejected' | 'converted';
-    customer: string;
-    createdDate: string;
-};
-
-interface QuotationsListProps {
-  data: Quotation[];
-  estimations: Estimation[];
-  products: Product[];
+interface SalesOrdersListProps {
+  data: SalesOrder[];
+  quotations: Quotation[];
 }
 
-const statusColors: Record<Quotation['status'], string> = {
-    draft: 'bg-gray-500/20 text-gray-700 dark:text-gray-300',
-    sent: 'bg-blue-500/20 text-blue-700 dark:text-blue-300',
-    approved: 'bg-green-500/20 text-green-700 dark:text-green-300',
-    rejected: 'bg-red-500/20 text-red-700 dark:text-red-300',
-    converted: 'bg-purple-500/20 text-purple-700 dark:text-purple-300',
+const statusColors: Record<SalesOrder['status'], string> = {
+    open: 'bg-blue-500/20 text-blue-700 dark:text-blue-300',
+    'in-progress': 'bg-yellow-500/20 text-yellow-700 dark:text-yellow-300',
+    fulfilled: 'bg-green-500/20 text-green-700 dark:text-green-300',
+    canceled: 'bg-red-500/20 text-red-700 dark:text-red-300',
 };
 
-export function QuotationsList({ data, estimations, products }: QuotationsListProps) {
+
+export function SalesOrdersList({ data, quotations }: SalesOrdersListProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
 
   const { currency } = useModules();
 
@@ -105,7 +79,7 @@ export function QuotationsList({ data, estimations, products }: QuotationsListPr
     }).format(amount);
   }, [currency]);
 
-  const columns: ColumnDef<Quotation>[] = React.useMemo(() => [
+  const columns: ColumnDef<SalesOrder>[] = React.useMemo(() => [
   {
     accessorKey: 'id',
     header: ({ column }) => (
@@ -113,12 +87,12 @@ export function QuotationsList({ data, estimations, products }: QuotationsListPr
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          ID
+          SO ID
           <CaretSortIcon className="ml-2 h-4 w-4" />
         </Button>
     ),
     cell: ({ row }) => (
-      <Link href={`/sales/quotations/${row.original.id}`} className="font-medium hover:underline">
+      <Link href={`/sales/sales-orders/${row.original.id}`} className="font-medium hover:underline">
           {row.getValue('id')}
       </Link>
     ),
@@ -127,7 +101,7 @@ export function QuotationsList({ data, estimations, products }: QuotationsListPr
     accessorKey: 'title',
     header: 'Title',
     cell: ({ row }) => (
-       <Link href={`/sales/quotations/${row.original.id}`} className="font-medium hover:underline">
+       <Link href={`/sales/sales-orders/${row.original.id}`} className="font-medium hover:underline">
           {row.getValue('title')}
       </Link>
     ),
@@ -155,15 +129,24 @@ export function QuotationsList({ data, estimations, products }: QuotationsListPr
     cell: ({ row }) => <div>{formatCurrency(row.getValue('totalCost'))}</div>,
   },
   {
-    accessorKey: 'createdDate',
-    header: 'Date',
-    cell: ({ row }) => <div>{row.getValue('createdDate')}</div>,
+    accessorKey: 'orderDate',
+    header: 'Order Date',
+    cell: ({ row }) => <div>{row.getValue('orderDate')}</div>,
+  },
+   {
+    accessorKey: 'quotationId',
+    header: 'Quotation ID',
+    cell: ({ row }) => (
+       <Link href={`/sales/quotations/${row.original.quotationId}`} className="font-medium hover:underline text-primary">
+          {row.getValue('quotationId')}
+      </Link>
+    ),
   },
   {
     id: 'actions',
     enableHiding: false,
     cell: ({ row }) => {
-      const quotation = row.original;
+      const salesOrder = row.original;
 
       return (
         <DropdownMenu>
@@ -174,12 +157,12 @@ export function QuotationsList({ data, estimations, products }: QuotationsListPr
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem asChild>
-                <Link href={`/sales/quotations/${quotation.id}`}>View Quotation</Link>
+                <Link href={`/sales/sales-orders/${salesOrder.id}`}>View Sales Order</Link>
             </DropdownMenuItem>
-            <DropdownMenuItem>Edit Quotation</DropdownMenuItem>
+            <DropdownMenuItem>Edit Sales Order</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="text-red-600">
-                Delete Quotation
+                Delete Sales Order
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -198,12 +181,10 @@ export function QuotationsList({ data, estimations, products }: QuotationsListPr
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
-      rowSelection,
     },
   });
 
@@ -211,45 +192,18 @@ export function QuotationsList({ data, estimations, products }: QuotationsListPr
     <>
     <Card>
       <CardHeader className="p-2">
-        <CardTitle>All Quotations</CardTitle>
-        <CardDescription>A list of all sales quotations.</CardDescription>
+        <CardTitle>All Sales Orders</CardTitle>
+        <CardDescription>A list of all confirmed sales orders.</CardDescription>
       </CardHeader>
       <CardContent className="p-2 pt-0">
         <div className="w-full">
           <div className="flex items-center justify-between py-2">
             <Input
-              placeholder="Filter quotations by title..."
+              placeholder="Filter by title..."
               value={(table.getColumn('title')?.getFilterValue() as string) ?? ''}
               onChange={(event) => table.getColumn('title')?.setFilterValue(event.target.value)}
               className="max-w-sm h-8"
             />
-            <div className="flex space-x-2">
-                <Button asChild>
-                    <Link href="/sales/quotations/new">
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        Create Quotation
-                    </Link>
-                </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="ml-auto h-8">
-                    Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {table.getAllColumns().filter((column) => column.getCanHide()).map((column) => (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
           </div>
           <div className="rounded-md border">
             <Table>
@@ -267,7 +221,7 @@ export function QuotationsList({ data, estimations, products }: QuotationsListPr
               <TableBody>
                 {table.getRowModel().rows?.length ? (
                   table.getRowModel().rows.map((row) => (
-                    <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                    <TableRow key={row.id}>
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id} className="p-2">
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -278,7 +232,7 @@ export function QuotationsList({ data, estimations, products }: QuotationsListPr
                 ) : (
                   <TableRow>
                     <TableCell colSpan={columns.length} className="h-24 text-center">
-                      No quotations found.
+                      No sales orders found.
                     </TableCell>
                   </TableRow>
                 )}

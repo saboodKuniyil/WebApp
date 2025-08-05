@@ -10,7 +10,7 @@ import type { TaskBlueprint } from '@/components/project-management/task-bluepri
 import type { Product } from '@/components/purchase/products-list';
 import type { Currency } from '@/components/settings/currency-management';
 import type { Estimation } from '@/components/sales/estimations-list';
-import type { Quotation } from '@/components/sales/quotations-list';
+import type { Quotation, QuotationItem } from '@/components/sales/quotations-list';
 
 // Define types for the new Payroll module
 export type Employee = {
@@ -152,6 +152,21 @@ export type Journal = {
     date: string;
     notes: string;
     entries: JournalEntry[];
+}
+
+// Sales Order Types
+export type SalesOrderItem = QuotationItem;
+
+export type SalesOrder = {
+    id: string;
+    quotationId: string;
+    title: string;
+    items: SalesOrderItem[];
+    totalCost: number;
+    status: 'open' | 'in-progress' | 'fulfilled' | 'canceled';
+    customer: string;
+    createdDate: string;
+    orderDate: string;
 }
 
 
@@ -645,9 +660,10 @@ export async function deleteCustomer(customerId: string): Promise<void> {
 type SalesDb = {
     estimations: Estimation[];
     quotations: Quotation[];
+    salesOrders: SalesOrder[];
 };
 
-const defaultSalesDb: SalesDb = { estimations: [], quotations: [] };
+const defaultSalesDb: SalesDb = { estimations: [], quotations: [], salesOrders: [] };
 
 export async function getEstimations(): Promise<Estimation[]> {
     const data = await readDbFile<SalesDb>(salesDbPath, defaultSalesDb);
@@ -712,6 +728,17 @@ export async function updateQuotation(updatedQuotation: Quotation): Promise<void
     } else {
         throw new Error(`Quotation with id ${updatedQuotation.id} not found.`);
     }
+}
+
+export async function getSalesOrders(): Promise<SalesOrder[]> {
+    const data = await readDbFile<SalesDb>(salesDbPath, defaultSalesDb);
+    return data.salesOrders || [];
+}
+
+export async function createSalesOrder(newSalesOrder: SalesOrder): Promise<void> {
+    const data = await readDbFile<SalesDb>(salesDbPath, defaultSalesDb);
+    data.salesOrders.push(newSalesOrder);
+    await writeDbFile(salesDbPath, data);
 }
 
 // Accounting Data

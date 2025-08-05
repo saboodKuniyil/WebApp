@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import type { Quotation, QuotationItem } from "./quotations-list";
 import { Button } from "../ui/button"
-import { Pencil, Save, Trash2, Plus, Printer, X } from "lucide-react"
+import { Pencil, Save, Trash2, Plus, Printer, X, ShoppingBag } from "lucide-react"
 import { useModules } from '@/context/modules-context';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Input } from '../ui/input';
@@ -18,6 +18,8 @@ import { useToast } from '@/hooks/use-toast';
 import { QuotationPrintLayout } from './quotation-print-layout';
 import ReactDOMServer from 'react-dom/server';
 import Image from 'next/image';
+import { createSalesOrderFromQuotation } from '@/app/sales/sales-orders/actions';
+import { useRouter } from 'next/navigation';
 
 interface QuotationDetailViewProps {
     quotation: Quotation;
@@ -28,6 +30,7 @@ const statusColors: Record<Quotation['status'], string> = {
     sent: 'bg-blue-500/20 text-blue-700 dark:text-blue-300',
     approved: 'bg-green-500/20 text-green-700 dark:text-green-300',
     rejected: 'bg-red-500/20 text-red-700 dark:text-red-300',
+    converted: 'bg-purple-500/20 text-purple-700 dark:text-purple-300',
 };
 
 const initialState = { message: '', errors: {} };
@@ -52,13 +55,15 @@ const adaptQuotationData = (quotation: Quotation): QuotationItem[] => {
 }
 
 export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
-    const [state, dispatch] = useActionState(updateQuotationAction, initialState);
+    const [updateState, updateDispatch] = useActionState(updateQuotationAction, initialState);
     const { currency, companyProfile, appSettings } = useModules();
     const [isEditing, setIsEditing] = React.useState(false);
     const [originalItems, setOriginalItems] = React.useState<QuotationItem[]>([]);
     const [items, setItems] = React.useState<QuotationItem[]>(adaptQuotationData(quotation));
+    const [isCreatingSO, setIsCreatingSO] = React.useState(false);
     
     const { toast } = useToast();
+    const router = useRouter();
     const formRef = React.useRef<HTMLFormElement>(null);
 
     const subtotal = items.reduce((acc, item) => acc + item.quantity * item.rate, 0);
@@ -68,15 +73,15 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
 
 
     React.useEffect(() => {
-        if (state.message) {
-            if (state.errors) {
-                toast({ variant: 'destructive', title: 'Error', description: state.message });
+        if (updateState.message) {
+            if (updateState.errors) {
+                toast({ variant: 'destructive', title: 'Error', description: updateState.message });
             } else {
-                toast({ title: 'Success', description: state.message });
+                toast({ title: 'Success', description: updateState.message });
                 setIsEditing(false);
             }
         }
-    }, [state, toast]);
+    }, [updateState, toast]);
 
     const handleItemChange = (itemId: string, field: keyof QuotationItem, value: string | number) => {
         setItems(prevItems =>
@@ -132,8 +137,27 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
         setIsEditing(false);
     };
 
+    const handleCreateSalesOrder = async () => {
+        setIsCreatingSO(true);
+        const result = await createSalesOrderFromQuotation(quotation.id);
+        if (result.salesOrderId) {
+            toast({
+                title: 'Success',
+                description: 'Sales Order created successfully.',
+            });
+            router.push(`/sales/sales-orders`);
+        } else {
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: result.message || 'Failed to create Sales Order.',
+            });
+        }
+        setIsCreatingSO(false);
+    };
+
     return (
-        <form ref={formRef} action={dispatch}>
+        <form ref={formRef} action={updateDispatch}>
             <input type="hidden" name="id" value={quotation.id} />
             <input type="hidden" name="items" value={JSON.stringify(items)} />
             <Card className="p-4 md:p-6">
@@ -143,10 +167,16 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
                             <h1 className="text-3xl font-bold font-headline">{quotation.title}</h1>
                             <p className="text-muted-foreground">Quotation #{quotation.id}</p>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap justify-end">
+                            {quotation.status === 'approved' && (
+                                <Button type="button" onClick={handleCreateSalesOrder} disabled={isCreatingSO}>
+                                    <ShoppingBag className="mr-2 h-4 w-4" />
+                                    {isCreatingSO ? 'Creating...' : 'Create Sales Order'}
+                                </Button>
+                            )}
                              <Button type="button" variant="outline" onClick={handlePrint}>
                                 <Printer className="mr-2 h-4 w-4" />
-                                Print View
+                                Print
                             </Button>
                             {isEditing ? (
                                 <>

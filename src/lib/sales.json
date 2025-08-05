@@ -1,3 +1,4 @@
+
 {
   "estimations": [
     {
@@ -352,17 +353,17 @@
         },
         {
           "id": "adhoc-1754059951753",
-          "title": "labour charges",
-          "description": "",
+          "name": "labour charges",
           "quantity": 15,
-          "rate": 5.85
+          "cost": 5.85,
+          "type": "adhoc"
         },
         {
           "id": "FG_FNT_7002",
-          "title": "TPR Desk 1700*55",
-          "description": "",
+          "name": "TPR Desk 1700*55",
           "quantity": 1,
-          "rate": 810.99
+          "cost": 810.99,
+          "type": "product"
         }
       ],
       "totalCost": 1248.73,
@@ -431,5 +432,6 @@
       "customer": "Drakkulllan",
       "createdDate": "2025-08-05"
     }
-  ]
+  ],
+  "salesOrders": []
 }
