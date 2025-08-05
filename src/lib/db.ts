@@ -113,15 +113,6 @@ export type EstimationItem = {
     imageUrl?: string;
 };
 
-export type QuotationItem = {
-    id: string; // Corresponds to the EstimationTask ID
-    title: string;
-    description?: string;
-    quantity: number;
-    rate: number; // Corresponds to the EstimationTask totalCost
-    imageUrl?: string;
-};
-
 export type Vendor = {
     id: string;
     name: string;
@@ -696,6 +687,7 @@ export async function updateQuotation(updatedQuotation: Quotation): Promise<void
     }
 }
 
+// Backup and Restore
 type FullBackup = {
   settings: SettingsDb;
   projectManagement: ProjectManagementDb;
