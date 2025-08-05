@@ -7,13 +7,13 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import type { Quotation, QuotationItem } from "./quotations-list";
 import { Button } from "../ui/button"
-import { Pencil, Save, Trash2, Plus, Printer, X, ShoppingBag } from "lucide-react"
+import { Pencil, Save, Trash2, Plus, Printer, X, ShoppingBag, Send, CheckCircle2, XCircle, FileSignature, Redo } from "lucide-react"
 import { useModules } from '@/context/modules-context';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { useActionState } from 'react';
-import { updateQuotationAction } from '@/app/sales/quotations/actions';
+import { updateQuotationAction, updateQuotationStatus } from '@/app/sales/quotations/actions';
 import { useToast } from '@/hooks/use-toast';
 import { QuotationPrintLayout } from './quotation-print-layout';
 import ReactDOMServer from 'react-dom/server';
@@ -61,6 +61,7 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
     const [originalItems, setOriginalItems] = React.useState<QuotationItem[]>([]);
     const [items, setItems] = React.useState<QuotationItem[]>(adaptQuotationData(quotation));
     const [isCreatingSO, setIsCreatingSO] = React.useState(false);
+    const [isChangingStatus, setIsChangingStatus] = React.useState(false);
     
     const { toast } = useToast();
     const router = useRouter();
@@ -136,6 +137,17 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
         setItems(originalItems);
         setIsEditing(false);
     };
+    
+    const handleChangeStatus = async (newStatus: Quotation['status']) => {
+        setIsChangingStatus(true);
+        const result = await updateQuotationStatus(quotation.id, newStatus);
+        if (result.message.includes('success')) {
+            toast({ title: 'Success', description: result.message });
+        } else {
+            toast({ variant: 'destructive', title: 'Error', description: result.message });
+        }
+        setIsChangingStatus(false);
+    };
 
     const handleCreateSalesOrder = async () => {
         setIsCreatingSO(true);
@@ -168,12 +180,6 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
                             <p className="text-muted-foreground">Quotation #{quotation.id}</p>
                         </div>
                         <div className="flex items-center gap-2 flex-wrap justify-end">
-                            {quotation.status === 'approved' && (
-                                <Button type="button" onClick={handleCreateSalesOrder} disabled={isCreatingSO}>
-                                    <ShoppingBag className="mr-2 h-4 w-4" />
-                                    {isCreatingSO ? 'Creating...' : 'Create Sales Order'}
-                                </Button>
-                            )}
                              <Button type="button" variant="outline" onClick={handlePrint}>
                                 <Printer className="mr-2 h-4 w-4" />
                                 Print
@@ -197,6 +203,30 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
                             )}
                             <Badge variant="outline" className={`capitalize text-lg border-0 ${statusColors[quotation.status]}`}>{quotation.status}</Badge>
                         </div>
+                    </div>
+                     <div className="border-t my-4" />
+                    <div className="flex items-center gap-2 flex-wrap">
+                        {quotation.status === 'draft' && (
+                            <>
+                                <Button type="button" size="sm" onClick={() => handleChangeStatus('sent')} disabled={isChangingStatus}><Send className="mr-2 h-4 w-4" />Mark as Sent</Button>
+                                <Button type="button" size="sm" variant="secondary" onClick={() => handleChangeStatus('approved')} disabled={isChangingStatus}><CheckCircle2 className="mr-2 h-4 w-4" />Approve</Button>
+                            </>
+                        )}
+                        {quotation.status === 'sent' && (
+                             <>
+                                <Button type="button" size="sm" onClick={() => handleChangeStatus('approved')} disabled={isChangingStatus}><CheckCircle2 className="mr-2 h-4 w-4" />Approve</Button>
+                                <Button type="button" size="sm" variant="destructive" onClick={() => handleChangeStatus('rejected')} disabled={isChangingStatus}><XCircle className="mr-2 h-4 w-4" />Reject</Button>
+                            </>
+                        )}
+                         {(quotation.status === 'approved' || quotation.status === 'rejected') && (
+                                <Button type="button" size="sm" variant="outline" onClick={() => handleChangeStatus('draft')} disabled={isChangingStatus}><Redo className="mr-2 h-4 w-4" />Re-draft</Button>
+                         )}
+                         {quotation.status === 'approved' && (
+                                <Button type="button" size="sm" onClick={handleCreateSalesOrder} disabled={isCreatingSO}>
+                                    <ShoppingBag className="mr-2 h-4 w-4" />
+                                    {isCreatingSO ? 'Creating...' : 'Create Sales Order'}
+                                </Button>
+                            )}
                     </div>
 
                      <div className="grid md:grid-cols-2 gap-4 pt-6 text-sm">

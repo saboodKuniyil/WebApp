@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { getQuotations, createQuotation as createDbQuotation, getEstimationById, updateQuotation as updateDbQuotation } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import type { QuotationItem, EstimationItem } from '@/lib/db';
+import type { QuotationItem, EstimationItem, Quotation } from '@/lib/db';
 
 export async function getNextQuotationId(): Promise<string> {
     const quotations = await getQuotations();
@@ -203,3 +203,27 @@ export async function updateQuotationAction(prevState: any, formData: FormData):
         return { message: 'Failed to update quotation.' };
     }
 }
+
+
+export async function updateQuotationStatus(
+  quotationId: string,
+  status: Quotation['status']
+): Promise<{ message: string; errors?: any }> {
+  try {
+    const quotation = await getQuotationById(quotationId);
+    if (!quotation) {
+      return { message: 'Quotation not found.' };
+    }
+
+    const updatedQuotation: Quotation = { ...quotation, status };
+    await updateDbQuotation(updatedQuotation);
+
+    revalidatePath(`/sales/quotations/${quotationId}`);
+    revalidatePath('/sales/quotations');
+    return { message: `Quotation status updated to ${status}.` };
+  } catch (error) {
+    console.error('Database Error:', error);
+    return { message: 'Failed to update quotation status.' };
+  }
+}
+
