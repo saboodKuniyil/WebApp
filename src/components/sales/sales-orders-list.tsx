@@ -45,6 +45,7 @@ import Link from 'next/link';
 import { Badge } from '../ui/badge';
 import type { SalesOrder } from '@/lib/db';
 import type { Quotation } from './quotations-list';
+import { CreateSalesOrderDialog } from './create-sales-order-dialog';
 
 interface SalesOrdersListProps {
   data: SalesOrder[];
@@ -204,6 +205,7 @@ export function SalesOrdersList({ data, quotations }: SalesOrdersListProps) {
               onChange={(event) => table.getColumn('title')?.setFilterValue(event.target.value)}
               className="max-w-sm h-8"
             />
+            <CreateSalesOrderDialog quotations={quotations} />
           </div>
           <div className="rounded-md border">
             <Table>
