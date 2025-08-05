@@ -176,14 +176,13 @@ export function EstimationDetailView({ estimation, products, customers }: Estima
                                                 <span className="text-right font-semibold">{formatCurrency(item.cost * item.quantity)}</span>
                                             </div>
                                             {(item.size || item.color || item.model || item.notes) && (
-                                                <div className="text-xs text-muted-foreground mt-1 pt-1">
-                                                    <p className="font-medium">Details:</p>
-                                                    <div className="pl-2">
-                                                        {item.size && <p><strong>Size:</strong> {item.size}</p>}
-                                                        {item.color && <p><strong>Color:</strong> {item.color}</p>}
-                                                        {item.model && <p><strong>Model:</strong> {item.model}</p>}
-                                                        {item.notes && <p className="whitespace-pre-wrap"><strong>Notes:</strong> {item.notes}</p>}
+                                                <div className="text-xs text-muted-foreground mt-1 pt-1 border-t">
+                                                    <div className="grid grid-cols-3 gap-x-4">
+                                                        {item.size && <div><strong>Size:</strong> {item.size}</div>}
+                                                        {item.color && <div><strong>Color:</strong> {item.color}</div>}
+                                                        {item.model && <div><strong>Model:</strong> {item.model}</div>}
                                                     </div>
+                                                    {item.notes && <p className="mt-1 whitespace-pre-wrap"><strong>Notes:</strong> {item.notes}</p>}
                                                 </div>
                                             )}
                                         </div>
