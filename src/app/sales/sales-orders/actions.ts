@@ -2,10 +2,11 @@
 'use server';
 
 import { z } from 'zod';
-import { getQuotationById, createSalesOrder, getSalesOrders } from '@/lib/db';
+import { getQuotationById, createSalesOrder, getSalesOrders, updateSalesOrder as updateDbSalesOrder, getSalesOrderById, createInvoice } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
-import type { SalesOrder } from '@/lib/db';
+import type { SalesOrder, Invoice } from '@/lib/db';
 import { updateQuotationStatus } from '../quotations/actions';
+import { getNextInvoiceId } from '../invoices/actions';
 
 export async function getNextSalesOrderId(): Promise<string> {
     const salesOrders = await getSalesOrders();
@@ -30,7 +31,7 @@ export async function getNextSalesOrderId(): Promise<string> {
 
 export async function createSalesOrderFromQuotation(
   quotationId: string
-): Promise<{ salesOrderId?: string; message?: string }> {
+): Promise<{ salesOrderId?: string; message: string }> {
   try {
     const quotation = await getQuotationById(quotationId);
 
@@ -43,7 +44,7 @@ export async function createSalesOrderFromQuotation(
     }
 
     const newSalesOrderId = await getNextSalesOrderId();
-
+    const now = new Date();
     const newSalesOrder: SalesOrder = {
         id: newSalesOrderId,
         quotationId: quotation.id,
@@ -52,8 +53,8 @@ export async function createSalesOrderFromQuotation(
         totalCost: quotation.totalCost,
         status: 'open',
         customer: quotation.customer,
-        createdDate: new Date().toISOString().split('T')[0],
-        orderDate: new Date().toISOString().split('T')[0],
+        createdDate: now.toISOString().split('T')[0],
+        orderDate: now.toISOString().split('T')[0],
     };
 
     await createSalesOrder(newSalesOrder);
@@ -70,4 +71,70 @@ export async function createSalesOrderFromQuotation(
     console.error('Database Error:', error);
     return { message: 'Failed to create Sales Order.' };
   }
+}
+
+export async function updateSalesOrderStatus(
+  salesOrderId: string,
+  status: SalesOrder['status']
+): Promise<{ message: string; errors?: any }> {
+  try {
+    const salesOrder = await getSalesOrderById(salesOrderId);
+    if (!salesOrder) {
+      return { message: 'Sales Order not found.' };
+    }
+
+    const updatedSalesOrder: SalesOrder = { ...salesOrder, status };
+    await updateDbSalesOrder(updatedSalesOrder);
+
+    revalidatePath(`/sales/sales-orders/${salesOrderId}`);
+    revalidatePath('/sales/sales-orders');
+    return { message: `Sales Order status updated to ${status}.` };
+  } catch (error) {
+    console.error('Database Error:', error);
+    return { message: 'Failed to update sales order status.' };
+  }
+}
+
+export async function createInvoiceFromSalesOrder(
+    salesOrderId: string
+): Promise<{ invoiceId?: string; message: string }> {
+    try {
+        const salesOrder = await getSalesOrderById(salesOrderId);
+        if (!salesOrder) {
+            return { message: 'Sales Order not found.' };
+        }
+        if (salesOrder.status !== 'fulfilled') {
+            return { message: 'Only fulfilled sales orders can be invoiced.' };
+        }
+
+        const newInvoiceId = await getNextInvoiceId();
+        const now = new Date();
+        const dueDate = new Date();
+        dueDate.setDate(now.getDate() + 30); // Due in 30 days
+
+        const newInvoice: Invoice = {
+            id: newInvoiceId,
+            salesOrderId: salesOrder.id,
+            title: salesOrder.title,
+            items: salesOrder.items,
+            totalCost: salesOrder.totalCost,
+            status: 'draft',
+            customer: salesOrder.customer,
+            createdDate: now.toISOString().split('T')[0],
+            invoiceDate: now.toISOString().split('T')[0],
+            dueDate: dueDate.toISOString().split('T')[0],
+        };
+
+        await createInvoice(newInvoice);
+        await updateSalesOrderStatus(salesOrderId, 'invoiced');
+        
+        revalidatePath('/sales/invoices');
+        revalidatePath(`/sales/sales-orders/${salesOrderId}`);
+        revalidatePath('/sales/sales-orders');
+        
+        return { invoiceId: newInvoiceId, message: 'Invoice created successfully.' };
+    } catch (error) {
+        console.error('Database Error:', error);
+        return { message: 'Failed to create invoice.' };
+    }
 }

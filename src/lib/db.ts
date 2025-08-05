@@ -163,11 +163,27 @@ export type SalesOrder = {
     title: string;
     items: SalesOrderItem[];
     totalCost: number;
-    status: 'open' | 'in-progress' | 'fulfilled' | 'canceled';
+    status: 'open' | 'in-progress' | 'fulfilled' | 'canceled' | 'invoiced';
     customer: string;
     createdDate: string;
     orderDate: string;
 }
+
+// Invoice Types
+export type InvoiceItem = SalesOrderItem;
+
+export type Invoice = {
+  id: string;
+  salesOrderId: string;
+  title: string;
+  items: InvoiceItem[];
+  totalCost: number;
+  status: 'draft' | 'sent' | 'paid' | 'void';
+  customer: string;
+  createdDate: string;
+  invoiceDate: string;
+  dueDate: string;
+};
 
 
 // Define paths for the new database files
@@ -661,9 +677,10 @@ type SalesDb = {
     estimations: Estimation[];
     quotations: Quotation[];
     salesOrders: SalesOrder[];
+    invoices: Invoice[];
 };
 
-const defaultSalesDb: SalesDb = { estimations: [], quotations: [], salesOrders: [] };
+const defaultSalesDb: SalesDb = { estimations: [], quotations: [], salesOrders: [], invoices: [] };
 
 export async function getEstimations(): Promise<Estimation[]> {
     const data = await readDbFile<SalesDb>(salesDbPath, defaultSalesDb);
@@ -744,6 +761,44 @@ export async function createSalesOrder(newSalesOrder: SalesOrder): Promise<void>
     const data = await readDbFile<SalesDb>(salesDbPath, defaultSalesDb);
     data.salesOrders.push(newSalesOrder);
     await writeDbFile(salesDbPath, data);
+}
+
+export async function updateSalesOrder(updatedSalesOrder: SalesOrder): Promise<void> {
+    const data = await readDbFile<SalesDb>(salesDbPath, defaultSalesDb);
+    const orderIndex = data.salesOrders.findIndex(so => so.id === updatedSalesOrder.id);
+    if (orderIndex !== -1) {
+        data.salesOrders[orderIndex] = updatedSalesOrder;
+        await writeDbFile(salesDbPath, data);
+    } else {
+        throw new Error(`Sales Order with id ${updatedSalesOrder.id} not found.`);
+    }
+}
+
+export async function getInvoices(): Promise<Invoice[]> {
+    const data = await readDbFile<SalesDb>(salesDbPath, defaultSalesDb);
+    return data.invoices || [];
+}
+
+export async function getInvoiceById(id: string): Promise<Invoice | undefined> {
+    const data = await readDbFile<SalesDb>(salesDbPath, defaultSalesDb);
+    return (data.invoices || []).find(inv => inv.id === id);
+}
+
+export async function createInvoice(newInvoice: Invoice): Promise<void> {
+    const data = await readDbFile<SalesDb>(salesDbPath, defaultSalesDb);
+    data.invoices.push(newInvoice);
+    await writeDbFile(salesDbPath, data);
+}
+
+export async function updateInvoice(updatedInvoice: Invoice): Promise<void> {
+    const data = await readDbFile<SalesDb>(salesDbPath, defaultSalesDb);
+    const invoiceIndex = data.invoices.findIndex(inv => inv.id === updatedInvoice.id);
+    if (invoiceIndex !== -1) {
+        data.invoices[invoiceIndex] = updatedInvoice;
+        await writeDbFile(salesDbPath, data);
+    } else {
+        throw new Error(`Invoice with id ${updatedInvoice.id} not found.`);
+    }
 }
 
 // Accounting Data
