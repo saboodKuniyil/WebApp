@@ -2,7 +2,7 @@
 'use server';
 
 import { z } from 'zod';
-import { getQuotations, createQuotation as createDbQuotation, getEstimationById, updateQuotation } from '@/lib/db';
+import { getQuotations, createQuotation as createDbQuotation, getEstimationById, updateQuotation as updateDbQuotation } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import type { QuotationItem, EstimationItem, Quotation } from '@/lib/db';
@@ -192,7 +192,7 @@ export async function updateQuotationAction(prevState: any, formData: FormData):
             totalCost,
         };
 
-        await updateQuotation(updatedQuotation);
+        await updateDbQuotation(updatedQuotation);
 
         revalidatePath(`/sales/quotations/${id}`);
         revalidatePath('/sales/quotations');
@@ -216,7 +216,7 @@ export async function updateQuotationStatus(
     }
 
     const updatedQuotation: Quotation = { ...quotation, status };
-    await updateQuotation(updatedQuotation);
+    await updateDbQuotation(updatedQuotation);
 
     revalidatePath(`/sales/quotations/${quotationId}`);
     revalidatePath('/sales/quotations');
