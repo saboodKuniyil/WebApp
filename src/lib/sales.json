@@ -203,6 +203,31 @@
       ],
       "totalCost": 1034.94,
       "createdDate": "2025-08-05"
+    },
+    {
+      "id": "EST-1006",
+      "title": "the estimaion   for the conculation",
+      "customerId": "CS_4005",
+      "customerName": "Drakkulllan",
+      "tasks": [
+        {
+          "id": "ET-1001",
+          "title": "The Dcumation",
+          "description": "thhhs",
+          "items": [
+            {
+              "id": "SRV_CNS_7001",
+              "name": "Financial Consultation",
+              "quantity": 1,
+              "cost": 250,
+              "type": "product"
+            }
+          ],
+          "totalCost": 250
+        }
+      ],
+      "totalCost": 250,
+      "createdDate": "2025-08-05"
     }
   ],
   "quotations": [
@@ -535,6 +560,24 @@
       "totalCost": 3000,
       "status": "draft",
       "customer": "Cassandra Oneill",
+      "createdDate": "2025-08-05"
+    },
+    {
+      "id": "QUO-1011",
+      "title": "the estimaion   for the conculation",
+      "estimationId": "EST-1006",
+      "items": [
+        {
+          "id": "SRV_CNS_7001",
+          "title": "Financial Consultation",
+          "description": "",
+          "quantity": 1,
+          "rate": 250
+        }
+      ],
+      "totalCost": 250,
+      "status": "draft",
+      "customer": "Drakkulllan",
       "createdDate": "2025-08-05"
     }
   ],
