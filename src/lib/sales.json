@@ -161,7 +161,7 @@
         }
       ],
       "totalCost": 358.05,
-      "status": "approved",
+      "status": "converted",
       "customer": "sabood Kuniyil",
       "createdDate": "2025-08-06",
       "subtotal": 316,
@@ -195,6 +195,38 @@
       "customer": "N/A",
       "createdDate": "2025-08-05",
       "orderDate": "2025-08-05"
+    },
+    {
+      "id": "SO-1002",
+      "quotationId": "QUO-1003",
+      "title": "Do the invoicing with q",
+      "items": [
+        {
+          "id": "SRV_LBR_7001",
+          "title": "Carpentry Labour Charges",
+          "description": "",
+          "quantity": 1,
+          "rate": 100,
+          "imageUrl": "",
+          "marginPercentage": 25,
+          "marginAmount": 25
+        },
+        {
+          "id": "RM_MDF_7001",
+          "title": "MDF Plain 18mm Thaiwan",
+          "description": "",
+          "quantity": 3,
+          "rate": 72,
+          "imageUrl": "",
+          "marginPercentage": 0,
+          "marginAmount": 0
+        }
+      ],
+      "totalCost": 358.05,
+      "status": "open",
+      "customer": "sabood Kuniyil",
+      "createdDate": "2025-08-06",
+      "orderDate": "2025-08-06"
     }
   ],
   "invoices": [
