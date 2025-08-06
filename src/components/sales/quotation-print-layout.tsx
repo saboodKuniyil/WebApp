@@ -194,6 +194,7 @@ export function QuotationPrintLayout({ quotation, companyProfile, currency, appS
                         <tbody>
                             {quotation.items.map(item => {
                                 const itemTotal = (item.quantity * item.rate) + (item.marginAmount || 0);
+                                const finalRate = item.quantity > 0 ? itemTotal / item.quantity : 0;
                                 return (
                                 <tr key={item.id}>
                                     <td>
@@ -208,7 +209,7 @@ export function QuotationPrintLayout({ quotation, companyProfile, currency, appS
                                         </div>
                                     </td>
                                     <td className="text-right">{item.quantity}</td>
-                                    <td className="text-right">{formatCurrency(item.rate)}</td>
+                                    <td className="text-right">{formatCurrency(finalRate)}</td>
                                     <td className="text-right">{formatCurrency(itemTotal)}</td>
                                 </tr>
                             )})}
