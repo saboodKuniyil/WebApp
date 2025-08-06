@@ -89,6 +89,8 @@ export type QuotationSettings = {
   accountNumber: string;
   iban: string;
   taxPercentage: number;
+  sendingEmail: string;
+  receivingEmail: string;
 };
 
 export type AppSettings = {
@@ -517,7 +519,9 @@ const defaultSettingsDb: SettingsDb = {
             bankName: "Default Bank",
             accountNumber: "0000-0000-0000-0000",
             iban: "AE000000000000000000000",
-            taxPercentage: 5
+            taxPercentage: 5,
+            sendingEmail: "noreply@example.com",
+            receivingEmail: "sales@example.com",
         }
     }, 
     currencies: [], 

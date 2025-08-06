@@ -3,7 +3,7 @@
 'use server';
 
 import { z } from 'zod';
-import { getQuotations, createQuotation as createDbQuotation, getEstimationById, updateQuotation as updateDbQuotation, getQuotationById } from '@/lib/db';
+import { getQuotations, createQuotation as createDbQuotation, getEstimationById, updateQuotation as updateDbQuotation, getQuotationById, getAppSettings } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import type { QuotationItem, EstimationItem, Quotation } from '@/lib/db';
@@ -257,12 +257,23 @@ export async function sendQuotationByEmail(quotationId: string): Promise<{ succe
     if (!quotation) {
         return { success: false, message: 'Quotation not found.' };
     }
+    
+    const appSettings = await getAppSettings();
+    const fromEmail = appSettings.quotationSettings?.sendingEmail;
+    const toEmail = appSettings.quotationSettings?.receivingEmail;
+    
+    if (!fromEmail || !toEmail) {
+        return { success: false, message: 'Sending and receiving emails are not configured in settings.' };
+    }
 
     // TODO: Implement actual email sending logic here
     // You will need to install and configure an email sending library like nodemailer
     // and provide your email service credentials (e.g., via environment variables).
 
-    console.log(`Simulating sending email for quotation ${quotation.id} to customer ${quotation.customer}`);
+    console.log(`Simulating sending email for quotation ${quotation.id}`);
+    console.log(`From: ${fromEmail}`);
+    console.log(`To: ${toEmail}`);
+    console.log(`Customer: ${quotation.customer}`);
     console.log('Email Body (Placeholder):');
     console.log(`Dear ${quotation.customer},`);
     console.log(`Please find attached our quotation ${quotation.id} for "${quotation.title}".`);

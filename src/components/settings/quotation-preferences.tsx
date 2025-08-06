@@ -46,8 +46,8 @@ export function QuotationPreferences({ settings }: QuotationPreferencesProps) {
     <form action={dispatch}>
       <Card>
         <CardHeader>
-          <CardTitle>Quotation Settings</CardTitle>
-          <CardDescription>Configure the default content and values for your quotations.</CardDescription>
+          <CardTitle>Quotation & Email Settings</CardTitle>
+          <CardDescription>Configure the default content and values for your quotations and emails.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
             <div className="space-y-2">
@@ -88,6 +88,26 @@ export function QuotationPreferences({ settings }: QuotationPreferencesProps) {
                     <Label htmlFor="taxPercentage">Tax Percentage (%)</Label>
                     <Input id="taxPercentage" name="taxPercentage" type="number" step="0.01" defaultValue={settings.quotationSettings?.taxPercentage} />
                     {state.errors?.taxPercentage && <p className="text-red-500 text-xs">{state.errors.taxPercentage[0]}</p>}
+                </div>
+            </div>
+
+             <Separator />
+
+             <div>
+                <h3 className="text-lg font-medium">Email Settings</h3>
+                 <p className="text-sm text-muted-foreground">Configure default email addresses for sending quotations.</p>
+            </div>
+
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 <div className="space-y-2">
+                    <Label htmlFor="sendingEmail">Sending Email Address</Label>
+                    <Input id="sendingEmail" name="sendingEmail" type="email" defaultValue={settings.quotationSettings?.sendingEmail} />
+                    {state.errors?.sendingEmail && <p className="text-red-500 text-xs">{state.errors.sendingEmail[0]}</p>}
+                </div>
+                 <div className="space-y-2">
+                    <Label htmlFor="receivingEmail">Default Recipient Email</Label>
+                    <Input id="receivingEmail" name="receivingEmail" type="email" defaultValue={settings.quotationSettings?.receivingEmail} />
+                     {state.errors?.receivingEmail && <p className="text-red-500 text-xs">{state.errors.receivingEmail[0]}</p>}
                 </div>
             </div>
 
