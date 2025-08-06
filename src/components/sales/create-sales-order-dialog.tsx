@@ -29,7 +29,7 @@ import { useToast } from '@/hooks/use-toast';
 import type { Quotation } from './quotations-list';
 import { useRouter } from 'next/navigation';
 
-const initialState = { salesOrderId: undefined, message: '' };
+const initialState = { salesOrderId: undefined, message: '', errors: {} };
 
 function SubmitButton() {
     return <Button type="submit"><ShoppingBag className="mr-2 h-4 w-4" />Create Sales Order</Button>;
@@ -88,14 +88,7 @@ export function CreateSalesOrderDialog({ quotations }: CreateSalesOrderDialogPro
         </DialogHeader>
         <form 
             ref={formRef} 
-            action={(formData) => {
-                const quotationId = formData.get('quotationId') as string;
-                if(quotationId) {
-                    dispatch(quotationId);
-                } else {
-                    toast({variant: 'destructive', title: 'Error', description: 'Please select a quotation.'});
-                }
-            }} 
+            action={dispatch}
             className="grid gap-4 py-4"
         >
           <div className="grid grid-cols-4 items-center gap-4">
@@ -116,6 +109,7 @@ export function CreateSalesOrderDialog({ quotations }: CreateSalesOrderDialogPro
                 )}
               </SelectContent>
             </Select>
+            {state.errors?.quotationId && <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.quotationId[0]}</p>}
           </div>
           <DialogFooter>
             <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>

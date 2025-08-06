@@ -29,10 +29,26 @@ export async function getNextSalesOrderId(): Promise<string> {
     return `${prefix}${nextNumber}`;
 }
 
+const createSalesOrderSchema = z.object({
+  quotationId: z.string().min(1, { message: 'Please select a quotation.' }),
+});
+
+
 export async function createSalesOrderFromQuotation(
-  quotationId: string
-): Promise<{ salesOrderId?: string; message: string }> {
+  prevState: { salesOrderId?: string; message: string; errors?: any },
+  formData: FormData
+): Promise<{ salesOrderId?: string; message: string; errors?: any }> {
   try {
+    const validatedFields = createSalesOrderSchema.safeParse({
+        quotationId: formData.get('quotationId'),
+    });
+
+    if (!validatedFields.success) {
+        return { message: 'Validation failed.', errors: validatedFields.error.flatten().fieldErrors };
+    }
+
+    const { quotationId } = validatedFields.data;
+
     const quotation = await getQuotationById(quotationId);
 
     if (!quotation) {
