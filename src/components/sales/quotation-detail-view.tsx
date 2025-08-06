@@ -71,10 +71,12 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
             prevItems.map(item => {
                 if (item.id === itemId) {
                     const newItem = { ...item, [field]: typeof value === 'string' && (field !== 'title' && field !== 'description') ? parseFloat(value) || 0 : value };
+                    
                     const itemSubtotal = newItem.quantity * newItem.rate;
 
-                    if(field === 'marginPercentage') {
-                        const newMarginAmount = itemSubtotal * ((newItem.marginPercentage || 0) / 100);
+                    if (field === 'marginPercentage' || field === 'quantity' || field === 'rate') {
+                        const marginPercent = field === 'marginPercentage' ? (value as number) : newItem.marginPercentage;
+                        const newMarginAmount = itemSubtotal * ((marginPercent || 0) / 100);
                         newItem.marginAmount = parseFloat(newMarginAmount.toFixed(2));
                     } else if (field === 'marginAmount') {
                          if (itemSubtotal > 0) {
@@ -340,12 +342,12 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
                                             {isEditing && (
                                                 <TableCell className="p-2 align-top text-right space-y-1">
                                                     <div className="flex items-center gap-1 justify-end">
-                                                        <Input type="number" value={item.marginPercentage} onChange={(e) => handleItemChange(item.id, 'marginPercentage', e.target.value)} className="w-20 h-7 text-right" placeholder="%" />
+                                                        <Input type="number" value={item.marginPercentage || ''} onChange={(e) => handleItemChange(item.id, 'marginPercentage', e.target.value)} className="w-20 h-7 text-right" placeholder="%" />
                                                         <span>%</span>
                                                     </div>
-                                                    <div className="flex items-center gap-1 justify-end">
+                                                     <div className="flex items-center gap-1 justify-end">
                                                         <span className="text-xs mr-1">{currency?.symbol}</span>
-                                                        <Input type="number" value={item.marginAmount} onChange={(e) => handleItemChange(item.id, 'marginAmount', e.target.value)} className="w-24 h-7 text-right" placeholder="Amt" />
+                                                        <Input type="number" value={item.marginAmount || ''} onChange={(e) => handleItemChange(item.id, 'marginAmount', e.target.value)} className="w-24 h-7 text-right" placeholder="Amt" />
                                                     </div>
                                                 </TableCell>
                                             )}
@@ -373,20 +375,11 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
                             </Button>
                         ) : <div></div>}
                         <div className="w-full md:w-1/3 text-right space-y-2">
-                             <div className="flex justify-between items-center">
-                                <span className="text-muted-foreground">Subtotal</span>
-                                <span>{currency?.symbol} {subtotal.toFixed(2)}</span>
-                            </div>
-                             <div className="flex justify-between items-center">
-                                <span className="text-muted-foreground">Margin</span>
-                                <span>{currency?.symbol} {totalMargin.toFixed(2)}</span>
-                            </div>
-                             <div className="flex justify-between items-center">
-                                <span className="text-muted-foreground">Tax ({taxPercentage}%)</span>
-                                <span>{currency?.symbol} {taxAmount.toFixed(2)}</span>
-                            </div>
-                             <div className="flex justify-between items-center border-t pt-2">
-                                <span className="font-semibold text-lg">Grand Total</span>
+                             <div className="flex justify-between items-center"><Label>Subtotal</Label><span>{currency?.symbol} {subtotal.toFixed(2)}</span></div>
+                             <div className="flex justify-between items-center"><Label>Margin</Label><span>{currency?.symbol} {totalMargin.toFixed(2)}</span></div>
+                             <div className="flex justify-between items-center"><Label>Tax ({taxPercentage}%)</Label><span>{currency?.symbol} {taxAmount.toFixed(2)}</span></div>
+                             <div className="flex justify-between items-center border-t pt-2 mt-2">
+                                <Label className="text-lg">Grand Total:</Label>
                                 <span className="font-bold text-xl">{currency?.symbol} {totalCost.toFixed(2)}</span>
                             </div>
                         </div>
