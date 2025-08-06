@@ -1,4 +1,5 @@
 
+
 'use client'
 
 import * as React from 'react';
@@ -80,13 +81,16 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
                         const marginPercent = value as number;
                         const newMarginAmount = itemSubtotal * ((marginPercent || 0) / 100);
                         newItem.marginAmount = parseFloat(newMarginAmount.toFixed(2));
-                    } else if (field === 'marginAmount' || field === 'quantity' || field === 'rate') {
+                    } else if (field === 'marginAmount') {
                          if (itemSubtotal > 0) {
                             const newMarginPercent = ((newItem.marginAmount || 0) / itemSubtotal) * 100;
                             newItem.marginPercentage = parseFloat(newMarginPercent.toFixed(2));
                         } else {
                             newItem.marginPercentage = 0;
                         }
+                    } else if (field === 'quantity' || field === 'rate') {
+                         const newMarginAmount = itemSubtotal * ((newItem.marginPercentage || 0) / 100);
+                         newItem.marginAmount = parseFloat(newMarginAmount.toFixed(2));
                     }
                     return newItem;
                 }
@@ -94,6 +98,7 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
             })
         );
     };
+    
 
     const handleAddNewItem = () => {
         const newItem: QuotationItem = {
@@ -393,8 +398,8 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
                             </Button>
                         ) : <div></div>}
                         <div className="w-full md:w-1/3 text-right space-y-2">
-                             <div className="flex justify-between items-center"><Label>Margin</Label><span>{currency?.symbol} {totalMargin.toFixed(2)}</span></div>
                              <div className="flex justify-between items-center"><Label>Subtotal</Label><span>{currency?.symbol} {subtotal.toFixed(2)}</span></div>
+                             <div className="flex justify-between items-center"><Label>Margin</Label><span>{currency?.symbol} {totalMargin.toFixed(2)}</span></div>
                              <div className="flex justify-between items-center"><Label>Tax ({taxPercentage}%)</Label><span>{currency?.symbol} {taxAmount.toFixed(2)}</span></div>
                              <div className="flex justify-between items-center border-t pt-2 mt-2">
                                 <Label className="text-lg">Grand Total:</Label>
