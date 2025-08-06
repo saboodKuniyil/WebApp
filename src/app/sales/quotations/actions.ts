@@ -156,12 +156,14 @@ export async function createQuotationFromEstimation(
 
 const updateQuotationSchema = z.object({
     id: z.string(),
+    title: z.string().min(1, 'Title is required.'),
     items: z.string().transform(val => JSON.parse(val)).pipe(z.array(z.any())),
 });
 
 export async function updateQuotationAction(prevState: any, formData: FormData): Promise<{ message: string, errors?: any }> {
     const validatedFields = updateQuotationSchema.safeParse({
         id: formData.get('id'),
+        title: formData.get('title'),
         items: formData.get('items'),
     });
 
@@ -172,7 +174,7 @@ export async function updateQuotationAction(prevState: any, formData: FormData):
         };
     }
     
-    const { id, items } = validatedFields.data;
+    const { id, title, items } = validatedFields.data;
 
     try {
         const quotations = await getQuotations();
@@ -186,6 +188,7 @@ export async function updateQuotationAction(prevState: any, formData: FormData):
 
         const updatedQuotation: Quotation = {
             ...existingQuotation,
+            title,
             items,
             totalCost,
         };

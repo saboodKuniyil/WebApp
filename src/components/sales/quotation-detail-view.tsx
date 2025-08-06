@@ -176,7 +176,18 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
                 <CardHeader className="p-0">
                     <div className="flex flex-col md:flex-row items-start justify-between gap-4">
                         <div>
-                            <h1 className="text-3xl font-bold font-headline">{quotation.title}</h1>
+                             {isEditing ? (
+                                <div className="space-y-1">
+                                    <Input 
+                                        name="title" 
+                                        defaultValue={quotation.title} 
+                                        className="text-3xl font-bold font-headline h-auto p-0 border-0 shadow-none focus-visible:ring-0" 
+                                    />
+                                     {updateState.errors?.title && <p className="text-red-500 text-xs">{updateState.errors.title[0]}</p>}
+                                </div>
+                            ) : (
+                                <h1 className="text-3xl font-bold font-headline">{quotation.title}</h1>
+                            )}
                             <p className="text-muted-foreground">Quotation #{quotation.id}</p>
                         </div>
                         <div className="flex items-center gap-2 flex-wrap justify-end">
