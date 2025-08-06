@@ -19,6 +19,7 @@ import ReactDOMServer from 'react-dom/server';
 import Image from 'next/image';
 import { createSalesOrderFromQuotation } from '@/app/sales/sales-orders/actions';
 import { useRouter } from 'next/navigation';
+import { Label } from '../ui/label';
 
 interface QuotationDetailViewProps {
     quotation: Quotation;
@@ -375,8 +376,8 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
                             </Button>
                         ) : <div></div>}
                         <div className="w-full md:w-1/3 text-right space-y-2">
-                             <div className="flex justify-between items-center"><Label>Subtotal</Label><span>{currency?.symbol} {subtotal.toFixed(2)}</span></div>
                              <div className="flex justify-between items-center"><Label>Margin</Label><span>{currency?.symbol} {totalMargin.toFixed(2)}</span></div>
+                             <div className="flex justify-between items-center"><Label>Subtotal</Label><span>{currency?.symbol} {subtotal.toFixed(2)}</span></div>
                              <div className="flex justify-between items-center"><Label>Tax ({taxPercentage}%)</Label><span>{currency?.symbol} {taxAmount.toFixed(2)}</span></div>
                              <div className="flex justify-between items-center border-t pt-2 mt-2">
                                 <Label className="text-lg">Grand Total:</Label>
