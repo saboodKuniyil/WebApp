@@ -64,6 +64,33 @@
       "status": "approved",
       "customer": "sabood Kuniyil",
       "createdDate": "2025-08-06"
+    },
+    {
+      "id": "QUO-1002",
+      "title": "BED SET",
+      "estimationId": "EST-1001",
+      "items": [
+        {
+          "id": "FG_LSF_7001",
+          "title": "Wardrobe White 180*200",
+          "description": "",
+          "quantity": 1,
+          "rate": 520,
+          "imageUrl": ""
+        },
+        {
+          "id": "SRV_LBR_7001",
+          "title": "Carpentry Labour Charges",
+          "description": "",
+          "quantity": 1,
+          "rate": 100,
+          "imageUrl": ""
+        }
+      ],
+      "totalCost": 620,
+      "status": "sent",
+      "customer": "sabood Kuniyil",
+      "createdDate": "2025-08-06"
     }
   ],
   "salesOrders": [

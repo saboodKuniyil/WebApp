@@ -206,11 +206,11 @@ export async function updateQuotationAction(prevState: any, formData: FormData):
 export async function updateQuotationStatus(
   quotationId: string,
   status: Quotation['status']
-): Promise<{ message: string; errors?: any }> {
+): Promise<{ success: boolean; message: string; errors?: any }> {
   try {
     const quotation = await getQuotationById(quotationId);
     if (!quotation) {
-      return { message: 'Quotation not found.' };
+      return { success: false, message: 'Quotation not found.' };
     }
 
     const updatedQuotation: Quotation = { ...quotation, status };
@@ -218,9 +218,9 @@ export async function updateQuotationStatus(
 
     revalidatePath(`/sales/quotations/${quotationId}`);
     revalidatePath('/sales/quotations');
-    return { message: `Quotation status updated to ${status}.` };
+    return { success: true, message: `Quotation status updated to ${status}.` };
   } catch (error) {
     console.error('Database Error:', error);
-    return { message: 'Failed to update quotation status.' };
+    return { success: false, message: 'Failed to update quotation status.' };
   }
 }

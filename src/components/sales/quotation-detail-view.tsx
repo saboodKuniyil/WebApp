@@ -141,7 +141,7 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
     const handleChangeStatus = async (newStatus: Quotation['status']) => {
         setIsChangingStatus(true);
         const result = await updateQuotationStatus(quotation.id, newStatus);
-        if (result.message.includes('success')) {
+        if (result.success) {
             toast({ title: 'Success', description: result.message });
         } else {
             toast({ variant: 'destructive', title: 'Error', description: result.message });
