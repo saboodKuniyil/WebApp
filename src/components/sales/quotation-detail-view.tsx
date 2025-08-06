@@ -273,92 +273,96 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
                                     <TableHead className="w-2/5 p-3">Item</TableHead>
                                     <TableHead className="w-[100px] text-right p-3">Qty</TableHead>
                                     <TableHead className="w-[120px] text-right p-3">Rate</TableHead>
-                                    <TableHead className="w-[120px] text-right p-3">Amount</TableHead>
                                     {isEditing && <TableHead className="w-[200px] text-right p-3">Margin</TableHead>}
+                                    <TableHead className="w-[120px] text-right p-3">Amount</TableHead>
                                     {isEditing && <TableHead className="w-[50px] p-3"></TableHead>}
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {items.map(item => (
-                                    <TableRow key={item.id}>
-                                        <TableCell className="p-2 align-top">
-                                            <div className="flex items-start gap-4">
-                                                {item.imageUrl && (
-                                                    <Image src={item.imageUrl} alt={item.title} width={64} height={64} className="rounded-md object-cover w-16 h-16" data-ai-hint="product item" />
-                                                )}
-                                                <div className="flex-1">
-                                                    {isEditing ? (
-                                                        <>
-                                                        <Input 
-                                                            value={item.title}
-                                                            onChange={(e) => handleItemChange(item.id, 'title', e.target.value)}
-                                                            className="font-medium"
-                                                        />
-                                                        <Textarea 
-                                                            value={item.description}
-                                                            onChange={(e) => handleItemChange(item.id, 'description', e.target.value)}
-                                                            className="text-xs text-muted-foreground mt-1"
-                                                            rows={2}
-                                                        />
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                        <p className="font-medium">{item.title}</p>
-                                                        <p className="text-xs text-muted-foreground mt-1 whitespace-pre-wrap">{item.description}</p>
-                                                        </>
+                                {items.map(item => {
+                                    const itemSubtotal = item.quantity * item.rate;
+                                    const itemTotal = itemSubtotal + (item.marginAmount || 0);
+                                    return (
+                                        <TableRow key={item.id}>
+                                            <TableCell className="p-2 align-top">
+                                                <div className="flex items-start gap-4">
+                                                    {item.imageUrl && (
+                                                        <Image src={item.imageUrl} alt={item.title} width={64} height={64} className="rounded-md object-cover w-16 h-16" data-ai-hint="product item" />
                                                     )}
-                                                </div>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="p-2 align-top text-right">
-                                            {isEditing ? (
-                                                <Input
-                                                    type="number"
-                                                    value={item.quantity}
-                                                    onChange={(e) => handleItemChange(item.id, 'quantity', e.target.value)}
-                                                    className="text-right h-8"
-                                                />
-                                            ) : (
-                                                item.quantity
-                                            )}
-                                        </TableCell>
-                                        <TableCell className="p-2 align-top text-right">
-                                            {isEditing ? (
-                                                <Input
-                                                    type="number"
-                                                    step="0.01"
-                                                    value={item.rate}
-                                                    onChange={(e) => handleItemChange(item.id, 'rate', e.target.value)}
-                                                    className="text-right h-8"
-                                                />
-                                            ) : (
-                                                <span>{currency?.symbol} {(item.rate).toFixed(2)}</span>
-                                            )}
-                                        </TableCell>
-                                        <TableCell className="p-2 align-top text-right font-medium">
-                                            {currency?.symbol} { (item.quantity * item.rate).toFixed(2) }
-                                        </TableCell>
-                                        {isEditing && (
-                                            <TableCell className="p-2 align-top text-right space-y-1">
-                                                <div className="flex items-center gap-1 justify-end">
-                                                    <Input type="number" value={item.marginPercentage} onChange={(e) => handleItemChange(item.id, 'marginPercentage', e.target.value)} className="w-20 h-7 text-right" placeholder="%" />
-                                                    <span>%</span>
-                                                </div>
-                                                 <div className="flex items-center gap-1 justify-end">
-                                                    <span className="text-xs mr-1">{currency?.symbol}</span>
-                                                    <Input type="number" value={item.marginAmount} onChange={(e) => handleItemChange(item.id, 'marginAmount', e.target.value)} className="w-24 h-7 text-right" placeholder="Amt" />
+                                                    <div className="flex-1">
+                                                        {isEditing ? (
+                                                            <>
+                                                            <Input 
+                                                                value={item.title}
+                                                                onChange={(e) => handleItemChange(item.id, 'title', e.target.value)}
+                                                                className="font-medium"
+                                                            />
+                                                            <Textarea 
+                                                                value={item.description}
+                                                                onChange={(e) => handleItemChange(item.id, 'description', e.target.value)}
+                                                                className="text-xs text-muted-foreground mt-1"
+                                                                rows={2}
+                                                            />
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                            <p className="font-medium">{item.title}</p>
+                                                            <p className="text-xs text-muted-foreground mt-1 whitespace-pre-wrap">{item.description}</p>
+                                                            </>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </TableCell>
-                                        )}
-                                        {isEditing && (
                                             <TableCell className="p-2 align-top text-right">
-                                                <Button variant="ghost" size="icon" type="button" onClick={() => handleRemoveItem(item.id)}>
-                                                    <Trash2 className="h-4 w-4 text-destructive" />
-                                                </Button>
+                                                {isEditing ? (
+                                                    <Input
+                                                        type="number"
+                                                        value={item.quantity}
+                                                        onChange={(e) => handleItemChange(item.id, 'quantity', e.target.value)}
+                                                        className="text-right h-8"
+                                                    />
+                                                ) : (
+                                                    item.quantity
+                                                )}
                                             </TableCell>
-                                        )}
-                                    </TableRow>
-                                ))}
+                                            <TableCell className="p-2 align-top text-right">
+                                                {isEditing ? (
+                                                    <Input
+                                                        type="number"
+                                                        step="0.01"
+                                                        value={item.rate}
+                                                        onChange={(e) => handleItemChange(item.id, 'rate', e.target.value)}
+                                                        className="text-right h-8"
+                                                    />
+                                                ) : (
+                                                    <span>{currency?.symbol} {(item.rate).toFixed(2)}</span>
+                                                )}
+                                            </TableCell>
+                                            {isEditing && (
+                                                <TableCell className="p-2 align-top text-right space-y-1">
+                                                    <div className="flex items-center gap-1 justify-end">
+                                                        <Input type="number" value={item.marginPercentage} onChange={(e) => handleItemChange(item.id, 'marginPercentage', e.target.value)} className="w-20 h-7 text-right" placeholder="%" />
+                                                        <span>%</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1 justify-end">
+                                                        <span className="text-xs mr-1">{currency?.symbol}</span>
+                                                        <Input type="number" value={item.marginAmount} onChange={(e) => handleItemChange(item.id, 'marginAmount', e.target.value)} className="w-24 h-7 text-right" placeholder="Amt" />
+                                                    </div>
+                                                </TableCell>
+                                            )}
+                                            <TableCell className="p-2 align-top text-right font-medium">
+                                                {currency?.symbol} {itemTotal.toFixed(2)}
+                                            </TableCell>
+                                            {isEditing && (
+                                                <TableCell className="p-2 align-top text-right">
+                                                    <Button variant="ghost" size="icon" type="button" onClick={() => handleRemoveItem(item.id)}>
+                                                        <Trash2 className="h-4 w-4 text-destructive" />
+                                                    </Button>
+                                                </TableCell>
+                                            )}
+                                        </TableRow>
+                                    )
+                                })}
                             </TableBody>
                         </Table>
                     </div>
