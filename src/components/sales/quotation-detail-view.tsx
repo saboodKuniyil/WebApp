@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { useActionState } from 'react';
-import { updateQuotationAction, updateQuotationStatus } from '@/app/sales/quotations/actions';
+import { updateQuotationAction, updateQuotationStatus, sendQuotationByEmail } from '@/app/sales/quotations/actions';
 import { useToast } from '@/hooks/use-toast';
 import { QuotationPrintLayout } from './quotation-print-layout';
 import ReactDOMServer from 'react-dom/server';
@@ -43,6 +43,7 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
     const [items, setItems] = React.useState<QuotationItem[]>(quotation.items.map(item => ({...item, marginPercentage: item.marginPercentage || 0, marginAmount: item.marginAmount || 0})));
     const [isCreatingSO, setIsCreatingSO] = React.useState(false);
     const [isChangingStatus, setIsChangingStatus] = React.useState(false);
+    const [isSendingEmail, setIsSendingEmail] = React.useState(false);
     
     const { toast } = useToast();
     const router = useRouter();
@@ -75,11 +76,11 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
                     
                     const itemSubtotal = newItem.quantity * newItem.rate;
 
-                    if (field === 'marginPercentage' || field === 'quantity' || field === 'rate') {
-                        const marginPercent = field === 'marginPercentage' ? (value as number) : newItem.marginPercentage;
+                    if (field === 'marginPercentage') {
+                        const marginPercent = value as number;
                         const newMarginAmount = itemSubtotal * ((marginPercent || 0) / 100);
                         newItem.marginAmount = parseFloat(newMarginAmount.toFixed(2));
-                    } else if (field === 'marginAmount') {
+                    } else if (field === 'marginAmount' || field === 'quantity' || field === 'rate') {
                          if (itemSubtotal > 0) {
                             const newMarginPercent = ((newItem.marginAmount || 0) / itemSubtotal) * 100;
                             newItem.marginPercentage = parseFloat(newMarginPercent.toFixed(2));
@@ -168,6 +169,18 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
         setIsCreatingSO(false);
     };
 
+    const handleSendEmail = async () => {
+        setIsSendingEmail(true);
+        const result = await sendQuotationByEmail(quotation.id);
+         if (result.success) {
+            toast({ title: 'Success', description: result.message });
+            handleChangeStatus('sent');
+        } else {
+            toast({ variant: 'destructive', title: 'Error', description: result.message });
+        }
+        setIsSendingEmail(false);
+    };
+
     return (
         <form ref={formRef} action={updateDispatch}>
             <input type="hidden" name="id" value={quotation.id} />
@@ -195,6 +208,10 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
                             <p className="text-muted-foreground">Quotation #{quotation.id}</p>
                         </div>
                         <div className="flex items-center gap-2 flex-wrap justify-end">
+                            <Button type="button" variant="outline" onClick={handleSendEmail} disabled={isSendingEmail}>
+                                <Send className="mr-2 h-4 w-4" />
+                                {isSendingEmail ? 'Sending...' : 'Send Email'}
+                            </Button>
                              <Button type="button" variant="outline" onClick={handlePrint}>
                                 <Printer className="mr-2 h-4 w-4" />
                                 Print

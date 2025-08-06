@@ -251,3 +251,27 @@ export async function updateQuotationStatus(
     return { success: false, message: 'Failed to update quotation status.' };
   }
 }
+
+export async function sendQuotationByEmail(quotationId: string): Promise<{ success: boolean; message: string }> {
+    const quotation = await getQuotationById(quotationId);
+    if (!quotation) {
+        return { success: false, message: 'Quotation not found.' };
+    }
+
+    // TODO: Implement actual email sending logic here
+    // You will need to install and configure an email sending library like nodemailer
+    // and provide your email service credentials (e.g., via environment variables).
+
+    console.log(`Simulating sending email for quotation ${quotation.id} to customer ${quotation.customer}`);
+    console.log('Email Body (Placeholder):');
+    console.log(`Dear ${quotation.customer},`);
+    console.log(`Please find attached our quotation ${quotation.id} for "${quotation.title}".`);
+    console.log(`Total amount: ${quotation.totalCost.toFixed(2)}`);
+    console.log('Thank you.');
+    
+    // For now, we'll just simulate a success response.
+    // Replace this with your actual email logic.
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+
+    return { success: true, message: 'Email sent successfully (simulated).' };
+}
