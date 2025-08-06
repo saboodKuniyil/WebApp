@@ -1,7 +1,71 @@
-
 {
-  "estimations": [],
-  "quotations": [],
+  "estimations": [
+    {
+      "id": "EST-1001",
+      "title": "BED SET",
+      "customerId": "CS_4001",
+      "customerName": "sabood Kuniyil",
+      "tasks": [
+        {
+          "id": "ET-1001",
+          "title": "BED ",
+          "description": "",
+          "items": [
+            {
+              "id": "FG_LSF_7001",
+              "name": "Wardrobe White 180*200",
+              "quantity": 1,
+              "cost": 520,
+              "type": "product",
+              "imageUrl": ""
+            },
+            {
+              "id": "SRV_LBR_7001",
+              "name": "Carpentry Labour Charges",
+              "quantity": 1,
+              "cost": 100,
+              "type": "product",
+              "imageUrl": ""
+            }
+          ],
+          "totalCost": 620,
+          "imageUrl": "data:image/jpeg;base64,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"
+        }
+      ],
+      "totalCost": 620,
+      "createdDate": "2025-08-06",
+      "status": "approved"
+    }
+  ],
+  "quotations": [
+    {
+      "id": "QUO-1001",
+      "title": "BED SET",
+      "estimationId": "EST-1001",
+      "items": [
+        {
+          "id": "FG_LSF_7001",
+          "title": "Wardrobe White 180*200",
+          "description": "",
+          "quantity": 1,
+          "rate": 520,
+          "imageUrl": ""
+        },
+        {
+          "id": "SRV_LBR_7001",
+          "title": "Carpentry Labour Charges",
+          "description": "",
+          "quantity": 1,
+          "rate": 100,
+          "imageUrl": ""
+        }
+      ],
+      "totalCost": 620,
+      "status": "approved",
+      "customer": "sabood Kuniyil",
+      "createdDate": "2025-08-06"
+    }
+  ],
   "salesOrders": [
     {
       "id": "SO-1001",

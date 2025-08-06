@@ -177,11 +177,11 @@ export async function deleteEstimationAction(estimationId: string): Promise<{ me
 export async function updateEstimationStatus(
   estimationId: string,
   status: Estimation['status']
-): Promise<{ message: string; errors?: any }> {
+): Promise<{ success: boolean, message: string; errors?: any }> {
   try {
     const estimation = await getEstimationById(estimationId);
     if (!estimation) {
-      return { message: 'Estimation not found.' };
+      return { success: false, message: 'Estimation not found.' };
     }
 
     const updatedEstimation: Estimation = { ...estimation, status };
@@ -189,9 +189,9 @@ export async function updateEstimationStatus(
 
     revalidatePath(`/sales/estimations/${estimationId}`);
     revalidatePath('/sales/estimations');
-    return { message: `Estimation status updated to ${status}.` };
+    return { success: true, message: `Estimation status updated to ${status}.` };
   } catch (error) {
     console.error('Database Error:', error);
-    return { message: 'Failed to update estimation status.' };
+    return { success: false, message: 'Failed to update estimation status.' };
   }
 }

@@ -66,7 +66,7 @@ export function EstimationDetailView({ estimation, products, customers }: Estima
     const handleChangeStatus = async (newStatus: Estimation['status']) => {
         setIsChangingStatus(true);
         const result = await updateEstimationStatus(estimation.id, newStatus);
-        if (result.message.includes('success')) {
+        if (result.success) {
             toast({ title: 'Success', description: result.message });
         } else {
             toast({ variant: 'destructive', title: 'Error', description: result.message });

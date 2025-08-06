@@ -1,5 +1,57 @@
 {
-  "products": [],
+  "products": [
+    {
+      "id": "RM_MDF_7001",
+      "name": "MDF Plain 18mm Thaiwan",
+      "description": "",
+      "imageUrl": "",
+      "type": "Raw Material",
+      "category": "MDF",
+      "subcategory": "Plain",
+      "purchasePrice": 60,
+      "salesPrice": 72,
+      "stock": 0,
+      "unit": ""
+    },
+    {
+      "id": "SRV_LBR_7001",
+      "name": "Carpentry Labour Charges",
+      "description": "",
+      "imageUrl": "",
+      "type": "Service",
+      "category": "Labour Charges",
+      "subcategory": "Carpentry",
+      "purchasePrice": 100,
+      "salesPrice": 100,
+      "stock": 0,
+      "unit": ""
+    },
+    {
+      "id": "FG_LSF_7001",
+      "name": "Wardrobe White 180*200",
+      "description": "",
+      "imageUrl": "",
+      "type": "Finished Good",
+      "category": "Loose Furniture",
+      "subcategory": "Wardrobe",
+      "purchasePrice": 400,
+      "salesPrice": 520,
+      "stock": 0,
+      "unit": "Piece",
+      "billOfMaterials": [
+        {
+          "productId": "RM_MDF_7001",
+          "quantity": 5
+        }
+      ],
+      "billOfServices": [
+        {
+          "productId": "SRV_LBR_7001",
+          "quantity": 1
+        }
+      ]
+    }
+  ],
   "units": [
     {
       "name": "Kilogram",
@@ -35,6 +87,52 @@
         {
           "name": "Plain",
           "abbreviation": "PLN"
+        }
+      ]
+    },
+    {
+      "name": "Labour Charges",
+      "abbreviation": "LBR",
+      "productType": "Service",
+      "subcategories": [
+        {
+          "name": "Carpentry",
+          "abbreviation": "CPR"
+        },
+        {
+          "name": "Upholistery",
+          "abbreviation": "UPH"
+        },
+        {
+          "name": "Painting",
+          "abbreviation": "PNT"
+        },
+        {
+          "name": "Tailoring",
+          "abbreviation": "TLR"
+        }
+      ]
+    },
+    {
+      "name": "Loose Furniture",
+      "abbreviation": "LSF",
+      "productType": "Finished Good",
+      "subcategories": [
+        {
+          "name": "Wardrobe",
+          "abbreviation": "WDB"
+        },
+        {
+          "name": "Bed",
+          "abbreviation": "BED"
+        },
+        {
+          "name": "Side Table",
+          "abbreviation": "STB"
+        },
+        {
+          "name": "Dressing Table",
+          "abbreviation": "DTB"
         }
       ]
     }
