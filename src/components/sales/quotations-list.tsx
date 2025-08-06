@@ -63,6 +63,9 @@ export type Quotation = {
     title: string;
     estimationId: string;
     items: QuotationItem[];
+    subtotal: number;
+    marginPercentage: number;
+    marginAmount: number;
     totalCost: number;
     status: 'draft' | 'sent' | 'approved' | 'rejected' | 'converted';
     customer: string;

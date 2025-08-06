@@ -35,6 +35,41 @@
       "totalCost": 620,
       "createdDate": "2025-08-06",
       "status": "approved"
+    },
+    {
+      "id": "EST-1002",
+      "title": "Do the invoicing",
+      "customerId": "CS_4001",
+      "customerName": "sabood Kuniyil",
+      "tasks": [
+        {
+          "id": "ET-1001",
+          "title": "This is task",
+          "description": "task",
+          "items": [
+            {
+              "id": "SRV_LBR_7001",
+              "name": "Carpentry Labour Charges",
+              "quantity": 1,
+              "cost": 100,
+              "type": "product",
+              "imageUrl": ""
+            },
+            {
+              "id": "RM_MDF_7001",
+              "name": "MDF Plain 18mm Thaiwan",
+              "quantity": 3,
+              "cost": 72,
+              "type": "product",
+              "imageUrl": ""
+            }
+          ],
+          "totalCost": 316
+        }
+      ],
+      "totalCost": 316,
+      "createdDate": "2025-08-06",
+      "status": "approved"
     }
   ],
   "quotations": [
@@ -88,7 +123,34 @@
         }
       ],
       "totalCost": 620,
-      "status": "sent",
+      "status": "approved",
+      "customer": "sabood Kuniyil",
+      "createdDate": "2025-08-06"
+    },
+    {
+      "id": "QUO-1003",
+      "title": "Do the invoicing with q",
+      "estimationId": "EST-1002",
+      "items": [
+        {
+          "id": "SRV_LBR_7001",
+          "title": "Carpentry Labour Charges",
+          "description": "",
+          "quantity": 1,
+          "rate": 100,
+          "imageUrl": ""
+        },
+        {
+          "id": "RM_MDF_7001",
+          "title": "MDF Plain 18mm Thaiwan",
+          "description": "",
+          "quantity": 3,
+          "rate": 72,
+          "imageUrl": ""
+        }
+      ],
+      "totalCost": 316,
+      "status": "draft",
       "customer": "sabood Kuniyil",
       "createdDate": "2025-08-06"
     }
@@ -115,11 +177,39 @@
         }
       ],
       "totalCost": 4902.32,
-      "status": "fulfilled",
+      "status": "invoiced",
       "customer": "N/A",
       "createdDate": "2025-08-05",
       "orderDate": "2025-08-05"
     }
   ],
-  "invoices": []
+  "invoices": [
+    {
+      "id": "INV-1001",
+      "salesOrderId": "SO-1001",
+      "title": "bED ROMM SETTT",
+      "items": [
+        {
+          "id": "ET-1001",
+          "title": "Cabinet",
+          "description": "dfdfd",
+          "quantity": 1,
+          "rate": 1249.91
+        },
+        {
+          "id": "ET-1002",
+          "title": "Bed ",
+          "description": "bEd size 120 /200\nthat isbew \nthis is new",
+          "quantity": 1,
+          "rate": 3652.41
+        }
+      ],
+      "totalCost": 4902.32,
+      "status": "draft",
+      "customer": "N/A",
+      "createdDate": "2025-08-06",
+      "invoiceDate": "2025-08-06",
+      "dueDate": "2025-09-05"
+    }
+  ]
 }

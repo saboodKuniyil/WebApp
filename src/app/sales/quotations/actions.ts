@@ -41,6 +41,9 @@ const createQuotationFromScratchSchema = z.object({
     .min(1, 'At least one item is required')
     .transform(val => JSON.parse(val))
     .pipe(z.array(quotationItemSchema).min(1, 'At least one item is required')),
+  subtotal: z.coerce.number(),
+  marginPercentage: z.coerce.number(),
+  marginAmount: z.coerce.number(),
   totalCost: z.coerce.number(),
   createdDate: z.string(),
 });
@@ -54,6 +57,9 @@ export async function createQuotationFromScratch(
         projectName: formData.get('projectName'),
         customer: formData.get('customer'),
         items: formData.get('items'),
+        subtotal: formData.get('subtotal'),
+        marginPercentage: formData.get('marginPercentage'),
+        marginAmount: formData.get('marginAmount'),
         totalCost: formData.get('totalCost'),
         createdDate: new Date().toISOString().split('T')[0],
     });
@@ -63,7 +69,7 @@ export async function createQuotationFromScratch(
         return { message: 'Failed to create quotation. Please check the fields.', errors };
     }
 
-    const { id, projectName, customer, items, totalCost, createdDate } = validatedFields.data;
+    const { id, projectName, customer, items, subtotal, marginAmount, marginPercentage, totalCost, createdDate } = validatedFields.data;
 
     try {
         const newQuotation: Quotation = {
@@ -71,6 +77,9 @@ export async function createQuotationFromScratch(
             title: projectName,
             estimationId: 'N/A', // No estimation linked
             items,
+            subtotal,
+            marginAmount,
+            marginPercentage,
             totalCost,
             status: 'draft' as const,
             customer,
@@ -130,14 +139,17 @@ export async function createQuotationFromEstimation(
         }))
     );
     
-    const totalCost = newQuotationItems.reduce((acc, item) => acc + (item.quantity * item.rate), 0);
+    const subtotal = newQuotationItems.reduce((acc, item) => acc + (item.quantity * item.rate), 0);
 
     const newQuotation: Quotation = {
         id: newId,
         title: estimation.title,
         estimationId: estimation.id,
         items: newQuotationItems,
-        totalCost: totalCost,
+        subtotal: subtotal,
+        marginPercentage: 0,
+        marginAmount: 0,
+        totalCost: subtotal, // Initially total is same as subtotal
         status: 'draft' as const,
         customer: estimation.customerName || 'N/A',
         createdDate: new Date().toISOString().split('T')[0],
@@ -158,6 +170,9 @@ const updateQuotationSchema = z.object({
     id: z.string(),
     title: z.string().min(1, 'Title is required.'),
     items: z.string().transform(val => JSON.parse(val)).pipe(z.array(z.any())),
+    marginPercentage: z.coerce.number(),
+    marginAmount: z.coerce.number(),
+    totalCost: z.coerce.number(),
 });
 
 export async function updateQuotationAction(prevState: any, formData: FormData): Promise<{ message: string, errors?: any }> {
@@ -165,6 +180,9 @@ export async function updateQuotationAction(prevState: any, formData: FormData):
         id: formData.get('id'),
         title: formData.get('title'),
         items: formData.get('items'),
+        marginPercentage: formData.get('marginPercentage'),
+        marginAmount: formData.get('marginAmount'),
+        totalCost: formData.get('totalCost'),
     });
 
     if (!validatedFields.success) {
@@ -174,7 +192,7 @@ export async function updateQuotationAction(prevState: any, formData: FormData):
         };
     }
     
-    const { id, title, items } = validatedFields.data;
+    const { id, title, items, marginAmount, marginPercentage, totalCost } = validatedFields.data;
 
     try {
         const quotations = await getQuotations();
@@ -184,12 +202,15 @@ export async function updateQuotationAction(prevState: any, formData: FormData):
             return { message: 'Quotation not found.' };
         }
         
-        const totalCost = items.reduce((acc: number, item: QuotationItem) => acc + (item.quantity * item.rate), 0);
+        const subtotal = items.reduce((acc: number, item: QuotationItem) => acc + (item.quantity * item.rate), 0);
 
         const updatedQuotation: Quotation = {
             ...existingQuotation,
             title,
             items,
+            subtotal,
+            marginAmount,
+            marginPercentage,
             totalCost,
         };
 

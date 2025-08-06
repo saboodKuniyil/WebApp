@@ -34,12 +34,18 @@ export function CreateQuotationForm({ customers, estimations }: CreateQuotationF
 
     const [nextId, setNextId] = React.useState('');
     const [items, setItems] = React.useState<QuotationItem[]>([]);
+    
+    const [subtotal, setSubtotal] = React.useState(0);
+    const [marginPercent, setMarginPercent] = React.useState(0);
+    const [marginAmount, setMarginAmount] = React.useState(0);
     const [totalCost, setTotalCost] = React.useState(0);
     
     const { toast } = useToast();
     const formRef = React.useRef<HTMLFormElement>(null);
-    const { currency } = useModules();
+    const { currency, appSettings } = useModules();
     const router = useRouter();
+
+    const taxPercentage = appSettings?.quotationSettings?.taxPercentage ?? 0;
 
     const approvedEstimations = React.useMemo(() => {
         return estimations.filter(e => e.status === 'approved');
@@ -80,9 +86,32 @@ export function CreateQuotationForm({ customers, estimations }: CreateQuotationF
     }, []);
 
     React.useEffect(() => {
-        const newTotalCost = items.reduce((acc, item) => acc + (item.quantity * item.rate), 0);
-        setTotalCost(newTotalCost);
+        const newSubtotal = items.reduce((acc, item) => acc + (item.quantity * item.rate), 0);
+        setSubtotal(newSubtotal);
     }, [items]);
+    
+    React.useEffect(() => {
+        const taxAmount = (subtotal + marginAmount) * (taxPercentage / 100);
+        setTotalCost(subtotal + marginAmount + taxAmount);
+    }, [subtotal, marginAmount, taxPercentage]);
+
+    const handleMarginPercentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const percent = parseFloat(e.target.value) || 0;
+        setMarginPercent(percent);
+        const newMarginAmount = subtotal * (percent / 100);
+        setMarginAmount(parseFloat(newMarginAmount.toFixed(2)));
+    };
+
+    const handleMarginAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const amount = parseFloat(e.target.value) || 0;
+        setMarginAmount(amount);
+        if (subtotal > 0) {
+            const newMarginPercent = (amount / subtotal) * 100;
+            setMarginPercent(parseFloat(newMarginPercent.toFixed(2)));
+        } else {
+            setMarginPercent(0);
+        }
+    };
     
     const handleItemChange = (itemId: string, field: keyof QuotationItem, value: string | number) => {
         setItems(prevItems =>
@@ -170,6 +199,9 @@ export function CreateQuotationForm({ customers, estimations }: CreateQuotationF
                                 <CardContent className="space-y-6">
                                     <input type="hidden" name="id" value={nextId} />
                                     <input type="hidden" name="items" value={JSON.stringify(items)} />
+                                    <input type="hidden" name="subtotal" value={subtotal} />
+                                    <input type="hidden" name="marginPercentage" value={marginPercent} />
+                                    <input type="hidden" name="marginAmount" value={marginAmount} />
                                     <input type="hidden" name="totalCost" value={totalCost} />
                                     
                                     <div className="grid grid-cols-2 gap-4">
@@ -276,9 +308,25 @@ export function CreateQuotationForm({ customers, estimations }: CreateQuotationF
                                     </div>
                                     
                                     <div className="flex justify-end">
-                                        <div className="text-right space-y-1 p-4 rounded-md border w-64 bg-background">
-                                            <div className="flex justify-between">
-                                                <span className="text-muted-foreground">Grand Total:</span>
+                                        <div className="text-right space-y-2 p-4 rounded-md border w-80 bg-background">
+                                            <div className="flex justify-between items-center"><Label>Subtotal</Label><span>{formatCurrency(subtotal)}</span></div>
+                                            <div className="flex justify-between items-center">
+                                                <Label htmlFor="marginPercent">Margin</Label>
+                                                <div className="flex items-center gap-1">
+                                                     <Input id="marginPercent" type="number" value={marginPercent} onChange={handleMarginPercentChange} className="w-20 h-8 text-right" />
+                                                    <span>%</span>
+                                                </div>
+                                            </div>
+                                             <div className="flex justify-between items-center">
+                                                 <Label htmlFor="marginAmount" className="sr-only">Margin Amount</Label>
+                                                <div className="flex items-center gap-1">
+                                                    <span className="text-sm mr-1">{currency?.symbol}</span>
+                                                    <Input id="marginAmount" type="number" value={marginAmount} onChange={handleMarginAmountChange} className="w-24 h-8 text-right" />
+                                                </div>
+                                            </div>
+                                            <div className="flex justify-between items-center"><Label>Tax ({taxPercentage}%)</Label><span>{formatCurrency((subtotal + marginAmount) * (taxPercentage / 100))}</span></div>
+                                            <div className="flex justify-between items-center border-t pt-2 mt-2">
+                                                <Label className="text-lg">Grand Total:</Label>
                                                 <span className="font-bold text-xl">{formatCurrency(totalCost)}</span>
                                             </div>
                                         </div>
