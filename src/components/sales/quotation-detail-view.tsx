@@ -5,7 +5,7 @@
 import * as React from 'react';
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import type { Quotation, QuotationItem } from "./quotations-list";
+import type { Quotation, QuotationItem } from "@/lib/db";
 import { Button } from "../ui/button"
 import { Pencil, Save, Trash2, Plus, Printer, X, ShoppingBag, Send, CheckCircle2, XCircle, FileSignature, Redo } from "lucide-react"
 import { useModules } from '@/context/modules-context';
@@ -35,7 +35,6 @@ const statusColors: Record<Quotation['status'], string> = {
 
 const initialState = { message: '', errors: {} };
 
-// This function adapts the old data structure (with tasks) to the new one (with items)
 const adaptQuotationData = (quotation: Quotation): QuotationItem[] => {
     if (quotation.items) {
         return quotation.items;
@@ -59,7 +58,7 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
     const { currency, companyProfile, appSettings } = useModules();
     const [isEditing, setIsEditing] = React.useState(false);
     const [originalItems, setOriginalItems] = React.useState<QuotationItem[]>([]);
-    const [items, setItems] = React.useState<QuotationItem[]>(adaptQuotationData(quotation));
+    const [items, setItems] = React.useState<QuotationItem[]>(adaptQuotationData(quotation).map(item => ({...item, marginPercentage: item.marginPercentage || 0, marginAmount: item.marginAmount || 0})));
     const [isCreatingSO, setIsCreatingSO] = React.useState(false);
     const [isChangingStatus, setIsChangingStatus] = React.useState(false);
     
@@ -68,9 +67,11 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
     const formRef = React.useRef<HTMLFormElement>(null);
 
     const subtotal = items.reduce((acc, item) => acc + item.quantity * item.rate, 0);
+    const totalMargin = items.reduce((acc, item) => acc + (item.marginAmount || 0), 0);
     const taxPercentage = appSettings?.quotationSettings?.taxPercentage ?? 0;
-    const taxAmount = subtotal * (taxPercentage / 100);
-    const totalCost = subtotal + taxAmount;
+    const preTaxTotal = subtotal + totalMargin;
+    const taxAmount = preTaxTotal * (taxPercentage / 100);
+    const totalCost = preTaxTotal + taxAmount;
 
 
     React.useEffect(() => {
@@ -88,8 +89,21 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
         setItems(prevItems =>
             prevItems.map(item => {
                 if (item.id === itemId) {
-                    const updatedValue = typeof value === 'string' && (field === 'quantity' || field === 'rate') ? parseFloat(value) || 0 : value;
-                    return { ...item, [field]: updatedValue };
+                    const newItem = { ...item, [field]: typeof value === 'string' ? parseFloat(value) || 0 : value };
+                    const itemSubtotal = newItem.quantity * newItem.rate;
+
+                    if(field === 'marginPercentage') {
+                        const newMarginAmount = itemSubtotal * ((newItem.marginPercentage || 0) / 100);
+                        newItem.marginAmount = parseFloat(newMarginAmount.toFixed(2));
+                    } else if (field === 'marginAmount') {
+                        if (itemSubtotal > 0) {
+                            const newMarginPercent = ((newItem.marginAmount || 0) / itemSubtotal) * 100;
+                            newItem.marginPercentage = parseFloat(newMarginPercent.toFixed(2));
+                        } else {
+                            newItem.marginPercentage = 0;
+                        }
+                    }
+                    return newItem;
                 }
                 return item;
             })
@@ -103,6 +117,8 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
             description: '',
             quantity: 1,
             rate: 0,
+            marginPercentage: 0,
+            marginAmount: 0,
         };
         setItems(prevItems => [...prevItems, newItem]);
     };
@@ -116,7 +132,7 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
         if (printWindow) {
             const printContent = ReactDOMServer.renderToString(
                 <QuotationPrintLayout
-                    quotation={{ ...quotation, items, totalCost: subtotal }} // Pass subtotal as it was before tax
+                    quotation={{ ...quotation, items, totalCost: preTaxTotal, subtotal: subtotal }}
                     companyProfile={companyProfile}
                     currency={currency}
                     appSettings={appSettings}
@@ -172,6 +188,10 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
         <form ref={formRef} action={updateDispatch}>
             <input type="hidden" name="id" value={quotation.id} />
             <input type="hidden" name="items" value={JSON.stringify(items)} />
+            <input type="hidden" name="subtotal" value={subtotal} />
+            <input type="hidden" name="marginAmount" value={totalMargin} />
+            <input type="hidden" name="totalCost" value={totalCost} />
+            
             <Card className="p-4 md:p-6">
                 <CardHeader className="p-0">
                     <div className="flex flex-col md:flex-row items-start justify-between gap-4">
@@ -272,6 +292,7 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
                                     <TableHead className="w-[100px] text-right p-3">Qty</TableHead>
                                     <TableHead className="w-[120px] text-right p-3">Rate</TableHead>
                                     <TableHead className="w-[120px] text-right p-3">Amount</TableHead>
+                                    {isEditing && <TableHead className="w-[200px] text-right p-3">Margin</TableHead>}
                                     {isEditing && <TableHead className="w-[50px] p-3"></TableHead>}
                                 </TableRow>
                             </TableHeader>
@@ -336,6 +357,18 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
                                             {currency?.symbol} { (item.quantity * item.rate).toFixed(2) }
                                         </TableCell>
                                         {isEditing && (
+                                            <TableCell className="p-2 align-top text-right space-y-1">
+                                                <div className="flex items-center gap-1 justify-end">
+                                                    <Input type="number" value={item.marginPercentage} onChange={(e) => handleItemChange(item.id, 'marginPercentage', e.target.value)} className="w-20 h-7 text-right" />
+                                                    <span>%</span>
+                                                </div>
+                                                <div className="flex items-center gap-1 justify-end">
+                                                    <span className="text-xs mr-1">{currency?.symbol}</span>
+                                                    <Input type="number" value={item.marginAmount} onChange={(e) => handleItemChange(item.id, 'marginAmount', e.target.value)} className="w-24 h-7 text-right" />
+                                                </div>
+                                            </TableCell>
+                                        )}
+                                        {isEditing && (
                                             <TableCell className="p-2 align-top text-right">
                                                 <Button variant="ghost" size="icon" type="button" onClick={() => handleRemoveItem(item.id)}>
                                                     <Trash2 className="h-4 w-4 text-destructive" />
@@ -358,6 +391,10 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
                              <div className="flex justify-between items-center">
                                 <span className="text-muted-foreground">Subtotal</span>
                                 <span>{currency?.symbol} {subtotal.toFixed(2)}</span>
+                            </div>
+                             <div className="flex justify-between items-center">
+                                <span className="text-muted-foreground">Margin</span>
+                                <span>{currency?.symbol} {totalMargin.toFixed(2)}</span>
                             </div>
                              <div className="flex justify-between items-center">
                                 <span className="text-muted-foreground">Tax ({taxPercentage}%)</span>

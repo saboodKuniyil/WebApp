@@ -10,7 +10,7 @@ import { Plus, Trash2 } from 'lucide-react';
 import { createQuotationFromScratch, getNextQuotationId, createQuotationFromEstimation } from '@/app/sales/quotations/actions';
 import { useToast } from '@/hooks/use-toast';
 import { useModules } from '@/context/modules-context';
-import type { QuotationItem } from './quotations-list';
+import type { QuotationItem } from '@/lib/db';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../ui/card';
 import { Textarea } from '../ui/textarea';
@@ -35,17 +35,19 @@ export function CreateQuotationForm({ customers, estimations }: CreateQuotationF
     const [nextId, setNextId] = React.useState('');
     const [items, setItems] = React.useState<QuotationItem[]>([]);
     
-    const [subtotal, setSubtotal] = React.useState(0);
-    const [marginPercent, setMarginPercent] = React.useState(0);
-    const [marginAmount, setMarginAmount] = React.useState(0);
-    const [totalCost, setTotalCost] = React.useState(0);
-    
     const { toast } = useToast();
     const formRef = React.useRef<HTMLFormElement>(null);
     const { currency, appSettings } = useModules();
     const router = useRouter();
 
     const taxPercentage = appSettings?.quotationSettings?.taxPercentage ?? 0;
+
+    const subtotal = React.useMemo(() => items.reduce((acc, item) => acc + (item.quantity * item.rate), 0), [items]);
+    const totalMargin = React.useMemo(() => items.reduce((acc, item) => acc + (item.marginAmount || 0), 0), [items]);
+    const preTaxTotal = subtotal + totalMargin;
+    const taxAmount = preTaxTotal * (taxPercentage / 100);
+    const totalCost = preTaxTotal + taxAmount;
+    
 
     const approvedEstimations = React.useMemo(() => {
         return estimations.filter(e => e.status === 'approved');
@@ -85,40 +87,25 @@ export function CreateQuotationForm({ customers, estimations }: CreateQuotationF
         getNextQuotationId().then(setNextId);
     }, []);
 
-    React.useEffect(() => {
-        const newSubtotal = items.reduce((acc, item) => acc + (item.quantity * item.rate), 0);
-        setSubtotal(newSubtotal);
-    }, [items]);
-    
-    React.useEffect(() => {
-        const taxAmount = (subtotal + marginAmount) * (taxPercentage / 100);
-        setTotalCost(subtotal + marginAmount + taxAmount);
-    }, [subtotal, marginAmount, taxPercentage]);
-
-    const handleMarginPercentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const percent = parseFloat(e.target.value) || 0;
-        setMarginPercent(percent);
-        const newMarginAmount = subtotal * (percent / 100);
-        setMarginAmount(parseFloat(newMarginAmount.toFixed(2)));
-    };
-
-    const handleMarginAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const amount = parseFloat(e.target.value) || 0;
-        setMarginAmount(amount);
-        if (subtotal > 0) {
-            const newMarginPercent = (amount / subtotal) * 100;
-            setMarginPercent(parseFloat(newMarginPercent.toFixed(2)));
-        } else {
-            setMarginPercent(0);
-        }
-    };
-    
     const handleItemChange = (itemId: string, field: keyof QuotationItem, value: string | number) => {
         setItems(prevItems =>
             prevItems.map(item => {
                 if (item.id === itemId) {
-                    const updatedValue = typeof value === 'string' && (field === 'quantity' || field === 'rate') ? parseFloat(value) || 0 : value;
-                    return { ...item, [field]: updatedValue };
+                    const newItem = { ...item, [field]: typeof value === 'string' && (field !== 'title' && field !== 'description') ? parseFloat(value) || 0 : value };
+                    const itemSubtotal = newItem.quantity * newItem.rate;
+
+                    if(field === 'marginPercentage') {
+                        const newMarginAmount = itemSubtotal * ((newItem.marginPercentage || 0) / 100);
+                        newItem.marginAmount = parseFloat(newMarginAmount.toFixed(2));
+                    } else if (field === 'marginAmount') {
+                         if (itemSubtotal > 0) {
+                            const newMarginPercent = ((newItem.marginAmount || 0) / itemSubtotal) * 100;
+                            newItem.marginPercentage = parseFloat(newMarginPercent.toFixed(2));
+                        } else {
+                            newItem.marginPercentage = 0;
+                        }
+                    }
+                    return newItem;
                 }
                 return item;
             })
@@ -132,6 +119,8 @@ export function CreateQuotationForm({ customers, estimations }: CreateQuotationF
             description: '',
             quantity: 1,
             rate: 0,
+            marginPercentage: 0,
+            marginAmount: 0,
         };
         setItems(prev => [...prev, newItem]);
     };
@@ -200,8 +189,7 @@ export function CreateQuotationForm({ customers, estimations }: CreateQuotationF
                                     <input type="hidden" name="id" value={nextId} />
                                     <input type="hidden" name="items" value={JSON.stringify(items)} />
                                     <input type="hidden" name="subtotal" value={subtotal} />
-                                    <input type="hidden" name="marginPercentage" value={marginPercent} />
-                                    <input type="hidden" name="marginAmount" value={marginAmount} />
+                                    <input type="hidden" name="marginAmount" value={totalMargin} />
                                     <input type="hidden" name="totalCost" value={totalCost} />
                                     
                                     <div className="grid grid-cols-2 gap-4">
@@ -242,6 +230,7 @@ export function CreateQuotationForm({ customers, estimations }: CreateQuotationF
                                                         <TableHead className="w-[100px] text-right">Qty</TableHead>
                                                         <TableHead className="w-[120px] text-right">Rate</TableHead>
                                                         <TableHead className="w-[120px] text-right">Amount</TableHead>
+                                                        <TableHead className="w-[200px] text-right">Margin</TableHead>
                                                         <TableHead className="w-[50px]"></TableHead>
                                                     </TableRow>
                                                 </TableHeader>
@@ -284,6 +273,16 @@ export function CreateQuotationForm({ customers, estimations }: CreateQuotationF
                                                                 <TableCell className="p-2 align-top text-right font-medium">
                                                                     {formatCurrency(item.quantity * item.rate)}
                                                                 </TableCell>
+                                                                <TableCell className="p-2 align-top text-right space-y-1">
+                                                                    <div className="flex items-center gap-1 justify-end">
+                                                                        <Input type="number" value={item.marginPercentage || ''} onChange={(e) => handleItemChange(item.id, 'marginPercentage', e.target.value)} className="w-20 h-7 text-right" placeholder="%" />
+                                                                        <span>%</span>
+                                                                    </div>
+                                                                     <div className="flex items-center gap-1 justify-end">
+                                                                        <span className="text-xs mr-1">{currency?.symbol}</span>
+                                                                        <Input type="number" value={item.marginAmount || ''} onChange={(e) => handleItemChange(item.id, 'marginAmount', e.target.value)} className="w-24 h-7 text-right" placeholder="Amt" />
+                                                                    </div>
+                                                                </TableCell>
                                                                 <TableCell className="p-2 align-top text-right">
                                                                     <Button variant="ghost" size="icon" type="button" onClick={() => handleRemoveItem(item.id)}>
                                                                         <Trash2 className="h-4 w-4 text-destructive" />
@@ -293,7 +292,7 @@ export function CreateQuotationForm({ customers, estimations }: CreateQuotationF
                                                         ))
                                                     ) : (
                                                         <TableRow>
-                                                            <TableCell colSpan={5} className="text-center h-24 text-muted-foreground">
+                                                            <TableCell colSpan={6} className="text-center h-24 text-muted-foreground">
                                                                 No items added yet.
                                                             </TableCell>
                                                         </TableRow>
@@ -310,21 +309,8 @@ export function CreateQuotationForm({ customers, estimations }: CreateQuotationF
                                     <div className="flex justify-end">
                                         <div className="text-right space-y-2 p-4 rounded-md border w-80 bg-background">
                                             <div className="flex justify-between items-center"><Label>Subtotal</Label><span>{formatCurrency(subtotal)}</span></div>
-                                            <div className="flex justify-between items-center">
-                                                <Label htmlFor="marginPercent">Margin</Label>
-                                                <div className="flex items-center gap-1">
-                                                     <Input id="marginPercent" type="number" value={marginPercent} onChange={handleMarginPercentChange} className="w-20 h-8 text-right" />
-                                                    <span>%</span>
-                                                </div>
-                                            </div>
-                                             <div className="flex justify-between items-center">
-                                                 <Label htmlFor="marginAmount" className="sr-only">Margin Amount</Label>
-                                                <div className="flex items-center gap-1">
-                                                    <span className="text-sm mr-1">{currency?.symbol}</span>
-                                                    <Input id="marginAmount" type="number" value={marginAmount} onChange={handleMarginAmountChange} className="w-24 h-8 text-right" />
-                                                </div>
-                                            </div>
-                                            <div className="flex justify-between items-center"><Label>Tax ({taxPercentage}%)</Label><span>{formatCurrency((subtotal + marginAmount) * (taxPercentage / 100))}</span></div>
+                                             <div className="flex justify-between items-center"><Label>Margin</Label><span>{formatCurrency(totalMargin)}</span></div>
+                                            <div className="flex justify-between items-center"><Label>Tax ({taxPercentage}%)</Label><span>{formatCurrency(taxAmount)}</span></div>
                                             <div className="flex justify-between items-center border-t pt-2 mt-2">
                                                 <Label className="text-lg">Grand Total:</Label>
                                                 <span className="font-bold text-xl">{formatCurrency(totalCost)}</span>

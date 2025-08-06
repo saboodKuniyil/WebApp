@@ -10,7 +10,6 @@ import type { TaskBlueprint } from '@/components/project-management/task-bluepri
 import type { Product } from '@/components/purchase/products-list';
 import type { Currency } from '@/components/settings/currency-management';
 import type { Estimation, EstimationTask } from '@/components/sales/estimations-list';
-import type { Quotation, QuotationItem } from '@/components/sales/quotations-list';
 
 // Define types for the new Payroll module
 export type Employee = {
@@ -111,6 +110,32 @@ export type EstimationItem = {
     notes?: string;
     imageUrl?: string;
 };
+
+export type QuotationItem = {
+    id: string;
+    title: string;
+    description?: string;
+    quantity: number;
+    rate: number;
+    imageUrl?: string;
+    marginPercentage?: number;
+    marginAmount?: number;
+};
+
+export type Quotation = {
+    id: string;
+    title: string;
+    estimationId: string;
+    items: QuotationItem[];
+    subtotal: number;
+    marginPercentage: number;
+    marginAmount: number;
+    totalCost: number;
+    status: 'draft' | 'sent' | 'approved' | 'rejected' | 'converted';
+    customer: string;
+    createdDate: string;
+};
+
 
 export type Vendor = {
     id: string;
@@ -698,7 +723,7 @@ export async function createEstimation(newEstimation: Estimation): Promise<void>
     await writeDbFile(salesDbPath, data);
 }
 
-export async function updateEstimation(updatedEstimation: Estimation): Promise<void> {
+export async function updateDbEstimation(updatedEstimation: Estimation): Promise<void> {
     const data = await readDbFile<SalesDb>(salesDbPath, defaultSalesDb);
     const estimationIndex = data.estimations.findIndex(e => e.id === updatedEstimation.id);
     if (estimationIndex !== -1) {
