@@ -89,7 +89,7 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
         setItems(prevItems =>
             prevItems.map(item => {
                 if (item.id === itemId) {
-                    const newItem = { ...item, [field]: typeof value === 'string' ? parseFloat(value) || 0 : value };
+                    const newItem = { ...item, [field]: typeof value === 'string' && (field !== 'title' && field !== 'description') ? parseFloat(value) || 0 : value };
                     const itemSubtotal = newItem.quantity * newItem.rate;
 
                     if(field === 'marginPercentage') {
@@ -389,12 +389,12 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
                         ) : <div></div>}
                         <div className="w-full md:w-1/3 text-right space-y-2">
                              <div className="flex justify-between items-center">
-                                <span className="text-muted-foreground">Subtotal</span>
-                                <span>{currency?.symbol} {subtotal.toFixed(2)}</span>
-                            </div>
-                             <div className="flex justify-between items-center">
                                 <span className="text-muted-foreground">Margin</span>
                                 <span>{currency?.symbol} {totalMargin.toFixed(2)}</span>
+                            </div>
+                             <div className="flex justify-between items-center">
+                                <span className="text-muted-foreground">Subtotal</span>
+                                <span>{currency?.symbol} {subtotal.toFixed(2)}</span>
                             </div>
                              <div className="flex justify-between items-center">
                                 <span className="text-muted-foreground">Tax ({taxPercentage}%)</span>
