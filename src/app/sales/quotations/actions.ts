@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import { z } from 'zod';
@@ -171,7 +172,7 @@ export async function createQuotationFromEstimation(
 const updateQuotationSchema = z.object({
     id: z.string(),
     title: z.string().min(1, 'Title is required.'),
-    items: z.string().transform(val => JSON.parse(val)).pipe(z.array(z.any())),
+    items: z.string().transform(val => JSON.parse(val)).pipe(z.array(quotationItemSchema)),
     marginAmount: z.coerce.number(),
     subtotal: z.coerce.number(),
     totalCost: z.coerce.number(),

@@ -138,7 +138,9 @@
           "description": "",
           "quantity": 1,
           "rate": 100,
-          "imageUrl": ""
+          "imageUrl": "",
+          "marginPercentage": 25,
+          "marginAmount": 25
         },
         {
           "id": "RM_MDF_7001",
@@ -146,13 +148,18 @@
           "description": "",
           "quantity": 3,
           "rate": 72,
-          "imageUrl": ""
+          "imageUrl": "",
+          "marginPercentage": 0,
+          "marginAmount": 0
         }
       ],
-      "totalCost": 316,
+      "totalCost": 358.05,
       "status": "draft",
       "customer": "sabood Kuniyil",
-      "createdDate": "2025-08-06"
+      "createdDate": "2025-08-06",
+      "subtotal": 316,
+      "marginAmount": 25,
+      "marginPercentage": 7.9113924050632916
     }
   ],
   "salesOrders": [

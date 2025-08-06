@@ -35,30 +35,12 @@ const statusColors: Record<Quotation['status'], string> = {
 
 const initialState = { message: '', errors: {} };
 
-const adaptQuotationData = (quotation: Quotation): QuotationItem[] => {
-    if (quotation.items) {
-        return quotation.items;
-    }
-    // @ts-ignore - Handle old data structure for backward compatibility
-    if (quotation.tasks) {
-         // @ts-ignore
-        return quotation.tasks.map(task => ({
-            id: task.id,
-            title: task.title,
-            description: task.description || '',
-            quantity: 1,
-            rate: task.totalCost,
-        }));
-    }
-    return [];
-}
-
 export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
     const [updateState, updateDispatch] = useActionState(updateQuotationAction, initialState);
     const { currency, companyProfile, appSettings } = useModules();
     const [isEditing, setIsEditing] = React.useState(false);
     const [originalItems, setOriginalItems] = React.useState<QuotationItem[]>([]);
-    const [items, setItems] = React.useState<QuotationItem[]>(adaptQuotationData(quotation).map(item => ({...item, marginPercentage: item.marginPercentage || 0, marginAmount: item.marginAmount || 0})));
+    const [items, setItems] = React.useState<QuotationItem[]>(quotation.items.map(item => ({...item, marginPercentage: item.marginPercentage || 0, marginAmount: item.marginAmount || 0})));
     const [isCreatingSO, setIsCreatingSO] = React.useState(false);
     const [isChangingStatus, setIsChangingStatus] = React.useState(false);
     
@@ -96,7 +78,7 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
                         const newMarginAmount = itemSubtotal * ((newItem.marginPercentage || 0) / 100);
                         newItem.marginAmount = parseFloat(newMarginAmount.toFixed(2));
                     } else if (field === 'marginAmount') {
-                        if (itemSubtotal > 0) {
+                         if (itemSubtotal > 0) {
                             const newMarginPercent = ((newItem.marginAmount || 0) / itemSubtotal) * 100;
                             newItem.marginPercentage = parseFloat(newMarginPercent.toFixed(2));
                         } else {
@@ -359,12 +341,12 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
                                         {isEditing && (
                                             <TableCell className="p-2 align-top text-right space-y-1">
                                                 <div className="flex items-center gap-1 justify-end">
-                                                    <Input type="number" value={item.marginPercentage} onChange={(e) => handleItemChange(item.id, 'marginPercentage', e.target.value)} className="w-20 h-7 text-right" />
+                                                    <Input type="number" value={item.marginPercentage} onChange={(e) => handleItemChange(item.id, 'marginPercentage', e.target.value)} className="w-20 h-7 text-right" placeholder="%" />
                                                     <span>%</span>
                                                 </div>
-                                                <div className="flex items-center gap-1 justify-end">
+                                                 <div className="flex items-center gap-1 justify-end">
                                                     <span className="text-xs mr-1">{currency?.symbol}</span>
-                                                    <Input type="number" value={item.marginAmount} onChange={(e) => handleItemChange(item.id, 'marginAmount', e.target.value)} className="w-24 h-7 text-right" />
+                                                    <Input type="number" value={item.marginAmount} onChange={(e) => handleItemChange(item.id, 'marginAmount', e.target.value)} className="w-24 h-7 text-right" placeholder="Amt" />
                                                 </div>
                                             </TableCell>
                                         )}
@@ -389,12 +371,12 @@ export function QuotationDetailView({ quotation }: QuotationDetailViewProps) {
                         ) : <div></div>}
                         <div className="w-full md:w-1/3 text-right space-y-2">
                              <div className="flex justify-between items-center">
-                                <span className="text-muted-foreground">Margin</span>
-                                <span>{currency?.symbol} {totalMargin.toFixed(2)}</span>
-                            </div>
-                             <div className="flex justify-between items-center">
                                 <span className="text-muted-foreground">Subtotal</span>
                                 <span>{currency?.symbol} {subtotal.toFixed(2)}</span>
+                            </div>
+                             <div className="flex justify-between items-center">
+                                <span className="text-muted-foreground">Margin</span>
+                                <span>{currency?.symbol} {totalMargin.toFixed(2)}</span>
                             </div>
                              <div className="flex justify-between items-center">
                                 <span className="text-muted-foreground">Tax ({taxPercentage}%)</span>
