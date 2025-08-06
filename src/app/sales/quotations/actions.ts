@@ -129,16 +129,18 @@ export async function createQuotationFromEstimation(
   const newId = await getNextQuotationId();
 
   try {
-    const newQuotationItems: QuotationItem[] = estimation.tasks.map(task => ({
-        id: task.id,
-        title: task.title,
-        description: task.description,
-        quantity: 1, // Each task is one "item" in the quotation
-        rate: task.totalCost, // The rate is the total cost of the task
-        imageUrl: task.imageUrl,
-        marginPercentage: 0,
-        marginAmount: 0,
-    }));
+    const newQuotationItems: QuotationItem[] = estimation.tasks.flatMap(task => 
+        task.items.map(item => ({
+            id: item.id,
+            title: item.name,
+            description: `Task: ${task.title}\n${item.notes || ''}`.trim(),
+            quantity: item.quantity,
+            rate: item.cost,
+            imageUrl: item.imageUrl,
+            marginPercentage: 0,
+            marginAmount: 0,
+        }))
+    );
     
     const subtotal = newQuotationItems.reduce((acc, item) => acc + (item.quantity * item.rate), 0);
 
