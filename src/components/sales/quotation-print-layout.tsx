@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import * as React from 'react';
@@ -17,9 +16,11 @@ interface QuotationPrintLayoutProps {
 
 export function QuotationPrintLayout({ quotation, companyProfile, currency, appSettings }: QuotationPrintLayoutProps) {
     const subtotal = quotation.items.reduce((acc, item) => acc + (item.quantity * item.rate), 0);
+    const totalMargin = quotation.items.reduce((acc, item) => acc + (item.marginAmount || 0), 0);
     const taxPercentage = appSettings?.quotationSettings?.taxPercentage ?? 0;
-    const taxAmount = subtotal * (taxPercentage / 100);
-    const totalCost = subtotal + taxAmount;
+    const preTaxTotal = subtotal + totalMargin;
+    const taxAmount = preTaxTotal * (taxPercentage / 100);
+    const totalCost = preTaxTotal + taxAmount;
 
     const formatCurrency = (amount: number) => {
         if (!currency) {
@@ -191,7 +192,9 @@ export function QuotationPrintLayout({ quotation, companyProfile, currency, appS
                             </tr>
                         </thead>
                         <tbody>
-                            {quotation.items.map(item => (
+                            {quotation.items.map(item => {
+                                const itemTotal = (item.quantity * item.rate) + (item.marginAmount || 0);
+                                return (
                                 <tr key={item.id}>
                                     <td>
                                         <div className="item-cell">
@@ -206,9 +209,9 @@ export function QuotationPrintLayout({ quotation, companyProfile, currency, appS
                                     </td>
                                     <td className="text-right">{item.quantity}</td>
                                     <td className="text-right">{formatCurrency(item.rate)}</td>
-                                    <td className="text-right">{formatCurrency(item.quantity * item.rate)}</td>
+                                    <td className="text-right">{formatCurrency(itemTotal)}</td>
                                 </tr>
-                            ))}
+                            )})}
                         </tbody>
                     </table>
 
@@ -218,6 +221,10 @@ export function QuotationPrintLayout({ quotation, companyProfile, currency, appS
                                 <div>
                                     <span>Subtotal</span>
                                     <span>{formatCurrency(subtotal)}</span>
+                                </div>
+                                <div>
+                                    <span>Margin</span>
+                                    <span>{formatCurrency(totalMargin)}</span>
                                 </div>
                                 <div>
                                     <span>Tax ({taxPercentage}%)</span>

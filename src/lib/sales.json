@@ -82,9 +82,11 @@
           "id": "FG_LSF_7001",
           "title": "Wardrobe White 180*200",
           "description": "",
-          "quantity": 1,
-          "rate": 520,
-          "imageUrl": ""
+          "quantity": 4,
+          "rate": 100,
+          "imageUrl": "",
+          "marginPercentage": 4,
+          "marginAmount": 16
         },
         {
           "id": "SRV_LBR_7001",
@@ -92,13 +94,18 @@
           "description": "",
           "quantity": 1,
           "rate": 100,
-          "imageUrl": ""
+          "imageUrl": "",
+          "marginPercentage": 11,
+          "marginAmount": 11
         }
       ],
-      "totalCost": 620,
+      "totalCost": 553.35,
       "status": "approved",
       "customer": "sabood Kuniyil",
-      "createdDate": "2025-08-06"
+      "createdDate": "2025-08-06",
+      "subtotal": 500,
+      "marginAmount": 27,
+      "marginPercentage": 5.4
     },
     {
       "id": "QUO-1002",
