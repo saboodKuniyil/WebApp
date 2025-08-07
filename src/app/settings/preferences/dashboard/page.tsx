@@ -2,10 +2,8 @@
 import { DashboardPreferences } from "@/components/settings/dashboard-preferences";
 import { getAppSettings, getCurrencies } from '@/lib/db';
 import type { AppSettings } from "@/lib/db";
-import { unstable_noStore as noStore } from 'next/cache';
 
 async function fetchAppSettings(): Promise<AppSettings> {
-  noStore();
   return getAppSettings();
 }
 

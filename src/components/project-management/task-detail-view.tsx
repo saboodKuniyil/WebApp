@@ -10,13 +10,14 @@ import type { Task } from "./tasks-list"
 import type { Issue } from "./issues-list"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { Button } from "../ui/button"
-import { Pencil, Trash2, Briefcase, AlertTriangle, PlusCircle } from "lucide-react"
+import { Pencil, Trash2, Briefcase, AlertTriangle, PlusCircle, DollarSign } from "lucide-react"
 import React from "react"
 import Link from "next/link"
 import { EditTaskDialog } from "./edit-task-dialog"
 import { DeleteTaskDialog } from "./delete-task-dialog"
 import { AddIssueDialog } from "./add-issue-dialog"
 import { TaskBlueprint } from "./task-blueprints-list"
+import { useModules } from "@/context/modules-context"
 
 interface TaskDetailViewProps {
     task: Task
@@ -61,6 +62,14 @@ const formatDate = (dateString: string | undefined) => {
 export function TaskDetailView({ task, project, issues, projects, taskBlueprints }: TaskDetailViewProps) {
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
+    const { currency } = useModules();
+
+    const formatCurrency = React.useCallback((amount: number) => {
+        if (!currency) {
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+        }
+        return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency.code }).format(amount);
+    }, [currency]);
 
     return (
         <div className="space-y-6">
@@ -122,6 +131,12 @@ export function TaskDetailView({ task, project, issues, projects, taskBlueprints
                                         {project.title}
                                     </Link>
                                 </Button>
+                            </div>
+                        )}
+                        {task.budget !== undefined && (
+                            <div>
+                                <p className="font-semibold flex items-center"><DollarSign className="h-4 w-4 mr-1" />Budget</p>
+                                <p className="font-medium">{formatCurrency(task.budget)}</p>
                             </div>
                         )}
                     </div>

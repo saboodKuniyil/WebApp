@@ -56,7 +56,7 @@ export async function saveProfileSettings(
     await updateCompanyProfile(validatedFields.data);
     revalidatePath('/settings/profile');
     // Also revalidate the layout to update the logo/name in the header
-    revalidatePath('/layout');
+    revalidatePath('/layout', 'layout');
     return { message: 'Profile updated successfully.' };
   } catch (error) {
     console.error('Database Error:', error);

@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import { z } from 'zod';
@@ -20,13 +21,13 @@ const productSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   description: z.string().optional(),
   imageUrl: z.string().url().optional().or(z.literal('')),
-  type: z.string().min(1, 'Type is required'),
+  type: z.string().optional(),
   category: z.string().min(1, 'Category is required'),
-  subcategory: z.string().min(1, 'Subcategory is required'),
-  purchasePrice: z.coerce.number().min(0, 'Purchase price must be a positive number'),
-  salesPrice: z.coerce.number().min(0, 'Sales price must be a positive number'),
-  stock: z.coerce.number().int().min(0, 'Stock must be a positive integer'),
-  unit: z.string().min(1, 'Unit is required'),
+  subcategory: z.string().optional(),
+  purchasePrice: z.coerce.number().min(0, 'Purchase price must be a positive number').optional(),
+  salesPrice: z.coerce.number().min(0, 'Sales price must be a positive number').optional(),
+  stock: z.coerce.number().int().min(0, 'Stock must be a positive integer').optional(),
+  unit: z.string().optional(),
   billOfMaterials: z.string().transform(val => JSON.parse(val)).pipe(z.array(billOfMaterialItemSchema)).optional(),
   billOfServices: z.string().transform(val => JSON.parse(val)).pipe(z.array(billOfServiceItemSchema)).optional(),
 });
@@ -114,14 +115,14 @@ export async function createProduct(
         id,
         name,
         description,
-        imageUrl,
-        type,
+        imageUrl: imageUrl || '',
+        type: type || '',
         category,
-        subcategory,
-        purchasePrice,
-        salesPrice,
-        stock,
-        unit
+        subcategory: subcategory || '',
+        purchasePrice: purchasePrice || 0,
+        salesPrice: salesPrice || 0,
+        stock: stock || 0,
+        unit: unit || ''
      };
      
      if(type === 'Finished Good') {

@@ -2,7 +2,6 @@
 import { getIssueById, getTaskById } from '@/lib/db';
 import type { Issue } from "@/components/project-management/issues-list";
 import type { Task } from '@/components/project-management/tasks-list';
-import { unstable_noStore as noStore } from 'next/cache';
 import { notFound } from 'next/navigation';
 import { IssueDetailView } from '@/components/project-management/issue-detail-view';
 import Link from 'next/link';
@@ -10,12 +9,10 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
 
 async function getIssue(id: string): Promise<Issue | undefined> {
-  noStore();
   return await getIssueById(id);
 }
 
 async function getTask(id: string): Promise<Task | undefined> {
-  noStore();
   return await getTaskById(id);
 }
 
@@ -43,4 +40,3 @@ export default async function IssueDetailPage({ params }: { params: { id: string
     </main>
   );
 }
-

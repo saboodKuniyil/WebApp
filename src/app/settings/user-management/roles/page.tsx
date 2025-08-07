@@ -1,17 +1,11 @@
+
 import { RolesList } from "@/components/settings/roles-list";
 import { getUserRoles } from '@/lib/db';
 import type { UserRole } from "@/lib/db";
-import { unstable_noStore as noStore } from 'next/cache';
 
 async function getRoles(): Promise<UserRole[]> {
-  noStore();
-  try {
     const roles = await getUserRoles();
     return roles;
-  } catch (error) {
-    console.error('Failed to read database:', error);
-    return [];
-  }
 }
 
 export default async function RolesPage() {

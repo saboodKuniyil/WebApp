@@ -33,6 +33,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Calendar } from '../ui/calendar';
 import { format, parseISO } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { useModules } from '@/context/modules-context';
 
 const initialState = { message: '', errors: {} };
 
@@ -58,6 +59,7 @@ export function EditTaskDialog({ task, projects, taskBlueprints, isOpen, setIsOp
     task.endDate ? parseISO(task.endDate) : undefined
   );
   const [selectedProjectId, setSelectedProjectId] = React.useState<string>(task.projectId);
+  const { currency } = useModules();
   
   const selectedProject = projects.find(p => p.id === selectedProjectId);
   const selectedBlueprint = taskBlueprints.find(b => b.id === selectedProject?.taskBlueprintId);
@@ -109,22 +111,16 @@ export function EditTaskDialog({ task, projects, taskBlueprints, isOpen, setIsOp
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="title" className="text-right">
-              Title
+              Title <span className="text-destructive">*</span>
             </Label>
             <Input id="title" name="title" className="col-span-3" defaultValue={task.title} />
             {state.errors?.title && (
               <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.title[0]}</p>
             )}
           </div>
-          <div className="grid grid-cols-4 items-start gap-4">
-            <Label htmlFor="description" className="text-right pt-2">
-              Description
-            </Label>
-            <Textarea id="description" name="description" className="col-span-3" defaultValue={task.description} />
-          </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="projectId" className="text-right">
-                Project
+                Project <span className="text-destructive">*</span>
             </Label>
             <Select name="projectId" defaultValue={task.projectId} onValueChange={setSelectedProjectId}>
               <SelectTrigger className="col-span-3">
@@ -140,14 +136,23 @@ export function EditTaskDialog({ task, projects, taskBlueprints, isOpen, setIsOp
                 <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.projectId[0]}</p>
             )}
           </div>
+          <div className="grid grid-cols-4 items-start gap-4">
+            <Label htmlFor="description" className="text-right pt-2">
+              Description
+            </Label>
+            <Textarea id="description" name="description" className="col-span-3" defaultValue={task.description} />
+          </div>
+           <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="budget" className="text-right">
+                  Budget ({currency?.symbol})
+                </Label>
+                <Input id="budget" name="budget" type="number" step="0.01" className="col-span-3" defaultValue={task.budget} />
+              </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="assignee" className="text-right">
               Assignee
             </Label>
             <Input id="assignee" name="assignee" className="col-span-3" defaultValue={task.assignee} />
-            {state.errors?.assignee && (
-              <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.assignee[0]}</p>
-            )}
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label className="text-right">
@@ -219,9 +224,6 @@ export function EditTaskDialog({ task, projects, taskBlueprints, isOpen, setIsOp
                 ))}
               </SelectContent>
             </Select>
-            {state.errors?.status && (
-                <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.status[0]}</p>
-            )}
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="label" className="text-right">
@@ -237,9 +239,6 @@ export function EditTaskDialog({ task, projects, taskBlueprints, isOpen, setIsOp
                 <SelectItem value="documentation">Documentation</SelectItem>
               </SelectContent>
             </Select>
-            {state.errors?.label && (
-                <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.label[0]}</p>
-            )}
           </div>
             <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="priority" className="text-right">
@@ -255,9 +254,6 @@ export function EditTaskDialog({ task, projects, taskBlueprints, isOpen, setIsOp
                     <SelectItem value="high">High</SelectItem>
                 </SelectContent>
                 </Select>
-                {state.errors?.priority && (
-                    <p className="col-span-4 text-red-500 text-xs text-right">{state.errors.priority[0]}</p>
-                )}
             </div>
           <DialogFooter>
             <DialogClose asChild>

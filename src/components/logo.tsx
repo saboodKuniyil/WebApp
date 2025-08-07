@@ -1,18 +1,12 @@
 
 'use client';
 import * as React from "react"
-import { useModules } from "@/context/modules-context";
 
-export function Logo(props: React.SVGProps<SVGSVGElement>) {
-  const { companyProfile } = useModules();
-  const [isClient, setIsClient] = React.useState(false);
+interface LogoProps extends React.SVGProps<SVGSVGElement> {
+    companyName?: string;
+}
 
-  React.useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  const companyName = isClient && companyProfile?.companyName ? companyProfile.companyName : 'BizView';
-
+export function Logo({ companyName = 'BizView', ...props }: LogoProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

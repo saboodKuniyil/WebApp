@@ -1,11 +1,7 @@
 
-'use client';
-
-import * as React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Users, Briefcase } from "lucide-react";
 import Link from "next/link";
-import { Skeleton } from '../ui/skeleton';
 
 type Stats = {
     todaysAppointments: number;
@@ -14,18 +10,13 @@ type Stats = {
 };
 
 export function CrmStats() {
-    const [stats, setStats] = React.useState<Stats | null>(null);
-
-    React.useEffect(() => {
-        // Mock data fetching - in a real app, these would hit a database
-        async function fetchStats() {
-            const todaysAppointments = 5;
-            const newLeads = 12;
-            const activeDeals = 8;
-            setStats({ todaysAppointments, newLeads, activeDeals });
-        }
-        fetchStats();
-    }, []);
+    // In a real app, this data would be fetched from a database
+    // For now, we'll use mock data.
+    const stats: Stats = {
+        todaysAppointments: 5,
+        newLeads: 12,
+        activeDeals: 8,
+    };
     
     const statCards = [
         {
@@ -58,11 +49,7 @@ export function CrmStats() {
                             <stat.Icon className={`h-4 w-4 text-muted-foreground`} />
                         </CardHeader>
                         <CardContent>
-                             {stats === null ? (
-                                <Skeleton className="h-7 w-12" />
-                            ) : (
-                                <div className="text-2xl font-bold">{stat.value}</div>
-                            )}
+                            <div className="text-2xl font-bold">{stat.value}</div>
                         </CardContent>
                     </Link>
                 </Card>

@@ -10,7 +10,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
 } from '@/components/ui/sidebar';
-import { Box, Calendar, LayoutDashboard, Briefcase, ShoppingCart, Home, Package, FileText, Landmark, Truck, CheckSquare, AlertTriangle, ClipboardList, Settings, ChevronsRight, CircleDollarSign, Heart, Wallet, User, ClipboardSignature, PenSquare, Building, Users as UsersIcon, ShieldCheck } from 'lucide-react';
+import { Box, Calendar, LayoutDashboard, Briefcase, ShoppingCart, Home, Package, FileText, Landmark, Truck, CheckSquare, AlertTriangle, ClipboardList, Settings, ChevronsRight, CircleDollarSign, Heart, Wallet, User, ClipboardSignature, PenSquare, Building, Users as UsersIcon, ShieldCheck, DollarSign, FileSignature, ShoppingBag, Blocks, Database, Scale, BookOpen } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useModules } from '@/context/modules-context';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -18,14 +18,17 @@ import { ChevronDown } from 'lucide-react';
 
 export function DashboardSidebarItems() {
   const pathname = usePathname();
-  const { isProjectManagementEnabled, isPurchaseModuleEnabled, isCrmEnabled, isPayrollEnabled, isUserManagementEnabled } = useModules();
-  const [isPurchaseOpen, setIsPurchaseOpen] = React.useState(true);
-  const [isProjectManagementOpen, setIsProjectManagementOpen] = React.useState(true);
-  const [isSettingsOpen, setIsSettingsOpen] = React.useState(true);
-  const [isPreferencesOpen, setIsPreferencesOpen] = React.useState(true);
-  const [isCrmOpen, setIsCrmOpen] = React.useState(true);
-  const [isPayrollOpen, setIsPayrollOpen] = React.useState(true);
-  const [isUserManagementOpen, setIsUserManagementOpen] = React.useState(true);
+  const { isProjectManagementEnabled, isPurchaseModuleEnabled, isCrmEnabled, isPayrollEnabled, isUserManagementEnabled, isSalesModuleEnabled, isAccountingEnabled } = useModules();
+  
+  const isCrmOpen = pathname.startsWith('/crm');
+  const isSalesOpen = pathname.startsWith('/sales');
+  const isProjectManagementOpen = pathname.startsWith('/project-management');
+  const isPurchaseOpen = pathname.startsWith('/purchase');
+  const isPayrollOpen = pathname.startsWith('/payroll');
+  const isAccountingOpen = pathname.startsWith('/accounting');
+  const isSettingsOpen = pathname.startsWith('/settings') || pathname.startsWith('/modules');
+  const isUserManagementOpen = pathname.startsWith('/settings/user-management');
+  const isPreferencesOpen = pathname.startsWith('/settings/preferences');
 
   return (
     <SidebarMenu>
@@ -38,16 +41,61 @@ export function DashboardSidebarItems() {
         </SidebarMenuButton>
       </SidebarMenuItem>
       
+      {isAccountingEnabled && (
+         <SidebarMenuItem>
+            <Collapsible defaultOpen={isAccountingOpen}>
+              <CollapsibleTrigger asChild>
+                  <SidebarMenuButton className="w-full justify-between">
+                      <div className="flex items-center gap-2">
+                          <Scale />
+                          Accounting
+                      </div>
+                      <ChevronDown className={`h-4 w-4 transition-transform data-[state=open]:rotate-180`} />
+                  </SidebarMenuButton>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <SidebarMenuSub>
+                  <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/accounting/dashboard'}>
+                      <Link href="/accounting/dashboard"><Home />Dashboard</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                   <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/accounting/sales'}>
+                      <Link href="/accounting/sales"><DollarSign />Sales</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                   <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/accounting/purchases'}>
+                      <Link href="/accounting/purchases"><ShoppingCart />Purchases</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/accounting/chart-of-accounts'}>
+                      <Link href="/accounting/chart-of-accounts"><ClipboardList />Chart of Accounts</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/accounting/journals'}>
+                      <Link href="/accounting/journals"><BookOpen />Manual Journals</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                </SidebarMenuSub>
+              </CollapsibleContent>
+            </Collapsible>
+         </SidebarMenuItem>
+      )}
+
       {isCrmEnabled && (
          <SidebarMenuItem>
-            <Collapsible open={isCrmOpen} onOpenChange={setIsCrmOpen}>
+            <Collapsible defaultOpen={isCrmOpen}>
               <CollapsibleTrigger asChild>
                   <SidebarMenuButton className="w-full justify-between">
                       <div className="flex items-center gap-2">
                           <Heart />
                           CRM
                       </div>
-                      <ChevronDown className={`h-4 w-4 transition-transform ${isCrmOpen ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`h-4 w-4 transition-transform data-[state=open]:rotate-180`} />
                   </SidebarMenuButton>
               </CollapsibleTrigger>
               <CollapsibleContent>
@@ -60,6 +108,64 @@ export function DashboardSidebarItems() {
                       </Link>
                     </SidebarMenuSubButton>
                   </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/crm/customers'}>
+                      <Link href="/crm/customers">
+                        <UsersIcon />
+                        Customers
+                      </Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                </SidebarMenuSub>
+              </CollapsibleContent>
+            </Collapsible>
+         </SidebarMenuItem>
+      )}
+
+      {isSalesModuleEnabled && (
+         <SidebarMenuItem>
+            <Collapsible defaultOpen={isSalesOpen}>
+              <CollapsibleTrigger asChild>
+                  <SidebarMenuButton className="w-full justify-between">
+                      <div className="flex items-center gap-2">
+                          <DollarSign />
+                          Sales
+                      </div>
+                      <ChevronDown className={`h-4 w-4 transition-transform data-[state=open]:rotate-180`} />
+                  </SidebarMenuButton>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <SidebarMenuSub>
+                  <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/sales/dashboard'}>
+                      <Link href="/sales/dashboard"><Home />Dashboard</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                   <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname === '/sales/customers'}>
+                      <Link href="/sales/customers"><UsersIcon />Customers</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                   <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname.startsWith('/sales/estimations')}>
+                      <Link href="/sales/estimations"><FileSignature />Estimations</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                   <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname.startsWith('/sales/quotations')}>
+                      <Link href="/sales/quotations"><ClipboardList />Quotations</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                   <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname.startsWith('/sales/sales-orders')}>
+                      <Link href="/sales/sales-orders"><ShoppingBag />Sales Orders</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                   <SidebarMenuItem>
+                    <SidebarMenuSubButton asChild isActive={pathname.startsWith('/sales/invoices')}>
+                      <Link href="/sales/invoices"><FileText />Invoices</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
                 </SidebarMenuSub>
               </CollapsibleContent>
             </Collapsible>
@@ -68,14 +174,14 @@ export function DashboardSidebarItems() {
 
       {isProjectManagementEnabled && (
          <SidebarMenuItem>
-            <Collapsible open={isProjectManagementOpen} onOpenChange={setIsProjectManagementOpen}>
+            <Collapsible defaultOpen={isProjectManagementOpen}>
               <CollapsibleTrigger asChild>
                   <SidebarMenuButton className="w-full justify-between">
                       <div className="flex items-center gap-2">
                           <Briefcase />
                           Project Management
                       </div>
-                      <ChevronDown className={`h-4 w-4 transition-transform ${isProjectManagementOpen ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`h-4 w-4 transition-transform data-[state=open]:rotate-180`} />
                   </SidebarMenuButton>
               </CollapsibleTrigger>
               <CollapsibleContent>
@@ -86,22 +192,22 @@ export function DashboardSidebarItems() {
                     </SidebarMenuSubButton>
                   </SidebarMenuItem>
                   <SidebarMenuItem>
-                    <SidebarMenuSubButton asChild isActive={pathname === '/project-management/projects'}>
+                    <SidebarMenuSubButton asChild isActive={pathname.startsWith('/project-management/projects')}>
                       <Link href="/project-management/projects"><Briefcase />Projects</Link>
                     </SidebarMenuSubButton>
                   </SidebarMenuItem>
                   <SidebarMenuItem>
-                    <SidebarMenuSubButton asChild isActive={pathname === '/project-management/tasks'}>
+                    <SidebarMenuSubButton asChild isActive={pathname.startsWith('/project-management/tasks')}>
                       <Link href="/project-management/tasks"><CheckSquare />Tasks</Link>
                     </SidebarMenuSubButton>
                   </SidebarMenuItem>
                   <SidebarMenuItem>
-                    <SidebarMenuSubButton asChild isActive={pathname === '/project-management/task-blueprints'}>
+                    <SidebarMenuSubButton asChild isActive={pathname.startsWith('/project-management/task-blueprints')}>
                       <Link href="/project-management/task-blueprints"><ClipboardList />Task Blueprints</Link>
                     </SidebarMenuSubButton>
                   </SidebarMenuItem>
                   <SidebarMenuItem>
-                    <SidebarMenuSubButton asChild isActive={pathname === '/project-management/issues'}>
+                    <SidebarMenuSubButton asChild isActive={pathname.startsWith('/project-management/issues')}>
                       <Link href="/project-management/issues"><AlertTriangle />Issues</Link>
                     </SidebarMenuSubButton>
                   </SidebarMenuItem>
@@ -112,14 +218,14 @@ export function DashboardSidebarItems() {
       )}
       {isPurchaseModuleEnabled && (
         <SidebarMenuItem>
-          <Collapsible open={isPurchaseOpen} onOpenChange={setIsPurchaseOpen}>
+          <Collapsible defaultOpen={isPurchaseOpen}>
             <CollapsibleTrigger asChild>
                 <SidebarMenuButton className="w-full justify-between">
                     <div className="flex items-center gap-2">
                         <ShoppingCart />
                         Purchase
                     </div>
-                    <ChevronDown className={`h-4 w-4 transition-transform ${isPurchaseOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`h-4 w-4 transition-transform data-[state=open]:rotate-180`} />
                 </SidebarMenuButton>
             </CollapsibleTrigger>
             <CollapsibleContent>
@@ -130,7 +236,7 @@ export function DashboardSidebarItems() {
                   </SidebarMenuSubButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                  <SidebarMenuSubButton asChild isActive={pathname === '/purchase/products'}>
+                  <SidebarMenuSubButton asChild isActive={pathname.startsWith('/purchase/products')}>
                     <Link href="/purchase/products"><Package />Products</Link>
                   </SidebarMenuSubButton>
                 </SidebarMenuItem>
@@ -162,14 +268,14 @@ export function DashboardSidebarItems() {
 
       {isPayrollEnabled && (
          <SidebarMenuItem>
-            <Collapsible open={isPayrollOpen} onOpenChange={setIsPayrollOpen}>
+            <Collapsible defaultOpen={isPayrollOpen}>
               <CollapsibleTrigger asChild>
                   <SidebarMenuButton className="w-full justify-between">
                       <div className="flex items-center gap-2">
                           <Wallet />
                           Payroll
                       </div>
-                      <ChevronDown className={`h-4 w-4 transition-transform ${isPayrollOpen ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`h-4 w-4 transition-transform data-[state=open]:rotate-180`} />
                   </SidebarMenuButton>
               </CollapsibleTrigger>
               <CollapsibleContent>
@@ -201,14 +307,14 @@ export function DashboardSidebarItems() {
       )}
 
        <SidebarMenuItem>
-            <Collapsible open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+            <Collapsible defaultOpen={isSettingsOpen}>
                 <CollapsibleTrigger asChild>
                     <SidebarMenuButton className="w-full justify-between">
                         <div className="flex items-center gap-2">
                             <Settings />
                             Settings
                         </div>
-                        <ChevronDown className={`h-4 w-4 transition-transform ${isSettingsOpen ? 'rotate-180' : ''}`} />
+                        <ChevronDown className={`h-4 w-4 transition-transform data-[state=open]:rotate-180`} />
                     </SidebarMenuButton>
                 </CollapsibleTrigger>
                 <CollapsibleContent>
@@ -231,42 +337,50 @@ export function DashboardSidebarItems() {
                         </SidebarMenuItem>
                         {isUserManagementEnabled && (
                           <SidebarMenuItem>
-                            <Collapsible open={isUserManagementOpen} onOpenChange={setIsUserManagementOpen}>
-                              <CollapsibleTrigger asChild>
-                                <SidebarMenuButton className="w-full justify-between">
-                                  <div className="flex items-center gap-2">
-                                    <UsersIcon />
-                                    User Management
-                                  </div>
-                                  <ChevronDown className={`h-4 w-4 transition-transform ${isUserManagementOpen ? 'rotate-180' : ''}`} />
-                                </SidebarMenuButton>
-                              </CollapsibleTrigger>
-                              <CollapsibleContent>
-                                <SidebarMenuSub>
-                                    <SidebarMenuItem>
-                                        <SidebarMenuSubButton asChild isActive={pathname === '/settings/user-management'}>
-                                            <Link href="/settings/user-management"><UsersIcon />Users</Link>
-                                        </SidebarMenuSubButton>
-                                    </SidebarMenuItem>
-                                    <SidebarMenuItem>
-                                        <SidebarMenuSubButton asChild isActive={pathname === '/settings/user-management/roles'}>
-                                            <Link href="/settings/user-management/roles"><ShieldCheck />Roles &amp; Permissions</Link>
-                                        </SidebarMenuSubButton>
-                                    </SidebarMenuItem>
-                                </SidebarMenuSub>
-                              </CollapsibleContent>
+                             <Collapsible defaultOpen={isUserManagementOpen}>
+                                <CollapsibleTrigger asChild>
+                                    <SidebarMenuSubButton className="w-full justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <UsersIcon />
+                                            User Management
+                                        </div>
+                                        <ChevronDown className={`h-4 w-4 transition-transform data-[state=open]:rotate-180`} />
+                                    </SidebarMenuSubButton>
+                                </CollapsibleTrigger>
+                                <CollapsibleContent>
+                                    <SidebarMenuSub>
+                                        <SidebarMenuItem>
+                                            <SidebarMenuSubButton asChild isActive={pathname.startsWith('/settings/user-management') && !pathname.includes('/roles')}>
+                                                <Link href="/settings/user-management"><UsersIcon />Users</Link>
+                                            </SidebarMenuSubButton>
+                                        </SidebarMenuItem>
+                                        <SidebarMenuItem>
+                                            <SidebarMenuSubButton asChild isActive={pathname.startsWith('/settings/user-management/roles')}>
+                                                <Link href="/settings/user-management/roles"><ShieldCheck />Roles & Permissions</Link>
+                                            </SidebarMenuSubButton>
+                                        </SidebarMenuItem>
+                                    </SidebarMenuSub>
+                                </CollapsibleContent>
                             </Collapsible>
                           </SidebarMenuItem>
                         )}
+                         <SidebarMenuItem>
+                            <SidebarMenuSubButton asChild isActive={pathname.startsWith('/settings/backup')}>
+                                <Link href="/settings/backup">
+                                    <Database />
+                                    Backup & Restore
+                                </Link>
+                            </SidebarMenuSubButton>
+                        </SidebarMenuItem>
                         <SidebarMenuItem>
-                            <Collapsible open={isPreferencesOpen} onOpenChange={setIsPreferencesOpen}>
+                            <Collapsible defaultOpen={isPreferencesOpen}>
                                 <CollapsibleTrigger asChild>
                                     <SidebarMenuSubButton className="w-full justify-between">
                                         <div className="flex items-center gap-2">
                                             <ChevronsRight />
                                             Preferences
                                         </div>
-                                        <ChevronDown className={`h-4 w-4 transition-transform ${isPreferencesOpen ? 'rotate-180' : ''}`} />
+                                        <ChevronDown className={`h-4 w-4 transition-transform data-[state=open]:rotate-180`} />
                                     </SidebarMenuSubButton>
                                 </CollapsibleTrigger>
                                 <CollapsibleContent>
@@ -277,13 +391,18 @@ export function DashboardSidebarItems() {
                                             </SidebarMenuSubButton>
                                         </SidebarMenuItem>
                                         <SidebarMenuItem>
-                                            <SidebarMenuSubButton asChild isActive={pathname === '/settings/preferences/product-preference'}>
-                                                <Link href="/settings/preferences/product-preference"><Package />Product Preference</Link>
+                                            <SidebarMenuSubButton asChild isActive={pathname === '/settings/preferences/currency'}>
+                                                <Link href="/settings/preferences/currency"><CircleDollarSign />Currency</Link>
                                             </SidebarMenuSubButton>
                                         </SidebarMenuItem>
                                         <SidebarMenuItem>
-                                            <SidebarMenuSubButton asChild isActive={pathname === '/settings/preferences/currency'}>
-                                                <Link href="/settings/preferences/currency"><CircleDollarSign />Currency</Link>
+                                            <SidebarMenuSubButton asChild isActive={pathname === '/settings/preferences/product'}>
+                                                <Link href="/settings/preferences/product"><Blocks />Product</Link>
+                                            </SidebarMenuSubButton>
+                                        </SidebarMenuItem>
+                                        <SidebarMenuItem>
+                                            <SidebarMenuSubButton asChild isActive={pathname === '/settings/preferences/quotation'}>
+                                                <Link href="/settings/preferences/quotation"><ClipboardList />Quotation</Link>
                                             </SidebarMenuSubButton>
                                         </SidebarMenuItem>
                                     </SidebarMenuSub>

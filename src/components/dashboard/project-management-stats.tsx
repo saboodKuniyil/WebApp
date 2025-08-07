@@ -1,55 +1,38 @@
 
-'use client';
-
-import * as React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Briefcase, CheckSquare, AlertTriangle } from "lucide-react";
-import { getProjects, getTasks, getIssues } from "@/lib/db";
+import type { Project } from "@/components/project-management/projects-list";
+import type { Task } from "@/components/project-management/tasks-list";
+import type { Issue } from "@/components/project-management/issues-list";
 import Link from 'next/link';
-import { Skeleton } from '../ui/skeleton';
 
-type Stats = {
-    activeProjects: number;
-    tasksCompleted: number;
-    openIssues: number;
-};
+interface ProjectManagementStatsProps {
+    projects: Project[];
+    tasks: Task[];
+    issues: Issue[];
+}
 
-export function ProjectManagementStats() {
-    const [stats, setStats] = React.useState<Stats | null>(null);
-
-    React.useEffect(() => {
-        async function fetchStats() {
-            const [projects, tasks, issues] = await Promise.all([
-                getProjects(),
-                getTasks(),
-                getIssues(),
-            ]);
-
-            const activeProjects = projects.filter(p => p.status === 'in-progress').length;
-            const tasksCompleted = tasks.filter(t => t.status === 'done').length;
-            const openIssues = issues.filter(i => i.status === 'open').length;
-
-            setStats({ activeProjects, tasksCompleted, openIssues });
-        }
-        fetchStats();
-    }, []);
+export function ProjectManagementStats({ projects, tasks, issues }: ProjectManagementStatsProps) {
+    const activeProjects = projects.filter(p => p.status === 'in-progress').length;
+    const tasksCompleted = tasks.filter(t => t.status === 'done').length;
+    const openIssues = issues.filter(i => i.status === 'open').length;
 
     const statCards = [
         {
             title: "Active Projects",
-            value: stats?.activeProjects,
+            value: activeProjects,
             Icon: Briefcase,
             href: "/project-management/projects"
         },
         {
             title: "Tasks Completed",
-            value: stats?.tasksCompleted,
+            value: tasksCompleted,
             Icon: CheckSquare,
             href: "/project-management/tasks"
         },
         {
             title: "Open Issues",
-            value: stats?.openIssues,
+            value: openIssues,
             Icon: AlertTriangle,
             href: "/project-management/issues"
         },
@@ -65,11 +48,7 @@ export function ProjectManagementStats() {
                             <stat.Icon className={`h-4 w-4 text-muted-foreground`} />
                         </CardHeader>
                         <CardContent>
-                            {stats === null ? (
-                                <Skeleton className="h-7 w-12" />
-                            ) : (
-                                <div className="text-2xl font-bold">{stat.value}</div>
-                            )}
+                            <div className="text-2xl font-bold">{stat.value}</div>
                         </CardContent>
                     </Link>
                 </Card>

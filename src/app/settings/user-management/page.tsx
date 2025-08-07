@@ -2,18 +2,11 @@
 import { UsersList } from "@/components/settings/users-list";
 import { getUsers as fetchUsers } from '@/lib/db';
 import type { User } from "@/lib/db";
-import { unstable_noStore as noStore } from 'next/cache';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 async function getUsers(): Promise<User[]> {
-  noStore();
-  try {
     const users = await fetchUsers();
     return users;
-  } catch (error) {
-    console.error('Failed to read database:', error);
-    return [];
-  }
 }
 
 export default async function UserManagementPage() {

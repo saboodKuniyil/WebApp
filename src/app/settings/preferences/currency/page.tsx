@@ -2,15 +2,12 @@
 import { CurrencyManagement } from "@/components/settings/currency-management";
 import { getCurrencies, getAppSettings } from '@/lib/db';
 import type { Currency } from "@/components/settings/currency-management";
-import { unstable_noStore as noStore } from 'next/cache';
 
 async function fetchCurrencies(): Promise<Currency[]> {
-  noStore();
   return getCurrencies();
 }
 
 async function fetchDefaultCurrency(): Promise<string> {
-    noStore();
     const settings = await getAppSettings();
     return settings.currency;
 }

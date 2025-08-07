@@ -2,76 +2,103 @@
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { getAppSettings, getCurrencies, getCompanyProfile } from '@/lib/db';
 import type { Currency } from '@/components/settings/currency-management';
 import type { AppSettings, CompanyProfile } from '@/lib/db';
 
 interface ModulesContextType {
   isProjectManagementEnabled: boolean;
-  setIsProjectManagementEnabled: (value: boolean) => void;
   isPurchaseModuleEnabled: boolean;
-  setIsPurchaseModuleEnabled: (value: boolean) => void;
   isCrmEnabled: boolean;
-  setIsCrmEnabled: (value: boolean) => void;
   isPayrollEnabled: boolean;
-  setIsPayrollEnabled: (value: boolean) => void;
   isUserManagementEnabled: boolean;
-  setIsUserManagementEnabled: (value: boolean) => void;
+  isSalesModuleEnabled: boolean;
+  isAccountingEnabled: boolean;
   currency: Currency | null;
   setCurrency: (currency: Currency | null) => void;
   allCurrencies: Currency[];
   appSettings: AppSettings | null;
   setAppSettings: (settings: AppSettings) => void;
   companyProfile: CompanyProfile | null;
+  setCompanyProfile: (profile: CompanyProfile | null) => void;
+  isInitialLoad: boolean; // Renamed from isLoading for clarity
 }
 
 const ModulesContext = createContext<ModulesContextType | undefined>(undefined);
 
-export const ModulesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [isProjectManagementEnabled, setIsProjectManagementEnabled] = useState(true);
-  const [isPurchaseModuleEnabled, setIsPurchaseModuleEnabled] = useState(true);
-  const [isCrmEnabled, setIsCrmEnabled] = useState(true);
-  const [isPayrollEnabled, setIsPayrollEnabled] = useState(true);
-  const [isUserManagementEnabled, setIsUserManagementEnabled] = useState(true);
-  const [currency, setCurrency] = useState<Currency | null>(null);
-  const [allCurrencies, setAllCurrencies] = useState<Currency[]>([]);
+interface ModulesProviderProps {
+  children: ReactNode;
+  serverAppSettings: AppSettings;
+  serverCurrencies: Currency[];
+  serverCompanyProfile: CompanyProfile;
+}
+
+export const ModulesProvider: React.FC<ModulesProviderProps> = ({ 
+  children,
+  serverAppSettings,
+  serverCurrencies,
+  serverCompanyProfile
+}) => {
   const [appSettings, setAppSettings] = useState<AppSettings | null>(null);
+  const [allCurrencies, setAllCurrencies] = useState<Currency[]>([]);
   const [companyProfile, setCompanyProfile] = useState<CompanyProfile | null>(null);
+  const [currency, setCurrency] = useState<Currency | null>(null);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   useEffect(() => {
-    async function fetchInitialData() {
-      const [settings, currencies, profile] = await Promise.all([
-        getAppSettings(),
-        getCurrencies(),
-        getCompanyProfile(),
-      ]);
-      const currentCurrency = currencies.find(c => c.code === settings.currency) || null;
-      setAllCurrencies(currencies);
-      setCurrency(currentCurrency);
-      setAppSettings(settings);
-      setCompanyProfile(profile);
+    setAppSettings(serverAppSettings);
+    setAllCurrencies(serverCurrencies);
+    setCompanyProfile(serverCompanyProfile);
+    setCurrency(serverCurrencies.find(c => c.code === serverAppSettings.currency) || null);
+    setIsInitialLoad(false);
+  }, [serverAppSettings, serverCurrencies, serverCompanyProfile]);
+
+
+  const handleSetAppSettings = (settings: AppSettings) => {
+    setAppSettings(settings);
+  };
+  
+  const handleSetCompanyProfile = (profile: CompanyProfile | null) => {
+    setCompanyProfile(profile);
+  };
+
+  const handleSetCurrency = (newCurrency: Currency | null) => {
+    setCurrency(newCurrency);
+  };
+  
+  // This effect ensures that if appSettings is updated from somewhere else (like preferences pages),
+  // the currency reflects that change.
+  useEffect(() => {
+    if (appSettings) {
+        const newCurrency = allCurrencies.find(c => c.code === appSettings.currency) || null;
+        setCurrency(newCurrency);
     }
-    fetchInitialData();
-  }, []);
+  }, [appSettings, allCurrencies]);
+
+  const isProjectManagementEnabled = appSettings?.enabled_modules?.project_management ?? false;
+  const isPurchaseModuleEnabled = appSettings?.enabled_modules?.purchase ?? false;
+  const isCrmEnabled = appSettings?.enabled_modules?.crm ?? false;
+  const isPayrollEnabled = appSettings?.enabled_modules?.payroll ?? false;
+  const isUserManagementEnabled = appSettings?.enabled_modules?.user_management ?? false;
+  const isSalesModuleEnabled = appSettings?.enabled_modules?.sales ?? false;
+  const isAccountingEnabled = appSettings?.enabled_modules?.accounting ?? false;
 
   return (
     <ModulesContext.Provider value={{ 
-        isProjectManagementEnabled, 
-        setIsProjectManagementEnabled, 
-        isPurchaseModuleEnabled, 
-        setIsPurchaseModuleEnabled,
+        isProjectManagementEnabled,
+        isPurchaseModuleEnabled,
         isCrmEnabled,
-        setIsCrmEnabled,
         isPayrollEnabled,
-        setIsPayrollEnabled,
         isUserManagementEnabled,
-        setIsUserManagementEnabled,
+        isSalesModuleEnabled,
+        isAccountingEnabled,
         currency,
-        setCurrency,
+        setCurrency: handleSetCurrency,
         allCurrencies,
         appSettings,
-        setAppSettings,
-        companyProfile
+        setAppSettings: handleSetAppSettings,
+        companyProfile,
+        setCompanyProfile: handleSetCompanyProfile,
+        isInitialLoad,
     }}>
       {children}
     </ModulesContext.Provider>
